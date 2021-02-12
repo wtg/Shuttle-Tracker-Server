@@ -1,3 +1,3 @@
 # Rensselaer Shuttle Server
 
-A description of this package.
+Server for the [Renssealer campus shuttle tracker](https://github.com/Gerzer/Rensselaer-Shuttle)
