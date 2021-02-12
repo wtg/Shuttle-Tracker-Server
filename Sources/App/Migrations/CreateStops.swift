@@ -12,7 +12,7 @@ struct CreateStops: Migration {
 	func prepare(on database: Database) -> EventLoopFuture<Void> {
 		return database.schema(Stop.schema)
 			.id()
-			.field("coordinate", .custom(Coordinate.self), .required)
+			.field("coordinate", .dictionary, .required)
 			.field("name", .string, .required)
 			.create()
 	}
