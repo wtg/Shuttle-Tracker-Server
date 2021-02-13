@@ -114,7 +114,7 @@ extension Set where Element == Bus {
 					guard let longitudeRange = rawLine.range(of: #"(?<=(lon:))-?\d+\.\d+"#, options: [.regularExpression]), let longitude = Double(rawLine[longitudeRange]) else {
 						return nil
 					}
-					guard let timeRange = rawLine.range(of: #"(?<=(time:))\d{6}"#, options: [.regularExpression]), let dateRange = rawLine.range(of: #"(?<=(date:))\d{8}"#, options: [.regularExpression]) else {
+					guard let timeRange = rawLine.range(of: #"(?<=(time:))\d+"#, options: [.regularExpression]), let dateRange = rawLine.range(of: #"(?<=(date:))\d{8}"#, options: [.regularExpression]) else {
 						return nil
 					}
 					let formatter = DateFormatter()

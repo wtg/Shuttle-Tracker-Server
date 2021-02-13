@@ -13,7 +13,7 @@ struct CreateBuses: Migration {
 		return database.schema(Bus.schema)
 			.id()
 			.field("locations", .array(of: .custom(Bus.Location.self)), .required)
-			.field("congestion", .int, .required)
+			.field("congestion", .int)
 			.create()
 	}
 	
