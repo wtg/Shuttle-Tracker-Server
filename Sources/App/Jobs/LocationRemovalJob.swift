@@ -22,7 +22,7 @@ struct LocationRemovalJob: ScheduledJob {
 				oldLocationsIndicies.forEach { (index) in
 					bus.locations.remove(at: index)
 				}
-				 _ = bus.update(on: context.application.db)
+				_ = bus.update(on: context.application.db)
 			}
 		return context.eventLoop.future()
 	}
