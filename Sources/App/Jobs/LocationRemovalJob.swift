@@ -16,13 +16,13 @@ struct LocationRemovalJob: ScheduledJob {
 				let oldLocations = bus.locations.filter { (location) in
 					return location.type == .user && location.date.timeIntervalSinceNow < -30
 				}
-				let oldLocationsIndicies = oldLocations.compactMap { (location) in
+				let oldLocationsIndices = oldLocations.compactMap { (location) in
 					return bus.locations.firstIndex(of: location)
 				}
-				oldLocationsIndicies.forEach { (index) in
+				oldLocationsIndices.forEach { (index) in
 					bus.locations.remove(at: index)
 				}
-				 _ = bus.update(on: context.application.db)
+				_ = bus.update(on: context.application.db)
 			}
 		return context.eventLoop.future()
 	}
