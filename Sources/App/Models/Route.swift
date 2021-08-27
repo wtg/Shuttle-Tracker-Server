@@ -1,6 +1,6 @@
 //
 //  Route.swift
-//  
+//  Rensselaer Shuttle Server
 //
 //  Created by Gabriel Jacoby-Cooper on 10/9/20.
 //
@@ -14,10 +14,13 @@ final class Route: Model, Content, Collection {
 	static let schema = "routes"
 	
 	let startIndex = 0
+	
 	lazy var endIndex = self.coordinates.count - 1
 	
 	@ID var id: UUID?
+	
 	@Field(key: "coordinates") var coordinates: [Coordinate]
+	
 	@Field(key: "stopIDs") var stopIDs: [Int]
 	
 	init() { }

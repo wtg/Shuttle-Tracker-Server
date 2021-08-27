@@ -1,6 +1,6 @@
 //
 //  routes.swift
-//  
+//  Rensselaer Shuttle Server
 //
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //
@@ -91,7 +91,3 @@ func routes(_ application: Application) throws {
 			}
 	}
 }
-
-extension Optional: Content, RequestDecodable, ResponseEncodable where Wrapped: Codable { }
-
-extension Set: Content, RequestDecodable, ResponseEncodable where Element: Codable { }

@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//  Rensselaer Shuttle Server
 //
 //  Created by Gabriel Jacoby-Cooper on 10/9/20.
 //
@@ -10,6 +10,7 @@ import Foundation
 struct Coordinate: Equatable, Codable {
 	
 	var latitude: Double
+	
 	var longitude: Double
 	
 	static func += (_ leftCoordinate: inout Coordinate, _ rightCoordinate: Coordinate) {

@@ -1,6 +1,6 @@
 //
 //  Bus.swift
-//  
+//  Rensselaer Shuttle Server
 //
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //
@@ -8,9 +8,9 @@
 import Vapor
 import Fluent
 
-final class Bus: Model {
+final class Bus: Hashable, Model {
 	
-	final class Location: Content, Fields {
+	final class Location: Equatable, Content, Fields {
 		
 		enum LocationType: String, Codable {
 			
@@ -20,8 +20,11 @@ final class Bus: Model {
 		}
 		
 		@ID(custom: "id", generatedBy: .user) var id: UUID?
+		
 		@Field(key: "date") var date: Date
+		
 		@Field(key: "coordinate") var coordinate: Coordinate
+		
 		@Enum(key: "type") var type: LocationType
 		
 		init() { }
@@ -31,6 +34,10 @@ final class Bus: Model {
 			self.date = date
 			self.coordinate = coordinate
 			self.type = type
+		}
+		
+		static func == (_ leftLocation: Bus.Location, _ rightLocation: Bus.Location) -> Bool {
+			return leftLocation.id == rightLocation.id
 		}
 		
 	}
@@ -47,7 +54,9 @@ final class Bus: Model {
 	}
 	
 	@ID(custom: "id", generatedBy: .user) var id: Int?
+	
 	@Field(key: "locations") var locations: [Location]
+	
 	@OptionalField(key: "congestion") var congestion: Int?
 	
 	init() { }
@@ -56,17 +65,6 @@ final class Bus: Model {
 		self.id = id
 		self.locations = locations
 	}
-	
-}
-
-struct BusResponse: Content {
-	
-	var id: Int
-	var location: Bus.Location
-	
-}
-
-extension Bus: Hashable {
 	
 	static func == (_ leftBus: Bus, _ rightBus: Bus) -> Bool {
 		return leftBus.id == rightBus.id
@@ -78,11 +76,11 @@ extension Bus: Hashable {
 	
 }
 
-extension Bus.Location: Equatable {
+struct BusResponse: Content {
 	
-	static func == (_ leftLocation: Bus.Location, _ rightLocation: Bus.Location) -> Bool {
-		return leftLocation.id == rightLocation.id
-	}
+	var id: Int
+	
+	var location: Bus.Location
 	
 }
 
@@ -141,6 +139,7 @@ extension Collection where Element == Bus.Location {
 			}
 		}
 	}
+	
 	var userLocation: Bus.Location? {
 		get {
 			let userLocations = self.filter { (location) -> Bool in
@@ -163,6 +162,7 @@ extension Collection where Element == Bus.Location {
 			return Bus.Location(id: UUID(), date: newestLocation?.date ?? Date(), coordinate: userCoordinate, type: .user)
 		}
 	}
+	
 	var resolvedLocation: Bus.Location? {
 		get {
 			return self.userLocation ?? self.systemLocation
@@ -171,7 +171,7 @@ extension Collection where Element == Bus.Location {
 	
 }
 
-extension Array: Mergable where Element == Bus.Location {
+extension Array: Mergeable where Element == Bus.Location {
 	
 	mutating func merge(with otherLocations: [Bus.Location]) {
 		otherLocations.forEach { (location) in

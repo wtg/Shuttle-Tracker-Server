@@ -1,6 +1,6 @@
 //
 //  Stop.swift
-//  
+//  Rensselaer Shuttle Server
 //
 //  Created by Gabriel Jacoby-Cooper on 10/20/20.
 //
@@ -14,7 +14,9 @@ final class Stop: Model, Content {
 	static let schema = "stops"
 	
 	@ID(custom: "id", generatedBy: .user) var id: Int?
+	
 	@Field(key: "coordinate") var coordinate: Coordinate
+	
 	@Field(key: "name") var name: String
 	
 	init() { }

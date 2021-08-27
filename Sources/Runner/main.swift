@@ -1,6 +1,6 @@
 //
 //  main.swift
-//
+//  Rensselaer Shuttle Server
 //
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //

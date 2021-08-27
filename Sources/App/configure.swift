@@ -1,6 +1,6 @@
 //
 //  configure.swift
-//  
+//  Rensselaer Shuttle Server
 //
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //
@@ -49,10 +49,4 @@ public func configure(_ application: Application) throws {
 	_ = RouteDownloadingJob().run(context: application.queues.queue.context)
 	_ = StopDownloadingJob().run(context: application.queues.queue.context)
 	try routes(application)
-}
-
-protocol Mergable: Collection {
-	
-	mutating func merge(with: Self);
-	
 }

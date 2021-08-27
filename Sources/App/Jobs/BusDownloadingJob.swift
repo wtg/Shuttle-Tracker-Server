@@ -1,6 +1,6 @@
 //
 //  BusDownloadingJob.swift
-//  
+//  Rensselaer Shuttle Server
 //
 //  Created by Gabriel Jacoby-Cooper on 9/26/20.
 //
