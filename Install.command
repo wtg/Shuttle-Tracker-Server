@@ -30,9 +30,8 @@ cd ~/
 echo "export PATH=/opt/swift/usr/bin:$PATH" >> .bashrc
 source .bashrc
 echo "Downloading shuttle server..." >> /dev/stdout
-git clone "https://github.com/Gerzer/Rensselaer-Shuttle.git" >> /var/log/shuttle_install.log
-mv Rensselaer-Shuttle shuttle
-cd shuttle/Server/
+git clone "https://github.com/Gerzer/Rensselaer-Shuttle-Server.git" >> /var/log/shuttle_install.log
+cd Rensselaer-Shuttle-Server
 chmod +x Update.command
 echo "Building shuttle server..." >> /dev/stdout
 swift build -c release >> /var/log/shuttle_install.log
