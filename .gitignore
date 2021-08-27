@@ -1,2 +1,3 @@
 .DS_Store
 /.swiftpm/xcode/package.xcworkspace/
+*.paw
