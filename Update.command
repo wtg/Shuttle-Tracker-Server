@@ -13,5 +13,5 @@ git pull >> /var/log/shuttle_update.log
 echo "Building shuttle tracker server..." >> /dev/stdout
 swift build -c release >> /var/log/shuttle_update.log
 echo "Starting daemon..." >> /dev/stdout
-systemctl restart shuttle >> /var/log/shuttle_update.log
+supervisorctl restart shuttle >> /var/log/shuttle_update.log
 echo "The shuttle server has been updated! You can check out the update log in \`/var/log/shuttle_update.log\`." >> /dev/stdout

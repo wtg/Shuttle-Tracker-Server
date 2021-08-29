@@ -34,7 +34,7 @@ cd ~/
 echo "Downloading shuttle tracker server..." >> /dev/stdout
 git clone "https://github.com/Gerzer/Shuttler-Tracker-Server.git" >> /var/log/shuttle_install.log
 cd Shuttle-Tracker-Server
-echo -e "export PATH=/opt/swift/usr/bin:\"$PATH\"\nexport root=\"$(pwd)\"" >> ~/.bashrc
+echo -e "export PATH=/opt/swift/usr/bin:\"\$PATH\"\nexport root=\"$(pwd)\"" >> ~/.bashrc
 source ~/.bashrc
 chmod +x Update.command
 echo "Building shuttle tracker server (this may take a while)..." >> /dev/stdout
