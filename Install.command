@@ -2,7 +2,11 @@
 
 source ~/.bashrc
 if [ $(id -u) -ne 0 ]; then
-	echo "ERROR: This script must be run as root." >> /dev/stderr
+	echo "ERROR: Must be run as root" >> /dev/stderr
+	exit
+fi
+if ! which -s apt-get; then
+	echo "ERROR: APT package manager not found" >> /dev/stderr
 	exit
 fi
 if [ -z $email ]; then
