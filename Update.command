@@ -10,7 +10,7 @@ systemctl stop shuttle >> /var/log/shuttle_update.log
 echo "Downloading shuttle tracker server..." >> /dev/stdout
 cd "$root"
 git pull >> /var/log/shuttle_update.log
-echo "Building shuttle tracker server..." >> /dev/stdout
+echo "Building shuttle tracker server (this may take a while)..." >> /dev/stdout
 swift build -c release >> /var/log/shuttle_update.log
 echo "Starting daemon..." >> /dev/stdout
 supervisorctl restart shuttle >> /var/log/shuttle_update.log
