@@ -37,7 +37,7 @@ echo "Downloading shuttle server..." >> /dev/stdout
 git clone "https://github.com/Gerzer/Rensselaer-Shuttle-Server.git" >> /var/log/shuttle_install.log
 cd Rensselaer-Shuttle-Server
 chmod +x Update.command
-echo "Building shuttle server..." >> /dev/stdout
+echo "Building shuttle server (this may take a while)..." >> /dev/stdout
 swift build -c release >> /var/log/shuttle_install.log
 echo "Configuring daemon..." >> /dev/stdout
 address=$(wget "http://ipecho.net/plain" -O - -q)
