@@ -42,7 +42,7 @@ extension Collection where Element == Stop {
 extension Array where Element == Stop {
 	
 	static func download(application: Application, _ stopsCallback: @escaping ([Stop]) -> Void) {
-		_ = application.client.get("https://shuttles.rpi.edu/stops")
+		_ = application.client.get("http://shuttles.rpi.edu/stops")
 			.map { (response) in
 				guard let length = response.body?.readableBytes, let data = response.body?.getData(at: 0, length: length) else {
 					return

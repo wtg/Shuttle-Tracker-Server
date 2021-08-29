@@ -53,7 +53,7 @@ extension Collection where Element == Route {
 extension Array where Element == Route {
 	
 	static func download(application: Application, _ routesCallback: @escaping ([Route]) -> Void) {
-		_ = application.client.get("https://shuttles.rpi.edu/routes")
+		_ = application.client.get("http://shuttles.rpi.edu/routes")
 			.map { (response) in
 				guard let length = response.body?.readableBytes, let data = response.body?.getData(at: 0, length: length) else {
 					return

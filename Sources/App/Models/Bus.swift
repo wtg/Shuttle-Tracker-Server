@@ -97,7 +97,7 @@ extension Collection where Element == Bus {
 extension Set where Element == Bus {
 	
 	static func download(application: Application, _ busesCallback:  @escaping (Set<Bus>) -> Void) {
-		_ = application.client.get("https://shuttles.rpi.edu/datafeed")
+		_ = application.client.get("http://shuttles.rpi.edu/datafeed")
 			.map { (response) in
 				guard let length = response.body?.readableBytes, let data = response.body?.getData(at: 0, length: length), let rawString = String(data: data, encoding: .utf8) else {
 					return
