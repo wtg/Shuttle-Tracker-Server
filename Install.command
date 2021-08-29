@@ -5,7 +5,7 @@ if [ $(id -u) -ne 0 ]; then
 	echo "ERROR: Must be run as root" >> /dev/stderr
 	exit
 fi
-if ! which apt-get; then
+if ! which apt-get >> /var/log/shuttle_update.log; then
 	echo "ERROR: APT package manager not found" >> /dev/stderr
 	exit
 fi
