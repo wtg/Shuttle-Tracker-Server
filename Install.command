@@ -16,7 +16,7 @@ if [ -z $email ]; then
 fi
 if [ -z $domain ]; then
 	echo "ERROR: Domain not set" >> /dev/stderr
-	echo "Specify your preferred domain (e.g., \"shuttle.gerzer.software\") in the \`domain\` environment variable, which you should set with the \`export\` command in your \`~/.bashrc\` file." >> /dev/stdout
+	echo "Specify your preferred domain (e.g., \"shuttletracker.app\") in the \`domain\` environment variable, which you should set with the \`export\` command in your \`~/.bashrc\` file." >> /dev/stdout
 	exit
 fi
 echo "Updating package lists..." >> /dev/stdout
@@ -31,17 +31,17 @@ tar -xvzf swift-5.3-RELEASE-ubuntu18.04.tar.gz >> /var/log/shuttle_install.log
 echo "Installing Swift..." >> /dev/stdout
 mv swift-5.3-RELEASE-ubuntu18.04 /opt/swift
 cd ~/
-echo "export PATH=/opt/swift/usr/bin:$PATH" >> .bashrc
-source .bashrc
-echo "Downloading shuttle server..." >> /dev/stdout
-git clone "https://github.com/Gerzer/Rensselaer-Shuttle-Server.git" >> /var/log/shuttle_install.log
-cd Rensselaer-Shuttle-Server
+echo "Downloading shuttle tracker server..." >> /dev/stdout
+git clone "https://github.com/Gerzer/Shuttler-Tracker-Server.git" >> /var/log/shuttle_install.log
+cd Shuttle-Tracker-Server
+echo -e "export PATH=/opt/swift/usr/bin:\"$PATH\"\nexport root=\"$(pwd)\"" >> ~/.bashrc
+source ~/.bashrc
 chmod +x Update.command
-echo "Building shuttle server (this may take a while)..." >> /dev/stdout
+echo "Building shuttle tracker server (this may take a while)..." >> /dev/stdout
 swift build -c release >> /var/log/shuttle_install.log
 echo "Configuring daemon..." >> /dev/stdout
 address=$(wget "http://ipecho.net/plain" -O - -q)
-echo -e "#!/bin/bash\n\nexport domain=$domain\n$(pwd)/.build/release/Runner serve --bind $address:443" > Serve.command
+echo -e "#!/bin/bash\n\nexport domain=$domain\n\"$(pwd)\"/.build/release/Runner serve --bind $address:443" > Serve.command
 chmod +x Serve.command
 echo -e "[program:shuttle]\ncommand=$(pwd)/Serve.command\ndirectory=$(pwd)\nstdout_logfile=/var/log/supervisor/shuttle_out.log\nstderr_logfile=/var/log/supervisor/shuttle_err.log" > /etc/supervisor/conf.d/shuttle.conf
 supervisorctl reread >> /var/log/shuttle_install.log

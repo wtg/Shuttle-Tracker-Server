@@ -1,6 +1,6 @@
 //
 //  Stop.swift
-//  Rensselaer Shuttle Server
+//  Shuttle Tracker Server
 //
 //  Created by Gabriel Jacoby-Cooper on 10/20/20.
 //

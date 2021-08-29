@@ -3,7 +3,7 @@
 import PackageDescription
 
 let package = Package(
-	name: "Rensselaer Shuttle Server",
+	name: "Shuttle Tracker Server",
 	platforms: [
 		.macOS(
 			.v10_15

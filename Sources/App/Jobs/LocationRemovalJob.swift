@@ -1,6 +1,6 @@
 //
 //  LocationRemovalJob.swift
-//  Rensselaer Shuttle Server
+//  Shuttle Tracker Server
 //
 //  Created by Gabriel Jacoby-Cooper on 9/22/20.
 //

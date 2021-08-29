@@ -1,6 +1,6 @@
 //
 //  Mergeable.swift
-//  Rensselaer Shuttle Server
+//  Shuttle Tracker Server
 //
 //  Created by Gabriel Jacoby-Cooper on 8/27/21.
 //

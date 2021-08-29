@@ -1,6 +1,6 @@
 //
 //  CreateBuses.swift
-//  Rensselaer Shuttle Server
+//  Shuttle Tracker Server
 //
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //
