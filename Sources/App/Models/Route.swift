@@ -11,6 +11,13 @@ import JSONParser
 
 final class Route: Model, Content, Collection {
 	
+	enum InternalColor: String, Codable {
+		
+		case red
+		case blue
+		
+	}
+	
 	static let schema = "routes"
 	
 	let startIndex = 0
@@ -23,11 +30,14 @@ final class Route: Model, Content, Collection {
 	
 	@Field(key: "stop_ids") var stopIDs: [Int]
 	
+	@OptionalField(key: "internal_color") var internalColor: InternalColor?
+	
 	init() { }
 	
-	init(_ coordinates: [Coordinate] = [], stopIDs: [Int]) {
+	init(_ coordinates: [Coordinate] = [], stopIDs: [Int], internalColor: InternalColor?) {
 		self.coordinates = coordinates
 		self.stopIDs = stopIDs
+		self.internalColor = internalColor
 	}
 	
 	subscript(_ position: Int) -> Coordinate {
@@ -69,7 +79,18 @@ extension Array where Element == Route {
 							return Coordinate(latitude: latitude, longitude: longitude)
 						} ?? []
 						let stopIDs = routeParser?["stop_ids", as: [Int].self] ?? []
-						return Route(coordinates, stopIDs: stopIDs)
+						let name = routeParser?["name", as: String.self]
+						let internalColor: Route.InternalColor? = {
+							switch name {
+							case .some("NEW North Route"):
+								return .red
+							case .some("NEW West Route"):
+								return .blue
+							default:
+								return nil
+							}
+						}()
+						return Route(coordinates, stopIDs: stopIDs, internalColor: internalColor)
 					}
 					routesCallback(routes)
 				} catch {

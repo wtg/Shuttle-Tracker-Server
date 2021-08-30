@@ -14,6 +14,7 @@ struct CreateRoutes: Migration {
 			.id()
 			.field("coordinates", .array(of: .custom(Coordinate.self)), .required)
 			.field("stop_ids", .array(of: .int), .required)
+			.field("internal_color", .string)
 			.create()
 	}
 	
