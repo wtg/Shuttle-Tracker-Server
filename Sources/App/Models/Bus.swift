@@ -119,7 +119,9 @@ extension Set where Element == Bus {
 					formatter.dateFormat = "HHmmss'|'MMddyyyy"
 					formatter.timeZone = TimeZone(abbreviation: "UTC")!
 					let dateString = "\(rawLine[timeRange])|\(rawLine[dateRange])"
-					let date = formatter.date(from: dateString)!
+					guard let date = formatter.date(from: dateString) else {
+						return nil
+					}
 					let coordinate = Coordinate(latitude: latitude, longitude: longitude)
 					let location = Bus.Location(id: UUID(), date: date, coordinate: coordinate, type: .system)
 					return Bus(id: id, locations: [location])
