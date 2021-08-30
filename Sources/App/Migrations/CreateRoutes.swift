@@ -13,7 +13,7 @@ struct CreateRoutes: Migration {
 		return database.schema(Route.schema)
 			.id()
 			.field("coordinates", .array(of: .custom(Coordinate.self)), .required)
-			.field("stopIDs", .array(of: .int), .required)
+			.field("stop_ids", .array(of: .int), .required)
 			.create()
 	}
 	

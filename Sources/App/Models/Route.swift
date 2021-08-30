@@ -21,7 +21,7 @@ final class Route: Model, Content, Collection {
 	
 	@Field(key: "coordinates") var coordinates: [Coordinate]
 	
-	@Field(key: "stopIDs") var stopIDs: [Int]
+	@Field(key: "stop_ids") var stopIDs: [Int]
 	
 	init() { }
 	
