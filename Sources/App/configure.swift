@@ -5,6 +5,7 @@
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //
 
+import NIOSSL
 import Vapor
 import FluentSQLiteDriver
 import Queues
@@ -31,7 +32,7 @@ public func configure(_ application: Application) throws {
 		try application.http.server.configuration.tlsConfiguration = .forServer(
 			certificateChain: [
 				.certificate(
-					.init(
+					NIOSSLCertificate(
 						file: "/etc/letsencrypt/live/\(domain)/fullchain.pem",
 						format: .pem
 					)
