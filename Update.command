@@ -14,4 +14,4 @@ echo "Building shuttle tracker server (this may take a while)..." >> /dev/stdout
 swift build -c release >> /var/log/shuttle_update.log
 echo "Starting daemon..." >> /dev/stdout
 supervisorctl start shuttle >> /var/log/shuttle_update.log
-echo "The shuttle server has been updated! You can check out the update log in \`/var/log/shuttle_update.log\`." >> /dev/stdout
+echo "The shuttle tracker server has been updated! You can check out the update log in \`/var/log/shuttle_update.log\`." >> /dev/stdout

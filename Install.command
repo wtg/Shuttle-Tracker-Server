@@ -51,4 +51,4 @@ chmod +x /etc/letsencrypt/renewal-hooks/pre/shuttle.command
 chmod +x /etc/letsencrypt/renewal-hooks/post/shuttle.command
 echo "Starting daemon..." >> /dev/stdout
 supervisorctl add shuttle >> /var/log/shuttle_install.log
-echo "The shuttle server has been installed! You can check out the installation log in \`/var/log/shuttle_install.log\`. Execute \`$(pwd)/Update.command\` at any time to update the server to the latest version." >> /dev/stdout
+echo "The shuttle tracker server has been installed! You can check out the installation log in \`/var/log/shuttle_install.log\`. Execute \`$(pwd)/Update.command\` at any time to update the server to the latest version." >> /dev/stdout
