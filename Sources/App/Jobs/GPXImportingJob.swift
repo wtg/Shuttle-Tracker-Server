@@ -20,7 +20,7 @@ struct GPXImportingJob: ScheduledJob {
 				route.delete(on: context.application.db)
 			}
 			.whenSuccess { (_) in
-				Route(from: gpx.routes.first!).save(on: context.application.db)
+				_ = Route(from: gpx.routes.first!).save(on: context.application.db)
 			}
 		Stop.query(on: context.application.db)
 			.all()
@@ -33,7 +33,7 @@ struct GPXImportingJob: ScheduledJob {
 						return Stop(from: gpxWaypoint)!
 					}
 					.forEach { (stop) in
-						stop.save(on: context.application.db)
+						_ = stop.save(on: context.application.db)
 					}
 			}
 		return context.eventLoop.future()
