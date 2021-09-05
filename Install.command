@@ -32,7 +32,7 @@ echo "Installing Swift..." >> /dev/stdout
 mv swift-5.3-RELEASE-ubuntu18.04 /opt/swift
 cd ~/
 echo "Downloading shuttle tracker server..." >> /dev/stdout
-git clone "https://github.com/Gerzer/Shuttler-Tracker-Server.git" >> /var/log/shuttle_install.log
+git clone "https://github.com/wtg/Shuttler-Tracker-Server.git" >> /var/log/shuttle_install.log
 cd Shuttle-Tracker-Server
 echo -e "export PATH=/opt/swift/usr/bin:\"\$PATH\"\nexport domain='$domain'\nexport root='$(pwd)\'" >> ~/.bashrc
 source ~/.bashrc
