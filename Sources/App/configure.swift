@@ -12,6 +12,7 @@ import Queues
 import QueuesFluentDriver
 
 public func configure(_ application: Application) throws {
+	application.middleware.use(CORSMiddleware(configuration: .default()))
 	application.middleware.use(FileMiddleware(publicDirectory: application.directory.publicDirectory))
 	application.databases.use(.sqlite(), as: .sqlite)
 	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate())
