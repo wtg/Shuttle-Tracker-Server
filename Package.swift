@@ -28,8 +28,8 @@ let package = Package(
 			from: "1.0.0-rc.2"
 		),
 		.package(
-			url: "https://github.com/vincentneo/CoreGPX.git",
-			from: "0.9.0"
+			url: "https://github.com/Gerzer/CoreGPX.git",
+			.branch("master")
 		),
 		.package(
 			url: "https://github.com/Gerzer/JSONParser.git",
