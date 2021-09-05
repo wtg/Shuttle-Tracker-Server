@@ -18,10 +18,7 @@ public func configure(_ application: Application) throws {
 	application.queues.schedule(BusDownloadingJob())
 		.minutely()
 		.at(0)
-	application.queues.schedule(RouteDownloadingJob())
-		.daily()
-		.at(.midnight)
-	application.queues.schedule(StopDownloadingJob())
+	application.queues.schedule(GPXImportingJob())
 		.daily()
 		.at(.midnight)
 	application.queues.schedule(LocationRemovalJob())
@@ -46,7 +43,6 @@ public func configure(_ application: Application) throws {
 		)
 	}
 	_ = BusDownloadingJob().run(context: application.queues.queue.context)
-	_ = RouteDownloadingJob().run(context: application.queues.queue.context)
-	_ = StopDownloadingJob().run(context: application.queues.queue.context)
+	_ = GPXImportingJob().run(context: application.queues.queue.context)
 	try routes(application)
 }

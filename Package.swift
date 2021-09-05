@@ -28,6 +28,10 @@ let package = Package(
 			from: "1.0.0-rc.2"
 		),
 		.package(
+			url: "https://github.com/vincentneo/CoreGPX.git",
+			from: "0.9.0"
+		),
+		.package(
 			url: "https://github.com/Gerzer/JSONParser.git",
 			.branch("main")
 		)
@@ -53,8 +57,17 @@ let package = Package(
 					package: "QueuesFluentDriver"
 				),
 				.product(
+					name: "CoreGPX",
+					package: "CoreGPX"
+				),
+				.product(
 					name: "JSONParser",
 					package: "JSONParser"
+				)
+			],
+			resources: [
+				.process(
+					"Route.gpx"
 				)
 			],
 			swiftSettings: [

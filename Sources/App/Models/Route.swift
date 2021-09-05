@@ -7,6 +7,7 @@
 
 import Vapor
 import Fluent
+import CoreGPX
 import JSONParser
 
 final class Route: Model, Content, Collection {
@@ -21,13 +22,12 @@ final class Route: Model, Content, Collection {
 	
 	@Field(key: "coordinates") var coordinates: [Coordinate]
 	
-	@Field(key: "stop_ids") var stopIDs: [Int]
-	
 	init() { }
 	
-	init(_ coordinates: [Coordinate] = [], stopIDs: [Int]) {
-		self.coordinates = coordinates
-		self.stopIDs = stopIDs
+	init(from gpxRoute: GPXRoute) {
+		self.coordinates = gpxRoute.points.compactMap { (gpxRoutePoint) in
+			return Coordinate(from: gpxRoutePoint)
+		}
 	}
 	
 	subscript(_ position: Int) -> Coordinate {
@@ -46,36 +46,6 @@ extension Collection where Element == Route {
 		self.forEach { (route) in
 			_ = route.save(on: database)
 		}
-	}
-	
-}
-
-extension Array where Element == Route {
-	
-	static func download(application: Application, _ routesCallback: @escaping ([Route]) -> Void) {
-		_ = application.client.get("http://shuttles.rpi.edu/routes")
-			.map { (response) in
-				guard let length = response.body?.readableBytes, let data = response.body?.getData(at: 0, length: length) else {
-					return
-				}
-				let parser = ArrayJSONParser(data)
-				do {
-					let routes = try parser.parse().enumerated().map { (index, _) -> Route in
-						let routeParser = parser[dictionaryAt: index]
-						let coordinates = routeParser?["points", as: [[String: Double]].self]?.compactMap { (object) -> Coordinate? in
-							guard let latitude = object["latitude"], let longitude = object["longitude"] else {
-								return nil
-							}
-							return Coordinate(latitude: latitude, longitude: longitude)
-						} ?? []
-						let stopIDs = routeParser?["stop_ids", as: [Int].self] ?? []
-						return Route(coordinates, stopIDs: stopIDs)
-					}
-					routesCallback(routes)
-				} catch {
-					return
-				}
-			}
 	}
 	
 }
