@@ -13,7 +13,7 @@ func routes(_ application: Application) throws {
 		return request.redirect(to: "/index.html")
 	}
 	application.get("testflight") { (request) -> Response in
-		return request.redirect(to: "https://testflight.apple.com/join/Wzc4xn2h")
+		return request.redirect(to: "https://testflight.apple.com/join/GsmZkfgd")
 	}
 	application.get("routes") { (request) -> EventLoopFuture<[Route]> in
 		return Route.query(on: request.db)
