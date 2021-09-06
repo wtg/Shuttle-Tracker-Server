@@ -10,7 +10,7 @@ import Fluent
 
 func routes(_ application: Application) throws {
 	application.get { (request) -> Response in
-		return request.redirect(to: "/index.html")
+		return request.redirect(to: "https://web.shuttletracker.app")
 	}
 	application.get("testflight") { (request) -> Response in
 		return request.redirect(to: "https://testflight.apple.com/join/GsmZkfgd")
