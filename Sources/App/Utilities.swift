@@ -7,6 +7,12 @@
 
 import Vapor
 
+enum Constants {
+	
+	static let apiVersion: UInt = 0
+	
+}
+
 extension Optional: Content, RequestDecodable, ResponseEncodable where Wrapped: Codable { }
 
 extension Set: Content, RequestDecodable, ResponseEncodable where Element: Codable { }

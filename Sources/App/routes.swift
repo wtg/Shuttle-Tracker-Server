@@ -15,6 +15,9 @@ func routes(_ application: Application) throws {
 	application.get("testflight") { (request) -> Response in
 		return request.redirect(to: "https://testflight.apple.com/join/GsmZkfgd")
 	}
+	application.get("version") { (_) -> UInt in
+		return Constants.apiVersion
+	}
 	application.get("routes") { (request) -> EventLoopFuture<[Route]> in
 		return Route.query(on: request.db)
 			.all()
