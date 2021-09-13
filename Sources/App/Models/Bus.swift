@@ -15,6 +15,7 @@ final class Bus: Hashable, Model {
 		enum LocationType: String, Codable {
 			
 			case system = "system"
+			
 			case user = "user"
 			
 		}

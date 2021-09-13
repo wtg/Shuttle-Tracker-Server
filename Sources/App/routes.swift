@@ -54,13 +54,13 @@ func routes(_ application: Application) throws {
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}
-		let newLocation = try request.content.decode(Bus.Location.self)
+		let location = try request.content.decode(Bus.Location.self)
 		return Bus.query(on: request.db)
 			.filter(\.$id == id)
 			.first()
 			.unwrap(or: Abort(.notFound))
 			.map { (bus) -> [Bus.Location] in
-				bus.locations.merge(with: [newLocation])
+				bus.locations.merge(with: [location])
 				_ = bus.update(on: request.db)
 				return bus.locations
 			}
