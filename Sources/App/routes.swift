@@ -26,11 +26,11 @@ func routes(_ application: Application) throws {
 		return Stop.query(on: request.db)
 			.all()
 	}
-	application.get("buses") { (request) -> EventLoopFuture<[BusResponse]> in
+	application.get("buses") { (request) -> EventLoopFuture<[Bus.Resolved]> in
 		return Bus.query(on: request.db)
 			.all()
-			.flatMapEachCompactThrowing { (bus) -> BusResponse? in
-				return bus.response
+			.flatMapEachCompactThrowing { (bus) -> Bus.Resolved? in
+				return bus.resolved
 			}
 	}
 	application.get("buses", ":id") { (request) -> EventLoopFuture<Bus.Location> in
@@ -44,7 +44,7 @@ func routes(_ application: Application) throws {
 				let locations = buses.flatMap { (bus) -> [Bus.Location] in
 					return bus.locations
 				}
-				guard let location = locations.resolvedLocation else {
+				guard let location = locations.resolved else {
 					throw Abort(.notFound)
 				}
 				return location

@@ -43,14 +43,25 @@ final class Bus: Hashable, Model {
 		
 	}
 	
+	struct Resolved: Content {
+		
+		var id: Int
+		
+		var location: Bus.Location
+		
+	}
+	
 	static let schema = "buses"
 	
-	var response: BusResponse? {
+	var resolved: Resolved? {
 		get {
-			guard let location = self.locations.resolvedLocation else {
+			guard let id = self.id else {
 				return nil
 			}
-			return BusResponse(id: self.id ?? 0, location: location)
+			guard let location = self.locations.resolved else {
+				return nil
+			}
+			return Resolved(id: id, location: location)
 		}
 	}
 	
@@ -74,14 +85,6 @@ final class Bus: Hashable, Model {
 	func hash(into hasher: inout Hasher) {
 		hasher.combine(self.id)
 	}
-	
-}
-
-struct BusResponse: Content {
-	
-	var id: Int
-	
-	var location: Bus.Location
 	
 }
 
@@ -166,7 +169,7 @@ extension Collection where Element == Bus.Location {
 		}
 	}
 	
-	var resolvedLocation: Bus.Location? {
+	var resolved: Bus.Location? {
 		get {
 			return self.userLocation ?? self.systemLocation
 		}
