@@ -9,6 +9,7 @@ import Foundation
 import Queues
 import CoreGPX
 
+/// A job that imports route and stop data from a local GPX file.
 struct GPXImportingJob: ScheduledJob {
 	
 	func run(context: QueueContext) -> EventLoopFuture<Void> {

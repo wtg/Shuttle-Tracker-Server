@@ -7,6 +7,7 @@
 
 import Queues
 
+/// A job that removes outdated location data.
 struct LocationRemovalJob: ScheduledJob {
 	
 	func run(context: QueueContext) -> EventLoopFuture<Void> {

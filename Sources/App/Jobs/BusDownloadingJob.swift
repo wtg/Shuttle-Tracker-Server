@@ -7,6 +7,7 @@
 
 import Queues
 
+/// A job that downloads the latest system bus data.
 struct BusDownloadingJob: ScheduledJob {
 	
 	func run(context: QueueContext) -> EventLoopFuture<Void> {

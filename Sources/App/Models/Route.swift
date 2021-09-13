@@ -10,6 +10,7 @@ import Fluent
 import CoreGPX
 import JSONParser
 
+/// A representation of a shuttle route.
 final class Route: Model, Content, Collection {
 	
 	static let schema = "routes"
@@ -20,10 +21,13 @@ final class Route: Model, Content, Collection {
 	
 	@ID var id: UUID?
 	
+	/// The waypoint coordinates that define this route.
 	@Field(key: "coordinates") var coordinates: [Coordinate]
 	
 	init() { }
 	
+	/// Create a route representation from a GPX route.
+	/// - Parameter gpxRoute: The GPX route from which to create a route representation.
 	init(from gpxRoute: GPXRoute) {
 		self.coordinates = gpxRoute.points.compactMap { (gpxRoutePoint) in
 			return Coordinate(from: gpxRoutePoint)
@@ -42,6 +46,8 @@ final class Route: Model, Content, Collection {
 
 extension Collection where Element == Route {
 	
+	/// Save each route object in this collection.
+	/// - Parameter database: The database on which to save the route objects.
 	func save(on database: Database) {
 		self.forEach { (route) in
 			_ = route.save(on: database)

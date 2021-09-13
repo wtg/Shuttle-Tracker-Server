@@ -9,6 +9,7 @@ import Vapor
 
 enum Constants {
 	
+	/// The current version number for the API. Increment this value every time a breaking change is made to the public-facing API.
 	static let apiVersion: UInt = 0
 	
 }
