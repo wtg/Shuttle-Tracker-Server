@@ -43,6 +43,123 @@ final class Bus: Hashable, Model {
 		
 	}
 	
+	struct Congestion: Content {
+		
+		enum Crowding: String, Codable {
+			
+			case notCrowded = "notCrowded"
+			
+			case crowded = "crowded"
+			
+			case completelyFull = "completelyFull"
+			
+		}
+		
+		struct Report: Codable, Comparable, Hashable {
+			
+			enum TransactionType: String, Codable {
+				
+				case boarding = "boarding"
+				
+				case leaving = "leaving"
+				
+				case update = "update"
+				
+			}
+			
+			let id: UUID
+			
+			let date: Date
+			
+			let coordinate: Coordinate
+			
+			let crowding: Crowding?
+			
+			let transactionType: TransactionType
+			
+			init(id: UUID = UUID(), date: Date = Date(), coordinate: Coordinate, crowding: Crowding? = nil, transactionType: TransactionType) {
+				self.id = id
+				self.date = date
+				self.coordinate = coordinate
+				self.crowding = crowding
+				self.transactionType = transactionType
+			}
+			
+			static func == (_ leftReport: Report, _ rightReport: Report) -> Bool {
+				return leftReport.id == rightReport.id
+			}
+			
+			static func < (_ leftReport: Bus.Congestion.Report, _ rightReport: Bus.Congestion.Report) -> Bool {
+				return leftReport.date < rightReport.date
+			}
+			
+			func hash(into hasher: inout Hasher) {
+				hasher.combine(self.id)
+			}
+			
+		}
+		
+		struct Resolved: Content {
+			
+			let crowding: Crowding?
+			
+		}
+		
+		var reports: Set<Report>
+		
+		var count: Int
+		
+		var resolved: Resolved {
+			get {
+				let reports = self.reports
+					.sorted()
+					.filter { (report) in
+						return report.crowding != nil && report.date.timeIntervalSinceNow > -600
+					}
+				let fallbackCrowding: Crowding? = { 
+					if self.count >= 10 {
+						return .crowded
+					} else if self.count >= 1 {
+						return .notCrowded
+					} else {
+						return nil
+					}
+				}()
+				return Resolved(crowding: reports.last?.crowding ?? fallbackCrowding)
+			}
+		}
+		
+		init(reports: Set<Report> = Set<Report>(), count: Int? = nil) {
+			self.reports = reports
+			if let count = count {
+				self.count = count
+			} else {
+				self.count = self.reports.reduce(into: 0) { (partialResult, report) in
+					switch report.transactionType {
+					case .boarding:
+						partialResult += 1
+					case .leaving:
+						partialResult -= 1
+					default:
+						break
+					}
+				}
+			}
+		}
+		
+		mutating func add(report: Report) {
+			switch report.transactionType {
+			case .boarding:
+				self.count += 1
+			case .leaving:
+				self.count = max(self.count - 1, 0)
+			case .update:
+				self.reports.insert(report)
+			}
+		}
+		
+	}
+	
 	static let schema = "buses"
 	
 	var response: BusResponse? {
@@ -58,13 +175,14 @@ final class Bus: Hashable, Model {
 	
 	@Field(key: "locations") var locations: [Location]
 	
-	@OptionalField(key: "congestion") var congestion: Int?
+	@Field(key: "congestion") var congestion: Congestion
 	
 	init() { }
 	
-	init(id: Int, locations: [Location] = []) {
+	init(id: Int, locations: [Location] = [], congestion: Congestion = Congestion()) {
 		self.id = id
 		self.locations = locations
+		self.congestion = congestion
 	}
 	
 	static func == (_ leftBus: Bus, _ rightBus: Bus) -> Bool {

@@ -65,21 +65,39 @@ func routes(_ application: Application) throws {
 				return bus.locations
 			}
 	}
-	application.put("buses", ":id", "board") { (request) -> EventLoopFuture<Int?> in
+	application.put("buses", ":id", "board") { (request) -> EventLoopFuture<Bus.Congestion.Resolved> in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}
+		let coordinate = try request.content.decode(Coordinate.self)
 		return Bus.query(on: request.db)
 			.filter(\.$id == id)
 			.first()
 			.unwrap(or: Abort(.notFound))
-			.map { (bus) -> Int? in
-				bus.congestion = (bus.congestion ?? 0) + 1
+			.map { (bus) -> Bus.Congestion.Resolved in
+				let report = Bus.Congestion.Report(coordinate: coordinate, transactionType: .boarding)
+				bus.congestion.add(report: report)
 				_ = bus.update(on: request.db)
-				return bus.congestion
+				return bus.congestion.resolved
 			}
 	}
-	application.put("buses", ":id", "leave") { (request) -> EventLoopFuture<Int?> in
+	application.put("buses", ":id", "leave") { (request) -> EventLoopFuture<Bus.Congestion.Resolved> in
+		guard let id = request.parameters.get("id", as: Int.self) else {
+			throw Abort(.badRequest)
+		}
+		let coordinate = try request.content.decode(Coordinate.self)
+		return Bus.query(on: request.db)
+			.filter(\.$id == id)
+			.first()
+			.unwrap(or: Abort(.notFound))
+			.map { (bus) -> Bus.Congestion.Resolved in
+				let report = Bus.Congestion.Report(coordinate: coordinate, transactionType: .leaving)
+				bus.congestion.add(report: report)
+				_ = bus.update(on: request.db)
+				return bus.congestion.resolved
+			}
+	}
+	application.get("buses", ":id", "congestion") { (request) -> EventLoopFuture<Bus.Congestion.Resolved> in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}
@@ -87,10 +105,27 @@ func routes(_ application: Application) throws {
 			.filter(\.$id == id)
 			.first()
 			.unwrap(or: Abort(.notFound))
-			.flatMapThrowing { (bus) -> Int? in
-				bus.congestion = (bus.congestion ?? 1) - 1
-				_ = bus.update(on: request.db)
-				return bus.congestion
+			.map { (bus) -> Bus.Congestion.Resolved in
+				return bus.congestion.resolved
 			}
+	}
+	application.patch("buses", ":id", "congestion") { (request) -> EventLoopFuture<Bus.Congestion.Resolved> in
+		guard let id = request.parameters.get("id", as: Int.self) else {
+			throw Abort(.badRequest)
+		}
+		let report = try request.content.decode(Bus.Congestion.Report.self)
+		guard report.transactionType == .update else {
+			throw Abort(.badRequest)
+		}
+		return Bus.query(on: request.db)
+			.filter(\.$id == id)
+			.first()
+			.unwrap(or: Abort(.notFound))
+			.map { (bus) -> Bus.Congestion.Resolved in
+				bus.congestion.add(report: report)
+				_ = bus.update(on: request.db)
+				return bus.congestion.resolved
+			}
+		
 	}
 }
