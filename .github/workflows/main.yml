@@ -3,16 +3,16 @@ name: 'deploy'
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Cloning repo
+      - name: Clone
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      - name: Push to dokku
+      - name: Push to Dokku
         uses: dokku/github-action@master
         with:
           git_remote_url: 'ssh://dokku@srv1.webtech.union.rpi.edu:2222/shuttletracker'
