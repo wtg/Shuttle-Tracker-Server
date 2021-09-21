@@ -40,8 +40,11 @@ public func configure(_ application: Application) throws {
 					)
 				)
 			],
-			privateKey: .file(
-				"\(FileManager.default.currentDirectoryPath)/tls/server.key"
+			privateKey: .privateKey(
+				NIOSSLPrivateKey(
+					file: "\(FileManager.default.currentDirectoryPath)/tls/server.key",
+					format: .pem
+				)
 			)
 		)
 	} else if let domain = ProcessInfo.processInfo.environment["domain"] {
