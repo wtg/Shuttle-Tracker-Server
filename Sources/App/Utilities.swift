@@ -13,7 +13,7 @@ enum Constants {
 	static let apiVersion: UInt = 0
 	
 	static let datafeedURI: URI = {
-		if let itrakString = ProcessInfo.processInfo.environment["itrak"] {
+		if let itrakString = ProcessInfo.processInfo.environment["ITRAK"] {
 			return URI(string: itrakString)
 		} else {
 			return URI(stringLiteral: "https://shuttletracker.app/datafeed")

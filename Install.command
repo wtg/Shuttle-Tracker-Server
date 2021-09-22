@@ -16,7 +16,7 @@ if [ -z $email ]; then
 fi
 if [ -z $domain ]; then
 	echo "ERROR: Domain not set" >> /dev/stderr
-	echo "Specify your preferred domain (e.g., \"shuttletracker.app\") in the \`domain\` environment variable, which you should set with the \`export\` command." >> /dev/stdout
+	echo "Specify your preferred domain (e.g., \"shuttletracker.app\") in the \`DOMAIN\` environment variable, which you should set with the \`export\` command." >> /dev/stdout
 	exit
 fi
 echo "Updating package lists..." >> /dev/stdout
@@ -34,14 +34,14 @@ cd ~/
 echo "Downloading shuttle tracker server..." >> /dev/stdout
 git clone "https://github.com/wtg/Shuttler-Tracker-Server.git" >> /var/log/shuttle_install.log
 cd Shuttle-Tracker-Server
-echo -e "export PATH=/opt/swift/usr/bin:\"\$PATH\"\nexport domain='$domain'\nexport root='$(pwd)\'" >> ~/.bashrc
+echo -e "export PATH=/opt/swift/usr/bin:\"\$PATH\"\nexport DOMAIN='$domain'\nexport ROOT='$(pwd)\'" >> ~/.bashrc
 source ~/.bashrc
 chmod +x Update.command
 echo "Building shuttle tracker server (this may take a while)..." >> /dev/stdout
 swift build -c release >> /var/log/shuttle_install.log
 echo "Configuring daemon..." >> /dev/stdout
 address=$(wget "http://ipecho.net/plain" -qO -)
-echo -e "[program:shuttle]\ncommand=$(pwd)/.build/release/Runner serve --bind $address:443\ndirectory=$(pwd)\nenvironment=domain=\"$domain\"\nstdout_logfile=/var/log/supervisor/shuttle_out.log\nstderr_logfile=/var/log/supervisor/shuttle_err.log" > /etc/supervisor/conf.d/shuttle.conf
+echo -e "[program:shuttle]\ncommand=$(pwd)/.build/release/Runner serve --bind $address:443\ndirectory=$(pwd)\nenvironment=DOMAIN=\"$domain\"\nstdout_logfile=/var/log/supervisor/shuttle_out.log\nstderr_logfile=/var/log/supervisor/shuttle_err.log" > /etc/supervisor/conf.d/shuttle.conf
 supervisorctl reread >> /var/log/shuttle_install.log
 echo "Generating SSL certificate..." >> /dev/stdout
 certbot certonly --non-interactive --standalone --agree-tos --email $email --domains $domain >> /var/log/shuttle_install.log

@@ -47,7 +47,7 @@ public func configure(_ application: Application) throws {
 				)
 			)
 		)
-	} else if let domain = ProcessInfo.processInfo.environment["domain"] {
+	} else if let domain = ProcessInfo.processInfo.environment["DOMAIN"] {
 		try application.http.server.configuration.tlsConfiguration = .forServer(
 			certificateChain: [
 				.certificate(
