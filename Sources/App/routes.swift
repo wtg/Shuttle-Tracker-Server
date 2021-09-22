@@ -18,6 +18,18 @@ func routes(_ application: Application) throws {
 	application.get("version") { (_) -> UInt in
 		return Constants.apiVersion
 	}
+	application.get("datafeed") { (_) -> EventLoopFuture<String> in
+		return application.client.get(Constants.datafeedURI)
+			.flatMapThrowing { (response) in
+				if response.status.code != 200 {
+					throw Abort(.failedDependency)
+				}
+				guard let length = response.body?.readableBytes, let rawString = response.body?.getString(at: 0, length: length) else {
+					throw Abort(.failedDependency)
+				}
+				return rawString
+			}
+	}
 	application.get("routes") { (request) -> EventLoopFuture<[Route]> in
 		return Route.query(on: request.db)
 			.all()

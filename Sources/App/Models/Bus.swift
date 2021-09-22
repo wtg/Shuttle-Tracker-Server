@@ -130,7 +130,7 @@ extension Set where Element == Bus {
 	///   - application: The current application object.
 	///   - busesCallback: A callback that's given a `Set<Bus>` instance with new bus objects. Note that these bus objects will **not** contain any user-reported location or congestion data and therefore must be separately merged with any existing bus data.
 	static func download(application: Application, _ busesCallback:  @escaping (Set<Bus>) -> Void) {
-		_ = application.client.get("http://shuttles.rpi.edu/datafeed")
+		_ = application.client.get(Constants.datafeedURI)
 			.map { (response) in
 				guard let length = response.body?.readableBytes, let data = response.body?.getData(at: 0, length: length), let rawString = String(data: data, encoding: .utf8) else {
 					return

@@ -29,6 +29,15 @@
         }
       },
       {
+        "package": "CoreGPX",
+        "repositoryURL": "https://github.com/Gerzer/CoreGPX.git",
+        "state": {
+          "branch": "master",
+          "revision": "4dc414e61414653ec09f277f0edcfbfea7e84351",
+          "version": null
+        }
+      },
+      {
         "package": "fluent",
         "repositoryURL": "https://github.com/vapor/fluent.git",
         "state": {
@@ -53,6 +62,15 @@
           "branch": null,
           "revision": "6f29f6f182c812075f09c7575c18ac5535c26824",
           "version": "4.0.1"
+        }
+      },
+      {
+        "package": "JSONParser",
+        "repositoryURL": "https://github.com/Gerzer/JSONParser.git",
+        "state": {
+          "branch": "main",
+          "revision": "d1c409a8bf44949ff48dcb15a4fbf4c836827cdd",
+          "version": null
         }
       },
       {

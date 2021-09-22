@@ -12,6 +12,14 @@ enum Constants {
 	/// The current version number for the API. Increment this value every time a breaking change is made to the public-facing API.
 	static let apiVersion: UInt = 0
 	
+	static let datafeedURI: URI = {
+		if let itrakString = ProcessInfo.processInfo.environment["itrak"] {
+			return URI(string: itrakString)
+		} else {
+			return URI(stringLiteral: "https://shuttletracker.app/datafeed")
+		}
+	}()
+	
 }
 
 extension Optional: Content, RequestDecodable, ResponseEncodable where Wrapped: Codable { }
