@@ -7,6 +7,7 @@
 
 import Vapor
 import Fluent
+import JSONParser
 
 /// A representation of a shuttle bus.
 final class Bus: Hashable, Model {
@@ -125,6 +126,24 @@ extension Collection where Element == Bus {
 
 extension Set where Element == Bus {
 	
+	private struct BusIDMap {
+		
+		private let parser: DictionaryJSONParser = {
+			let routeFileURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+				.appendingPathComponent("Public", isDirectory: true)
+				.appendingPathComponent("buses.json", isDirectory: false)
+			let data = try! Data(contentsOf: routeFileURL)
+			return DictionaryJSONParser(data)
+		}()
+		
+		subscript(_ backendID: String) -> Int? {
+			return self.parser[backendID, as: Int.self]
+		}
+		
+	}
+	
+	private static let busIDMap = BusIDMap()
+	
 	/// Download the latest system bus data.
 	/// - Parameters:
 	///   - application: The current application object.
@@ -136,7 +155,7 @@ extension Set where Element == Bus {
 					return
 				}
 				let buses = rawString.split(separator: "\r\n").dropFirst().dropLast().compactMap { (rawLine) -> Bus? in
-					guard let idRange = rawLine.range(of: #"(?<=(Vehicle\sID:))\d+"#, options: [.regularExpression]), let id = Int(rawLine[idRange]) else {
+					guard let backendIDRange = rawLine.range(of: #"(?<=(Vehicle\sID:))\d+"#, options: [.regularExpression]) else {
 						return nil
 					}
 					guard let latitudeRange = rawLine.range(of: #"(?<=(lat:))-?\d+\.\d+"#, options: [.regularExpression]), let latitude = Double(rawLine[latitudeRange]) else {
@@ -148,6 +167,8 @@ extension Set where Element == Bus {
 					guard let timeRange = rawLine.range(of: #"(?<=(time:))\d+"#, options: [.regularExpression]), let dateRange = rawLine.range(of: #"(?<=(date:))\d{8}"#, options: [.regularExpression]) else {
 						return nil
 					}
+					let backendID = String(rawLine[backendIDRange])
+					let id = self.busIDMap[backendID]!
 					let formatter = DateFormatter()
 					formatter.dateFormat = "HHmmss'|'MMddyyyy"
 					formatter.timeZone = TimeZone(abbreviation: "UTC")!
