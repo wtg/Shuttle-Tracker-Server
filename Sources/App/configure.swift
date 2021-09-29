@@ -25,6 +25,8 @@ public func configure(_ application: Application) throws {
 		.at(.midnight)
 	application.queues.schedule(LocationRemovalJob())
 		.everySecond()
+	application.queues.schedule(RestartJob())
+		.at(Date() + 21600)
 	try application.autoMigrate()
 		.wait()
 	try application.queues.startInProcessJobs()
