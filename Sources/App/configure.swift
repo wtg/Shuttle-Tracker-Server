@@ -33,7 +33,7 @@ public func configure(_ application: Application) throws {
 	try application.queues.startScheduledJobs()
 	if FileManager.default.fileExists(atPath: "tls") {
 		print("TLS directory detected!")
-		try application.http.server.configuration.tlsConfiguration = .forServer(
+		try application.http.server.configuration.tlsConfiguration = .makeServerConfiguration(
 			certificateChain: [
 				.certificate(
 					NIOSSLCertificate(
@@ -50,7 +50,7 @@ public func configure(_ application: Application) throws {
 			)
 		)
 	} else if let domain = ProcessInfo.processInfo.environment["DOMAIN"] {
-		try application.http.server.configuration.tlsConfiguration = .forServer(
+		try application.http.server.configuration.tlsConfiguration = .makeServerConfiguration(
 			certificateChain: [
 				.certificate(
 					NIOSSLCertificate(
