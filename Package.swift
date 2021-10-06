@@ -11,8 +11,8 @@ let package = Package(
 	],
 	dependencies: [
 		.package(
-			url: "https://github.com/Gerzer/vapor.git",
-			.branch("main")
+			url: "https://github.com/vapor/vapor.git",
+			from: "4.0.0"
 		),
 		.package(
 			url: "https://github.com/vapor/fluent.git",
