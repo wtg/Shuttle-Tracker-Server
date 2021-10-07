@@ -24,7 +24,7 @@ struct GPXImportingJob: AsyncScheduledJob {
 			.all()
 		for route in routes {
 			try await route.delete(on: context.application.db)
-			try await Route(from: gpx.routes.first!)
+			try await Route(from: gpx.tracks.first!.segments.first!)
 				.save(on: context.application.db)
 		}
 		let stops = try await Stop.query(on: context.application.db)

@@ -34,6 +34,12 @@ final class Route: Model, Content, Collection {
 		}
 	}
 	
+	init(from gpxTrackSegment: GPXTrackSegment) {
+		self.coordinates = gpxTrackSegment.points.compactMap { (gpxTrackPoint) in
+			return Coordinate(from: gpxTrackPoint)
+		}
+	}
+	
 	subscript(_ position: Int) -> Coordinate {
 		return self.coordinates[position]
 	}
