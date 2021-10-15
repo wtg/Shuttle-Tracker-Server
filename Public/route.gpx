@@ -45,10 +45,6 @@
 	<wpt lat="42.735450" lon="-73.663959">
 		<name>Beman Lane</name>
 	</wpt>
-	<wpt lat="42.728698" lon="-73.675927">
-		<time>2021-10-01T18:52:54Z</time>
-		<name>Armory</name>
-	</wpt>
 	<rte>
 		<name>Route</name>
 		<rtept lat="42.730777" lon="-73.677212">
@@ -577,84 +573,6 @@
 				<ele>0.000000</ele>
 			</trkpt>
 			<trkpt lat="42.730398" lon="-73.675924">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.730352" lon="-73.675786">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.730234" lon="-73.675856">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.730183" lon="-73.675879">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.730063" lon="-73.675883">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.729552" lon="-73.675768">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.729366" lon="-73.675754">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.729210" lon="-73.675773">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.728993" lon="-73.675831">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.728669" lon="-73.675897">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.728478" lon="-73.675891">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.728368" lon="-73.675858">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.728301" lon="-73.675807">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.728239" lon="-73.675731">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.728209" lon="-73.675624">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.728102" lon="-73.674927">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.728299" lon="-73.674867">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.728425" lon="-73.675640">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.728478" lon="-73.675891">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.728669" lon="-73.675897">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.728993" lon="-73.675831">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.729210" lon="-73.675773">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.729366" lon="-73.675754">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.729552" lon="-73.675768">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.730121" lon="-73.675888">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.730183" lon="-73.675879">
-				<ele>0.000000</ele>
-			</trkpt>
-			<trkpt lat="42.730352" lon="-73.675786">
 				<ele>0.000000</ele>
 			</trkpt>
 			<trkpt lat="42.730184" lon="-73.675325">

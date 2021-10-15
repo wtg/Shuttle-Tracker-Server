@@ -23,7 +23,7 @@ struct GPXImportingJob: ScheduledJob {
 					route.delete(on: context.application.db)
 				}
 				.whenSuccess { (_) in
-					_ = Route(from: gpx.tracks.first!.segments.first!).save(on: context.application.db)
+					_ = Route(from: gpx.routes.first!).save(on: context.application.db)
 				}
 			Stop.query(on: context.application.db)
 				.all()
