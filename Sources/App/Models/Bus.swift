@@ -69,7 +69,7 @@ final class Bus: Hashable, Model {
 	
 	static let schema = "buses"
 	
-	///  A simplified representation of this `Bus` instance that's suitable for returning as a response to incoming requests.
+	/// A simplified representation of this `Bus` instance that's suitable for returning as a response to incoming requests.
 	var resolved: Resolved? {
 		get {
 			guard let id = self.id else {
