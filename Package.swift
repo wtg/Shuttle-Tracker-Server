@@ -33,7 +33,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/Gerzer/JSONParser.git",
-			.branch("main")
+			from: "1.3.0"
 		)
 	],
 	targets: [

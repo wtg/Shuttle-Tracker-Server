@@ -45,6 +45,9 @@ func routes(_ application: Application) throws {
 				return bus.resolved
 			}
 	}
+	application.get("buses", "all") { (request) -> Set<Int> in
+		return Buses.sharedInstance.allBusIDs
+	}
 	application.get("buses", ":id") { (request) -> EventLoopFuture<Bus.Location> in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
