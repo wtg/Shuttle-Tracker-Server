@@ -126,24 +126,6 @@ extension Collection where Element == Bus {
 
 extension Set where Element == Bus {
 	
-	private struct BusIDMap {
-		
-		private let parser: DictionaryJSONParser = {
-			let routeFileURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-				.appendingPathComponent("Public", isDirectory: true)
-				.appendingPathComponent("buses.json", isDirectory: false)
-			let data = try! Data(contentsOf: routeFileURL)
-			return DictionaryJSONParser(data)
-		}()
-		
-		subscript(_ backendID: String) -> Int? {
-			return self.parser[backendID, as: Int.self]
-		}
-		
-	}
-	
-	private static let busIDMap = BusIDMap()
-	
 	/// Download the latest system bus data.
 	/// - Parameters:
 	///   - application: The current application object.
@@ -168,7 +150,7 @@ extension Set where Element == Bus {
 						return nil
 					}
 					let backendID = String(rawLine[backendIDRange])
-					let id = self.busIDMap[backendID]!
+					let id = Buses.sharedInstance.busIDMap[backendID]
 					let formatter = DateFormatter()
 					formatter.dateFormat = "HHmmss'|'MMddyyyy"
 					formatter.timeZone = TimeZone(abbreviation: "UTC")!
