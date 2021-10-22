@@ -10,10 +10,10 @@ import JSONParser
 
 /// A representation of all of the known buses.
 /// - Warning: Don't create instances of `Buses` yourself; instead use the shared instance.
-struct Buses: JSONProvider {
+class Buses: JSONProvider {
 	
 	/// A mapping of backend IDs to frontend IDs.
-	struct BusIDMap: JSONProvider {
+	class BusIDMap: JSONProvider {
 		
 		/// The internal JSON parser.
 		/// - Warning: Don't access this property directly.
