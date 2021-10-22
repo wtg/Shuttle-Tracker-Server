@@ -64,7 +64,13 @@ public func configure(_ application: Application) throws {
 			)
 		)
 	}
-	_ = BusDownloadingJob().run(context: application.queues.queue.context)
-	_ = GPXImportingJob().run(context: application.queues.queue.context)
+	Buses.sharedInstance.allBusIDs.forEach { (busID) in
+		let _ = Bus(id: busID)
+			.save(on: application.db)
+	}
+	_ = BusDownloadingJob()
+		.run(context: application.queues.queue.context)
+	_ = GPXImportingJob()
+		.run(context: application.queues.queue.context)
 	try routes(application)
 }
