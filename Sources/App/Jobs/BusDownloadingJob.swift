@@ -7,6 +7,10 @@
 
 import Queues
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 /// A job that downloads the latest system bus data.
 struct BusDownloadingJob: AsyncScheduledJob {
 	

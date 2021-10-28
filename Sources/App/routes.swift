@@ -8,6 +8,10 @@
 import Vapor
 import Fluent
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 func routes(_ application: Application) throws {
 	application.get { (request) -> Response in
 		return request.redirect(to: "https://web.shuttletracker.app")
