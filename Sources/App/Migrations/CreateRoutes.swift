@@ -7,17 +7,17 @@
 
 import Fluent
 
-struct CreateRoutes: Migration {
+struct CreateRoutes: AsyncMigration {
 	
-	func prepare(on database: Database) -> EventLoopFuture<Void> {
-		return database.schema(Route.schema)
+	func prepare(on database: Database) async throws {
+		try await database.schema(Route.schema)
 			.id()
 			.field("coordinates", .array(of: .custom(Coordinate.self)), .required)
 			.create()
 	}
 	
-	func revert(on database: Database) -> EventLoopFuture<Void> {
-		return database.schema(Route.schema)
+	func revert(on database: Database) async throws {
+		try await database.schema(Route.schema)
 			.delete()
 	}
 	

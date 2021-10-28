@@ -1,31 +1,33 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.5
 
 import PackageDescription
 
 let package = Package(
 	name: "Shuttle Tracker Server",
 	platforms: [
-		.macOS(
-			.v10_15
-		)
+		.macOS(.v12)
 	],
 	dependencies: [
 		.package(
 			url: "https://github.com/vapor/vapor.git",
-			from: "4.0.0"
+			.upToNextMajor(from: "4.50.0")
+		),
+		.package(
+			url: "https://github.com/vapor/queues.git",
+			.upToNextMajor(from: "1.8.1")
 		),
 		.package(
 			url: "https://github.com/vapor/fluent.git",
-			from: "4.0.0"
+			.upToNextMajor(from: "4.4.0")
 		),
 		.package(
 			url:"https://github.com/vapor/fluent-sqlite-driver.git",
-			from: "4.0.0"
+			.upToNextMajor(from: "4.0.0")
 		),
 		.package(
 			name: "QueuesFluentDriver",
 			url: "https://github.com/m-barthelemy/vapor-queues-fluent-driver.git",
-			from: "1.0.0-rc.2"
+			.upToNextMajor(from: "1.0.0")
 		),
 		.package(
 			url: "https://github.com/Gerzer/CoreGPX.git",
@@ -33,7 +35,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/Gerzer/JSONParser.git",
-			from: "1.3.0"
+			.upToNextMajor(from: "1.3.0")
 		)
 	],
 	targets: [

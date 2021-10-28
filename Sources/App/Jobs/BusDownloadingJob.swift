@@ -8,24 +8,19 @@
 import Queues
 
 /// A job that downloads the latest system bus data.
-struct BusDownloadingJob: ScheduledJob {
+struct BusDownloadingJob: AsyncScheduledJob {
 	
-	func run(context: QueueContext) -> EventLoopFuture<Void> {
-		Set<Bus>.download(application: context.application) { (buses) in
-			var newBuses = buses
-			Bus.query(on: context.application.db)
-				.all()
-				.mapEachCompact { (existingBus) in
-					if let newBus = newBuses.remove(existingBus) {
-						existingBus.locations.merge(with: newBus.locations)
-						_ = existingBus.update(on: context.application.db)
-					}
-				}
-				.whenSuccess { (_) in
-					newBuses.save(on: context.application.db)
-				}
+	func run(context: QueueContext) async throws {
+		var newBuses = try await Set<Bus>.download(application: context.application)
+		let buses = try await Bus.query(on: context.application.db)
+			.all()
+		for bus in buses {
+			if let newBus = newBuses.remove(bus) {
+				bus.locations.merge(with: newBus.locations)
+				try await bus.update(on: context.application.db)
+			}
 		}
-		return context.eventLoop.future()
+		newBuses.save(on: context.application.db)
 	}
 	
 }

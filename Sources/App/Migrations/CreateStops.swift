@@ -7,18 +7,18 @@
 
 import Fluent
 
-struct CreateStops: Migration {
+struct CreateStops: AsyncMigration {
 	
-	func prepare(on database: Database) -> EventLoopFuture<Void> {
-		return database.schema(Stop.schema)
+	func prepare(on database: Database) async throws {
+		try await database.schema(Stop.schema)
 			.id()
 			.field("name", .string, .required)
 			.field("coordinate", .dictionary, .required)
 			.create()
 	}
 	
-	func revert(on database: Database) -> EventLoopFuture<Void> {
-		return database.schema(Stop.schema)
+	func revert(on database: Database) async throws {
+		try await database.schema(Stop.schema)
 			.delete()
 	}
 	
