@@ -49,31 +49,3 @@ extension Collection where Element == Stop {
 	}
 	
 }
-
-//extension Array where Element == Stop {
-//	
-//	static func download(application: Application, _ stopsCallback: @escaping ([Stop]) -> Void) {
-//		_ = application.client.get("http://shuttles.rpi.edu/stops")
-//			.map { (response) in
-//				guard let length = response.body?.readableBytes, let data = response.body?.getData(at: 0, length: length) else {
-//					return
-//				}
-//				let parser = ArrayJSONParser(data)
-//				do {
-//					let stops = try parser.parse().enumerated().compactMap { (index, _) -> Stop? in
-//						let stopParser = parser[dictionaryAt: index]
-//						guard let id = stopParser?["id", as: Int.self], let latitude = stopParser?["latitude", as: Double.self], let longitude = stopParser?["longitude", as: Double.self] else {
-//							return nil
-//						}
-//						let coordinate = Coordinate(latitude: latitude, longitude: longitude)
-//						let name = stopParser?["name", as: String.self] ?? ""
-//						return Stop(id: id, coordinate: coordinate, name: name)
-//					}
-//					stopsCallback(stops)
-//				} catch {
-//					return
-//				}
-//			}
-//	}
-//	
-//}

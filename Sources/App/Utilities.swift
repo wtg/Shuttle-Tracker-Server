@@ -6,22 +6,23 @@
 //
 
 import Vapor
+import Foundation
 
 enum Constants {
 	
 	/// The current version number for the API. Increment this value every time a breaking change is made to the public-facing API.
 	static let apiVersion: UInt = 0
 	
-	static let datafeedURI: URI = {
+	static let datafeedURL: URL = {
 		if let itrakString = ProcessInfo.processInfo.environment["ITRAK"] {
-			return URI(string: itrakString)
+			return URL(string: itrakString)!
 		} else {
-			return URI(stringLiteral: "https://shuttletracker.app/datafeed")
+			return URL(string: "https://shuttletracker.app/datafeed")!
 		}
 	}()
 	
 }
 
-extension Optional: Content, RequestDecodable, ResponseEncodable where Wrapped: Codable { }
+extension Optional: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Wrapped: Codable { }
 
-extension Set: Content, RequestDecodable, ResponseEncodable where Element: Codable { }
+extension Set: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Element: Codable { }

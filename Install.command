@@ -16,7 +16,7 @@ if [ -z $email ]; then
 fi
 if [ -z $domain ]; then
 	echo "ERROR: Domain not set" >> /dev/stderr
-	echo "Specify your preferred domain (e.g., \"shuttletracker.app\") in the \`DOMAIN\` environment variable, which you should set with the \`export\` command." >> /dev/stdout
+	echo "Specify your preferred domain (e.g., \"shuttletracker.app\") in the \`domain\` environment variable, which you should set with the \`export\` command." >> /dev/stdout
 	exit
 fi
 echo "Updating package lists..." >> /dev/stdout
@@ -25,11 +25,11 @@ echo "Installing dependencies..." >> /dev/stdout
 apt-get install -y wget clang libicu-dev libatomic1 build-essential pkg-config openssl libssl-dev zlib1g-dev libsqlite3-dev libtinfo5 libpython2.7-dev libncurses5 libcurl4 git supervisor certbot >> /var/log/shuttle_install.log
 cd /tmp/
 echo "Downloading Swift..." >> /dev/stdout
-wget "https://swift.org/builds/swift-5.3-release/ubuntu1804/swift-5.3-RELEASE/swift-5.3-RELEASE-ubuntu18.04.tar.gz" >> /var/log/shuttle_install.log
+wget "https://swift.org/builds/swift-5.5.1-release/ubuntu1804/swift-5.5.1-RELEASE/swift-5.5.1-RELEASE-ubuntu18.04.tar.gz" >> /var/log/shuttle_install.log
 echo "Unpacking Swift..." >> /dev/stdout
-tar -xvzf swift-5.3-RELEASE-ubuntu18.04.tar.gz >> /var/log/shuttle_install.log
+tar -xvzf swift-5.5.1-RELEASE-ubuntu18.04.tar.gz >> /var/log/shuttle_install.log
 echo "Installing Swift..." >> /dev/stdout
-mv swift-5.3-RELEASE-ubuntu18.04 /opt/swift
+mv swift-5.5.1-RELEASE-ubuntu18.04 /opt/swift
 cd ~/
 echo "Downloading shuttle tracker server..." >> /dev/stdout
 git clone "https://github.com/wtg/Shuttler-Tracker-Server.git" >> /var/log/shuttle_install.log
