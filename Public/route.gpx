@@ -24,10 +24,9 @@
 		<name>West Hall</name>
 	</wpt>
 	<wpt lat="42.730952" lon="-73.678995">
-		<name><![CDATA[’87 Gymnasium]]></name>
+		<name>‘87 Gymnasium</name>
 	</wpt>
 	<wpt lat="42.729362" lon="-73.674015">
-		<ele>0.000000</ele>
 		<name>Barton Hall</name>
 	</wpt>
 	<wpt lat="42.731638" lon="-73.669710">
@@ -46,7 +45,6 @@
 		<name>Beman Lane</name>
 	</wpt>
 	<wpt lat="42.728698" lon="-73.675927">
-		<time>2021-10-01T18:52:54Z</time>
 		<name>The Armory</name>
 	</wpt>
 	<rte>
