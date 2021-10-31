@@ -69,7 +69,7 @@ final class Bus: Hashable, Model {
 	
 	static let schema = "buses"
 	
-	///  A simplified representation of this `Bus` instance that's suitable for returning as a response to incoming requests.
+	/// A simplified representation of this `Bus` instance that's suitable for returning as a response to incoming requests.
 	var resolved: Resolved? {
 		get {
 			guard let id = self.id else {
@@ -126,62 +126,42 @@ extension Collection where Element == Bus {
 
 extension Set where Element == Bus {
 	
-	private struct BusIDMap {
-		
-		private let parser: DictionaryJSONParser = {
-			let routeFileURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-				.appendingPathComponent("Public", isDirectory: true)
-				.appendingPathComponent("buses.json", isDirectory: false)
-			let data = try! Data(contentsOf: routeFileURL)
-			return DictionaryJSONParser(data)
-		}()
-		
-		subscript(_ backendID: String) -> Int? {
-			return self.parser[backendID, as: Int.self]
-		}
-		
-	}
-	
-	private static let busIDMap = BusIDMap()
-	
 	/// Download the latest system bus data.
 	/// - Parameters:
 	///   - application: The current application object.
 	///   - busesCallback: A callback that's given a `Set<Bus>` instance with new bus objects. Note that these bus objects will **not** contain any user-reported location or congestion data and therefore must be separately merged with any existing bus data.
-	static func download(application: Application, _ busesCallback:  @escaping (Set<Bus>) -> Void) {
-		_ = application.client.get(Constants.datafeedURI)
-			.map { (response) in
-				guard let length = response.body?.readableBytes, let data = response.body?.getData(at: 0, length: length), let rawString = String(data: data, encoding: .utf8) else {
-					return
+	static func download(application: Application) async throws -> Set<Bus> {
+		let rawString = try String(contentsOf: Constants.datafeedURL)
+		let buses = rawString.split(separator: "\r\n")
+			.dropFirst()
+			.dropLast()
+			.compactMap { (rawLine) -> Bus? in
+				guard let backendIDRange = rawLine.range(of: #"(?<=(Vehicle\sID:))\d+"#, options: [.regularExpression]) else {
+					return nil
 				}
-				let buses = rawString.split(separator: "\r\n").dropFirst().dropLast().compactMap { (rawLine) -> Bus? in
-					guard let backendIDRange = rawLine.range(of: #"(?<=(Vehicle\sID:))\d+"#, options: [.regularExpression]) else {
-						return nil
-					}
-					guard let latitudeRange = rawLine.range(of: #"(?<=(lat:))-?\d+\.\d+"#, options: [.regularExpression]), let latitude = Double(rawLine[latitudeRange]) else {
-						return nil
-					}
-					guard let longitudeRange = rawLine.range(of: #"(?<=(lon:))-?\d+\.\d+"#, options: [.regularExpression]), let longitude = Double(rawLine[longitudeRange]) else {
-						return nil
-					}
-					guard let timeRange = rawLine.range(of: #"(?<=(time:))\d+"#, options: [.regularExpression]), let dateRange = rawLine.range(of: #"(?<=(date:))\d{8}"#, options: [.regularExpression]) else {
-						return nil
-					}
-					let backendID = String(rawLine[backendIDRange])
-					let id = self.busIDMap[backendID]!
-					let formatter = DateFormatter()
-					formatter.dateFormat = "HHmmss'|'MMddyyyy"
-					formatter.timeZone = TimeZone(abbreviation: "UTC")!
-					let dateString = "\(rawLine[timeRange])|\(rawLine[dateRange])"
-					guard let date = formatter.date(from: dateString) else {
-						return nil
-					}
-					let coordinate = Coordinate(latitude: latitude, longitude: longitude)
-					let location = Bus.Location(id: UUID(), date: date, coordinate: coordinate, type: .system)
-					return Bus(id: id, locations: [location])
+				guard let latitudeRange = rawLine.range(of: #"(?<=(lat:))-?\d+\.\d+"#, options: [.regularExpression]), let latitude = Double(rawLine[latitudeRange]) else {
+					return nil
 				}
-				busesCallback(Set(buses))
+				guard let longitudeRange = rawLine.range(of: #"(?<=(lon:))-?\d+\.\d+"#, options: [.regularExpression]), let longitude = Double(rawLine[longitudeRange]) else {
+					return nil
+				}
+				guard let timeRange = rawLine.range(of: #"(?<=(time:))\d+"#, options: [.regularExpression]), let dateRange = rawLine.range(of: #"(?<=(date:))\d{8}"#, options: [.regularExpression]) else {
+					return nil
+				}
+				let backendID = String(rawLine[backendIDRange])
+				let id = Buses.sharedInstance.busIDMap[backendID]
+				let formatter = DateFormatter()
+				formatter.dateFormat = "HHmmss'|'MMddyyyy"
+				formatter.timeZone = TimeZone(abbreviation: "UTC")!
+				let dateString = "\(rawLine[timeRange])|\(rawLine[dateRange])"
+				guard let date = formatter.date(from: dateString) else {
+					return nil
+				}
+				let coordinate = Coordinate(latitude: latitude, longitude: longitude)
+				let location = Bus.Location(id: UUID(), date: date, coordinate: coordinate, type: .system)
+				return Bus(id: id, locations: [location])
 			}
+		return Set(buses)
 	}
 	
 }

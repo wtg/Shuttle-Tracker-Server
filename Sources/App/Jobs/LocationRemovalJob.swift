@@ -8,24 +8,23 @@
 import Queues
 
 /// A job that removes outdated location data.
-struct LocationRemovalJob: ScheduledJob {
+struct LocationRemovalJob: AsyncScheduledJob {
 	
-	func run(context: QueueContext) -> EventLoopFuture<Void> {
-		_ = Bus.query(on: context.application.db)
+	func run(context: QueueContext) async throws {
+		let buses = try await Bus.query(on: context.application.db)
 			.all()
-			.mapEach { (bus) in
-				let oldLocations = bus.locations.filter { (location) in
-					return location.type == .user && location.date.timeIntervalSinceNow < -30
-				}
-				let oldLocationsIndices = oldLocations.compactMap { (location) in
-					return bus.locations.firstIndex(of: location)
-				}
-				oldLocationsIndices.forEach { (index) in
-					bus.locations.remove(at: index)
-				}
-				_ = bus.update(on: context.application.db)
+		for bus in buses {
+			let oldLocations = bus.locations.filter { (location) in
+				return location.type == .user && location.date.timeIntervalSinceNow < -30
 			}
-		return context.eventLoop.future()
+			let oldLocationsIndices = oldLocations.compactMap { (location) in
+				return bus.locations.firstIndex(of: location)
+			}
+			oldLocationsIndices.forEach { (index) in
+				bus.locations.remove(at: index)
+			}
+			try await bus.update(on: context.application.db)
+		}
 	}
 	
 }

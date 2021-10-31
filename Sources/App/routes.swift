@@ -8,6 +8,10 @@
 import Vapor
 import Fluent
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif
+
 func routes(_ application: Application) throws {
 	application.get { (request) -> Response in
 		return request.redirect(to: "https://web.shuttletracker.app")
@@ -18,91 +22,83 @@ func routes(_ application: Application) throws {
 	application.get("version") { (_) -> UInt in
 		return Constants.apiVersion
 	}
-	application.get("datafeed") { (_) -> EventLoopFuture<String> in
-		return application.client.get(Constants.datafeedURI)
-			.flatMapThrowing { (response) in
-				if response.status.code != 200 {
-					throw Abort(.failedDependency)
-				}
-				guard let length = response.body?.readableBytes, let rawString = response.body?.getString(at: 0, length: length) else {
-					throw Abort(.failedDependency)
-				}
-				return rawString
-			}
+	application.get("datafeed") { (_) throws -> String in
+		return try String(contentsOf: Constants.datafeedURL)
 	}
-	application.get("routes") { (request) -> EventLoopFuture<[Route]> in
-		return Route.query(on: request.db)
+	application.get("routes") { (request) async throws -> [Route] in
+		return try await Route.query(on: request.db)
 			.all()
 	}
-	application.get("stops") { (request) -> EventLoopFuture<[Stop]> in
-		return Stop.query(on: request.db)
+	application.get("stops") { (request) async throws -> [Stop] in
+		return try await Stop.query(on: request.db)
 			.all()
 	}
-	application.get("buses") { (request) -> EventLoopFuture<[Bus.Resolved]> in
-		return Bus.query(on: request.db)
+	application.get("buses") { (request) async throws -> [Bus.Resolved] in
+		return try await Bus.query(on: request.db)
 			.all()
-			.flatMapEachCompactThrowing { (bus) -> Bus.Resolved? in
+			.compactMap { (bus) in
 				return bus.resolved
 			}
 	}
-	application.get("buses", ":id") { (request) -> EventLoopFuture<Bus.Location> in
+	application.get("buses", "all") { (request) -> Set<Int> in
+		return Buses.sharedInstance.allBusIDs
+	}
+	application.get("buses", ":id") { (request) async throws -> Bus.Location in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}
-		return Bus.query(on: request.db)
+		let buses = try await Bus.query(on: request.db)
 			.filter(\.$id == id)
 			.all()
-			.flatMapThrowing { (buses) -> Bus.Location in
-				let locations = buses.flatMap { (bus) -> [Bus.Location] in
-					return bus.locations
-				}
-				guard let location = locations.resolved else {
-					throw Abort(.notFound)
-				}
-				return location
-			}
+		let locations = buses.flatMap { (bus) -> [Bus.Location] in
+			return bus.locations
+		}
+		guard let location = locations.resolved else {
+			throw Abort(.notFound)
+		}
+		return location
 	}
-	application.patch("buses", ":id") { (request) -> EventLoopFuture<[Bus.Location]> in
+	application.patch("buses", ":id") { (request) async throws -> Bus.Location? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}
 		let location = try request.content.decode(Bus.Location.self)
-		return Bus.query(on: request.db)
+		let bus = try await Bus.query(on: request.db)
 			.filter(\.$id == id)
 			.first()
-			.unwrap(or: Abort(.notFound))
-			.map { (bus) -> [Bus.Location] in
-				bus.locations.merge(with: [location])
-				_ = bus.update(on: request.db)
-				return bus.locations
-			}
+		guard let bus = bus else {
+			throw Abort(.notFound)
+		}
+		bus.locations.merge(with: [location])
+		try await bus.update(on: request.db)
+		return bus.locations.resolved
 	}
-	application.put("buses", ":id", "board") { (request) -> EventLoopFuture<Int?> in
+	application.put("buses", ":id", "board") { (request) async throws -> Int? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}
-		return Bus.query(on: request.db)
+		let bus = try await Bus.query(on: request.db)
 			.filter(\.$id == id)
 			.first()
-			.unwrap(or: Abort(.notFound))
-			.map { (bus) -> Int? in
-				bus.congestion = (bus.congestion ?? 0) + 1
-				_ = bus.update(on: request.db)
-				return bus.congestion
-			}
+		guard let bus = bus else {
+			throw Abort(.notFound)
+		}
+		bus.congestion = (bus.congestion ?? 0) + 1
+		try await bus.update(on: request.db)
+		return bus.congestion
 	}
-	application.put("buses", ":id", "leave") { (request) -> EventLoopFuture<Int?> in
+	application.put("buses", ":id", "leave") { (request) async throws -> Int? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}
-		return Bus.query(on: request.db)
+		let bus = try await Bus.query(on: request.db)
 			.filter(\.$id == id)
 			.first()
-			.unwrap(or: Abort(.notFound))
-			.flatMapThrowing { (bus) -> Int? in
-				bus.congestion = (bus.congestion ?? 1) - 1
-				_ = bus.update(on: request.db)
-				return bus.congestion
-			}
+		guard let bus = bus else {
+			throw Abort(.notFound)
+		}
+		bus.congestion = (bus.congestion ?? 1) - 1
+		try await bus.update(on: request.db)
+		return bus.congestion
 	}
 }

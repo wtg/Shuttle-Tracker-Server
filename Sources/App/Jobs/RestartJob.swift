@@ -7,11 +7,10 @@
 
 import Queues
 
-struct RestartJob: ScheduledJob {
+struct RestartJob: AsyncScheduledJob {
 	
-	func run(context: QueueContext) -> EventLoopFuture<Void> {
+	func run(context: QueueContext) {
 		context.application.shutdown()
-		return context.eventLoop.future()
 	}
 	
 }
