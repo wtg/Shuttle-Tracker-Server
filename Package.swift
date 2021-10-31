@@ -31,7 +31,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/Gerzer/CoreGPX.git",
-			.branch("master")
+			.revision("6ef3abe863a82a3be7552734f20080749554eae1")
 		),
 		.package(
 			url: "https://github.com/Gerzer/JSONParser.git",
