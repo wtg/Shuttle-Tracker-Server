@@ -66,24 +66,9 @@ let package = Package(
 					name: "JSONParser",
 					package: "JSONParser"
 				)
-			],
-			resources: [
-				.process(
-					"Route.gpx"
-				)
-			],
-			swiftSettings: [
-				.unsafeFlags(
-					[
-						"-cross-module-optimization"
-					],
-					.when(
-						configuration: .release
-					)
-				)
 			]
 		),
-		.target(
+		.executableTarget(
 			name: "Runner",
 			dependencies: [
 				.target(

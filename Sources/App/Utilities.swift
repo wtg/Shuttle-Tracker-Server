@@ -5,8 +5,8 @@
 //  Created by Gabriel Jacoby-Cooper on 8/27/21.
 //
 
-import Vapor
 import Foundation
+import Vapor
 
 enum Constants {
 	
