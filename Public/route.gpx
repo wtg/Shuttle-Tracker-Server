@@ -9,7 +9,7 @@
 		<name>Student Union</name>
 	</wpt>
 	<wpt lat="42.727888" lon="-73.678127">
-		<name>Center for Biotechnology and Interdisciplinary Studies</name>
+		<name>Academy Hall</name>
 	</wpt>
 	<wpt lat="42.722881" lon="-73.679696">
 		<name>Polytechnic Residence Commons</name>
@@ -24,7 +24,7 @@
 		<name>West Hall</name>
 	</wpt>
 	<wpt lat="42.730952" lon="-73.678995">
-		<name>’87 Gymnasium</name>
+		<name><![CDATA[’87 Gymnasium]]></name>
 	</wpt>
 	<wpt lat="42.729362" lon="-73.674015">
 		<ele>0.000000</ele>
@@ -47,7 +47,7 @@
 	</wpt>
 	<wpt lat="42.728698" lon="-73.675927">
 		<time>2021-10-01T18:52:54Z</time>
-		<name>Armory</name>
+		<name>The Armory</name>
 	</wpt>
 	<rte>
 		<name>Route</name>
