@@ -7,18 +7,18 @@
 
 import Fluent
 
-struct CreateBuses: Migration {
+struct CreateBuses: AsyncMigration {
 	
-	func prepare(on database: Database) -> EventLoopFuture<Void> {
-		return database.schema(Bus.schema)
+	func prepare(on database: Database) async throws {
+		try await database.schema(Bus.schema)
 			.id()
 			.field("locations", .array(of: .custom(Bus.Location.self)), .required)
 			.field("congestion", .int)
 			.create()
 	}
 	
-	func revert(on database: Database) -> EventLoopFuture<Void> {
-		return database.schema(Bus.schema)
+	func revert(on database: Database) async throws {
+		try await database.schema(Bus.schema)
 			.delete()
 	}
 	

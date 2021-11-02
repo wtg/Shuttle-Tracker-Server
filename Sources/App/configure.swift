@@ -18,7 +18,8 @@ public func configure(_ application: Application) throws {
 	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate())
 	application.queues.use(.fluent(useSoftDeletes: false))
 	application.queues.schedule(BusDownloadingJob())
-		.everySecond()
+		.minutely()
+		.at(0)
 	application.queues.schedule(GPXImportingJob())
 		.daily()
 		.at(.midnight)
@@ -63,7 +64,19 @@ public func configure(_ application: Application) throws {
 			)
 		)
 	}
-	_ = BusDownloadingJob().run(context: application.queues.queue.context)
-	_ = GPXImportingJob().run(context: application.queues.queue.context)
+	for busID in Buses.sharedInstance.allBusIDs {
+		Task {
+			try await Bus(id: busID)
+				.save(on: application.db)
+		}
+	}
+	Task {
+		try await BusDownloadingJob()
+			.run(context: application.queues.queue.context)
+	}
+	Task {
+		try await GPXImportingJob()
+			.run(context: application.queues.queue.context)
+	}
 	try routes(application)
 }
