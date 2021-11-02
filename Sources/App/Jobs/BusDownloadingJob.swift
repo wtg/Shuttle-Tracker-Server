@@ -15,16 +15,20 @@ import FoundationNetworking
 struct BusDownloadingJob: AsyncScheduledJob {
 	
 	func run(context: QueueContext) async throws {
-		var newBuses = try await Set<Bus>.download(application: context.application)
+		let newBuses = try await Downloaders.getBuses(on: context.application)
+		var allNewBuses = Set<Bus>()
+		for try await newBus in newBuses {
+			allNewBuses.insert(newBus as! Bus)
+		}
 		let buses = try await Bus.query(on: context.application.db)
 			.all()
 		for bus in buses {
-			if let newBus = newBuses.remove(bus) {
+			if let newBus = allNewBuses.remove(bus) {
 				bus.locations.merge(with: newBus.locations)
 				try await bus.update(on: context.application.db)
 			}
 		}
-		newBuses.save(on: context.application.db)
+		allNewBuses.save(on: context.application.db)
 	}
 	
 }
