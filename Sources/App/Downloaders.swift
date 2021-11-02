@@ -8,6 +8,10 @@
 import Vapor
 import Fluent
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif // canImport(FoundationNetworking)
+
 enum Downloaders {
 	
 	/// Download the latest system bus data.
