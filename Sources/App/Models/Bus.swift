@@ -154,10 +154,20 @@ extension Set where Element == Bus {
 				formatter.dateFormat = "HHmmss'|'MMddyyyy"
 				formatter.timeZone = TimeZone(abbreviation: "UTC")!
 				let dateString = "\(rawLine[timeRange])|\(rawLine[dateRange])"
-				guard let date = formatter.date(from: dateString) else {
+				guard var date = formatter.date(from: dateString) else {
 					return nil
 				}
 				let coordinate = Coordinate(latitude: latitude, longitude: longitude)
+				if date > Date() {
+					let oldBus = try? await Bus.query(on: application.db)
+						.filter(\.$id == id)
+						.first()
+					if let oldLocation = oldBus?.locations.resolved, oldLocation.coordinate == coordinate {
+						date = oldLocation.date
+					} else {
+						date = Date.now
+					}
+				}
 				let location = Bus.Location(id: UUID(), date: date, coordinate: coordinate, type: .system)
 				return Bus(id: id, locations: [location])
 			}

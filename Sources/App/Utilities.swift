@@ -26,3 +26,15 @@ enum Constants {
 extension Optional: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Wrapped: Codable { }
 
 extension Set: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Element: Codable { }
+
+#if os(Linux)
+extension Date {
+	
+	static var now: Date {
+		get {
+			return Date()
+		}
+	}
+	
+}
+#endif // os(Linux)
