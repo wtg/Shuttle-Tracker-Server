@@ -26,8 +26,8 @@ class Buses: JSONProvider {
 			self.parser = parser
 		}
 		
-		subscript(_ backendID: String) -> Int {
-			return self[backendID, as: Int.self]!
+		subscript(_ backendID: String) -> Int? {
+			return self[backendID, as: Int.self]
 		}
 		
 	}

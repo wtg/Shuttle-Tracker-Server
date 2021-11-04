@@ -149,7 +149,9 @@ extension Set where Element == Bus {
 					return nil
 				}
 				let backendID = String(rawLine[backendIDRange])
-				let id = Buses.sharedInstance.busIDMap[backendID]
+				guard let id = Buses.sharedInstance.busIDMap[backendID] else {
+					return nil
+				}
 				let formatter = DateFormatter()
 				formatter.dateFormat = "HHmmss'|'MMddyyyy"
 				formatter.timeZone = TimeZone(abbreviation: "UTC")!
