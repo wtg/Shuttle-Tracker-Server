@@ -63,6 +63,12 @@ func routes(_ application: Application) throws {
 			throw Abort(.badRequest)
 		}
 		let location = try request.content.decode(Bus.Location.self)
+		let isValid = try await Route.query(on: request.db)
+			.first()?
+			.check(location: location) ?? false
+		guard isValid else {
+			throw Abort(.conflict)
+		}
 		let bus = try await Bus.query(on: request.db)
 			.filter(\.$id == id)
 			.first()
