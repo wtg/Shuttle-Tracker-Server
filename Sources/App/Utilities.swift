@@ -23,6 +23,12 @@ enum Constants {
 	
 }
 
+enum CoordinateUtilities {
+	
+	static let centerLatitude = 42.735
+	
+}
+
 extension Optional: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Wrapped: Codable { }
 
 extension Set: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Element: Codable { }

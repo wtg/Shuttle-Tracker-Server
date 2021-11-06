@@ -48,4 +48,11 @@ struct Coordinate: Equatable, Codable {
 		self.init(latitude: latitude, longitude: longitude)
 	}
 	
+	func convertedForFlatGrid(centeredAtLatitude centerLatitude: Double) -> (x: Double, y: Double) {
+		let r = 6.3781E6
+		let x = r * self.longitude * cos(centerLatitude)
+		let y = r * self.latitude
+		return (x: x, y: y)
+	}
+	
 }
