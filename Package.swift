@@ -14,7 +14,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/vapor/queues.git",
-			.upToNextMajor(from: "1.8.1")
+			.upToNextMajor(from: "1.8.0")
 		),
 		.package(
 			url: "https://github.com/vapor/fluent.git",
@@ -36,6 +36,10 @@ let package = Package(
 		.package(
 			url: "https://github.com/Gerzer/JSONParser.git",
 			.upToNextMajor(from: "1.3.0")
+		),
+		.package(
+			url: "https://github.com/malcommac/UAParserSwift.git",
+			.upToNextMajor(from: "1.2.0")
 		)
 	],
 	targets: [
@@ -65,15 +69,17 @@ let package = Package(
 				.product(
 					name: "JSONParser",
 					package: "JSONParser"
+				),
+				.product(
+					name: "UAParserSwift",
+					package: "UAParserSwift"
 				)
 			]
 		),
 		.executableTarget(
 			name: "Runner",
 			dependencies: [
-				.target(
-					name: "App"
-				)
+				.target(name: "App")
 			]
 		)
 	]
