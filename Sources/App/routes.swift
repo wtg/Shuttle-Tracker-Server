@@ -7,6 +7,7 @@
 
 import Vapor
 import Fluent
+import UAParserSwift
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
@@ -14,7 +15,16 @@ import FoundationNetworking
 
 func routes(_ application: Application) throws {
 	application.get { (request) -> Response in
-		return request.redirect(to: "https://web.shuttletracker.app")
+		guard let agent = request.headers["User-Agent"].first else {
+			return request.redirect(to: "https://web.shuttletracker.app")
+		}
+		let parser = UAParser(agent: agent)
+		switch parser.os?.name?.lowercased() {
+		case "ios", "mac os":
+			return request.redirect(to: "https://apps.apple.com/us/app/shuttle-tracker/id1583503452")
+		default:
+			return request.redirect(to: "https://web.shuttletracker.app")
+		}
 	}
 	application.get("testflight") { (request) -> Response in
 		return request.redirect(to: "https://testflight.apple.com/join/GsmZkfgd")
