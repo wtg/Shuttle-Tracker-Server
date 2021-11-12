@@ -11,7 +11,7 @@ import Vapor
 enum Constants {
 	
 	/// The current version number for the API. Increment this value every time a breaking change is made to the public-facing API.
-	static let apiVersion: UInt = 0
+	static let apiVersion: UInt = 1
 	
 	static let datafeedURL: URL = {
 		if let itrakString = ProcessInfo.processInfo.environment["ITRAK"] {
