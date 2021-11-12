@@ -16,18 +16,45 @@ import FoundationNetworking
 func routes(_ application: Application) throws {
 	application.get { (request) -> Response in
 		guard let agent = request.headers["User-Agent"].first else {
-			return request.redirect(to: "https://web.shuttletracker.app")
+			return request.redirect(to: "/web")
 		}
 		let parser = UAParser(agent: agent)
 		switch parser.os?.name?.lowercased() {
 		case "ios", "mac os":
-			return request.redirect(to: "https://apps.apple.com/us/app/shuttle-tracker/id1583503452")
+			return request.redirect(to: "/swiftui")
 		default:
-			return request.redirect(to: "https://web.shuttletracker.app")
+			return request.redirect(to: "/web")
+		}
+	}
+	application.get("swiftui") { (request) in
+		return request.redirect(to: "https://apps.apple.com/us/app/shuttle-tracker/id1583503452")
+	}
+	application.get("swiftui", "beta") { (request) in
+		return request.redirect(to: "https://testflight.apple.com/join/GsmZkfgd")
+	}
+	application.get("android") { (request) in
+		return request.redirect(to: "https://play.google.com/store/apps/details?id=edu.rpi.shuttletracker")
+	}
+	application.get("web") { (request) in
+		return request.redirect(to: "https://web.shuttletracker.app")
+	}
+	application.get("web", "beta") { (request) in
+		return request.redirect(to: "https://staging.web.shuttletracker.app")
+	}
+	application.get("beta") { (request) -> Response in
+		guard let agent = request.headers["User-Agent"].first else {
+			return request.redirect(to: "/web/beta")
+		}
+		let parser = UAParser(agent: agent)
+		switch parser.os?.name?.lowercased() {
+		case "ios", "mac os":
+			return request.redirect(to: "/swiftui/beta")
+		default:
+			return request.redirect(to: "/web/beta")
 		}
 	}
 	application.get("testflight") { (request) -> Response in
-		return request.redirect(to: "https://testflight.apple.com/join/GsmZkfgd")
+		return request.redirect(to: "/swiftui/beta")
 	}
 	application.get("version") { (_) -> UInt in
 		return Constants.apiVersion
@@ -42,6 +69,9 @@ func routes(_ application: Application) throws {
 	application.get("stops") { (request) async throws -> [Stop] in
 		return try await Stop.query(on: request.db)
 			.all()
+	}
+	application.get("stops", ":shortname") { (request) in
+		return request.redirect(to: "/", type: .temporary)
 	}
 	application.get("buses") { (request) async throws -> [Bus.Resolved] in
 		return try await Bus.query(on: request.db)
