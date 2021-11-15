@@ -68,7 +68,7 @@ final class Route: Model, Content, Collection {
 				return distance.isNaN ? nil : distance
 			}
 			.reduce(into: false) { (partialResult, distance) in
-				if distance < 100 {
+				if distance < 10 {
 					partialResult = true
 				}
 			}
