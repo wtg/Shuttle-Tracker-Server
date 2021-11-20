@@ -8,15 +8,40 @@
 import NIOSSL
 import Vapor
 import FluentSQLiteDriver
+import FluentPostgresDriver
 import Queues
 import QueuesFluentDriver
 
 public func configure(_ application: Application) throws {
-	application.middleware.use(CORSMiddleware(configuration: .default()))
-	application.middleware.use(FileMiddleware(publicDirectory: application.directory.publicDirectory))
-	application.databases.use(.sqlite(), as: .sqlite)
+	application.middleware.use(
+		CORSMiddleware(
+			configuration: .default()
+		)
+	)
+	application.middleware.use(
+		FileMiddleware(
+			publicDirectory: application.directory.publicDirectory
+		)
+	)
+	application.databases.use(
+		.sqlite(),
+		as: .sqlite,
+		isDefault: true
+	)
+	application.databases.use(
+		.postgres(
+			hostname: "localhost",
+			username: "Gabriel",
+			password: ""
+		),
+		as: .psql,
+		isDefault: false
+	)
 	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate())
-	application.queues.use(.fluent(useSoftDeletes: false))
+	application.migrations.add(CreateAnnouncements(), to: .psql)
+	application.queues.use(
+		.fluent(useSoftDeletes: false)
+	)
 	application.queues.schedule(BusDownloadingJob())
 		.minutely()
 		.at(0)
