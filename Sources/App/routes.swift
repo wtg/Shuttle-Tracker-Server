@@ -53,37 +53,74 @@ func routes(_ application: Application) throws {
 			return request.redirect(to: "/web/beta")
 		}
 	}
-	application.get("testflight") { (request) -> Response in
+	application.get("testflight") { (request) in
 		return request.redirect(to: "/swiftui/beta")
 	}
-	application.get("version") { (_) -> UInt in
+	application.get("version") { (_) in
 		return Constants.apiVersion
 	}
-	application.get("datafeed") { (_) throws -> String in
+	application.get("announcements") { (request) in
+		return try await Announcement.query(on: request.db(.psql))
+			.all()
+	}
+	application.post("announcements") { (request) -> Announcement in
+		let decoder = JSONDecoder()
+		decoder.dateDecodingStrategy = .iso8601
+		let announcement = try request.content.decode(Announcement.self, using: decoder)
+		guard let data = (announcement.subject + announcement.body).data(using: .utf8) else {
+			throw Abort(.internalServerError)
+		}
+		guard let keysDirectoryPath = ProcessInfo.processInfo.environment["KEYS_DIRECTORY"] else {
+			throw Abort(.internalServerError)
+		}
+		let keyFilePaths = try FileManager.default.contentsOfDirectory(atPath: keysDirectoryPath)
+			.filter { (filePath) in
+				return filePath.hasSuffix(".pem")
+			}
+		let keysDirectoryURL = URL(fileURLWithPath: keysDirectoryPath, isDirectory: true)
+		for keyFilePath in keyFilePaths {
+			let keyFileURL = keysDirectoryURL.appendingPathComponent(keyFilePath)
+			let publicKey: P256.Signing.PublicKey
+			let signature: P256.Signing.ECDSASignature
+			do {
+				let keyFileContents = try String(contentsOfFile: keyFileURL.path)
+				publicKey = try P256.Signing.PublicKey(pemRepresentation: keyFileContents)
+				signature = try P256.Signing.ECDSASignature(rawRepresentation: announcement.signature)
+			} catch {
+				continue
+			}
+			if publicKey.isValidSignature(signature, for: data) {
+				try await announcement.save(on: request.db(.psql))
+				return announcement
+			}
+		}
+		throw Abort(.forbidden)
+	}
+	application.get("datafeed") { (_) in
 		return try String(contentsOf: Constants.datafeedURL)
 	}
-	application.get("routes") { (request) async throws -> [Route] in
+	application.get("routes") { (request) in
 		return try await Route.query(on: request.db)
 			.all()
 	}
-	application.get("stops") { (request) async throws -> [Stop] in
+	application.get("stops") { (request) in
 		return try await Stop.query(on: request.db)
 			.all()
 	}
 	application.get("stops", ":shortname") { (request) in
 		return request.redirect(to: "/", type: .temporary)
 	}
-	application.get("buses") { (request) async throws -> [Bus.Resolved] in
+	application.get("buses") { (request) in
 		return try await Bus.query(on: request.db)
 			.all()
 			.compactMap { (bus) in
 				return bus.resolved
 			}
 	}
-	application.get("buses", "all") { (request) -> Set<Int> in
+	application.get("buses", "all") { (_) in
 		return Buses.sharedInstance.allBusIDs
 	}
-	application.get("buses", ":id") { (request) async throws -> Bus.Location in
+	application.get("buses", ":id") { (request) -> Bus.Location in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}
@@ -98,7 +135,7 @@ func routes(_ application: Application) throws {
 		}
 		return location
 	}
-	application.patch("buses", ":id") { (request) async throws -> Bus.Location? in
+	application.patch("buses", ":id") { (request) -> Bus.Location? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}
@@ -119,7 +156,7 @@ func routes(_ application: Application) throws {
 		try await bus.update(on: request.db)
 		return bus.locations.resolved
 	}
-	application.put("buses", ":id", "board") { (request) async throws -> Int? in
+	application.put("buses", ":id", "board") { (request) -> Int? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}
@@ -133,7 +170,7 @@ func routes(_ application: Application) throws {
 		try await bus.update(on: request.db)
 		return bus.congestion
 	}
-	application.put("buses", ":id", "leave") { (request) async throws -> Int? in
+	application.put("buses", ":id", "leave") { (request) -> Int? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}

@@ -8,15 +8,53 @@
 import NIOSSL
 import Vapor
 import FluentSQLiteDriver
+import FluentPostgresDriver
 import Queues
 import QueuesFluentDriver
 
 public func configure(_ application: Application) throws {
-	application.middleware.use(CORSMiddleware(configuration: .default()))
-	application.middleware.use(FileMiddleware(publicDirectory: application.directory.publicDirectory))
-	application.databases.use(.sqlite(), as: .sqlite)
+	application.middleware.use(
+		CORSMiddleware(
+			configuration: .default()
+		)
+	)
+	application.middleware.use(
+		FileMiddleware(
+			publicDirectory: application.directory.publicDirectory
+		)
+	)
+	application.databases.use(
+		.sqlite(),
+		as: .sqlite,
+		isDefault: true
+	)
+	if let postgresURLString = ProcessInfo.processInfo.environment["DATABASE_URL"], let postgresURL = URL(string: postgresURLString) {
+		application.databases.use(
+			try .postgres(
+				url: postgresURL
+			),
+			as: .psql,
+			isDefault: false
+		)
+	} else {
+		let postgresHostname = ProcessInfo.processInfo.environment["POSTGRES_HOSTNAME"]!
+		let postgresUsername = ProcessInfo.processInfo.environment["POSTGRES_USERNAME"]!
+		let postgresPassword = ProcessInfo.processInfo.environment["POSTGRES_PASSWORD"] ?? ""
+		application.databases.use(
+			.postgres(
+				hostname: postgresHostname,
+				username: postgresUsername,
+				password: postgresPassword
+			),
+			as: .psql,
+			isDefault: false
+		)
+	}
 	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate())
-	application.queues.use(.fluent(useSoftDeletes: false))
+	application.migrations.add(CreateAnnouncements(), to: .psql)
+	application.queues.use(
+		.fluent(useSoftDeletes: false)
+	)
 	application.queues.schedule(BusDownloadingJob())
 		.minutely()
 		.at(0)
