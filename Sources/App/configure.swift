@@ -28,15 +28,28 @@ public func configure(_ application: Application) throws {
 		as: .sqlite,
 		isDefault: true
 	)
-	application.databases.use(
-		.postgres(
-			hostname: "localhost",
-			username: "Gabriel",
-			password: ""
-		),
-		as: .psql,
-		isDefault: false
-	)
+	if let postgresURLString = ProcessInfo.processInfo.environment["DATABASE_URL"], let postgresURL = URL(string: postgresURLString) {
+		application.databases.use(
+			try .postgres(
+				url: postgresURL
+			),
+			as: .psql,
+			isDefault: false
+		)
+	} else {
+		let postgresHostname = ProcessInfo.processInfo.environment["POSTGRES_HOSTNAME"]!
+		let postgresUsername = ProcessInfo.processInfo.environment["POSTGRES_USERNAME"]!
+		let postgresPassword = ProcessInfo.processInfo.environment["POSTGRES_PASSWORD"] ?? ""
+		application.databases.use(
+			.postgres(
+				hostname: postgresHostname,
+				username: postgresUsername,
+				password: postgresPassword
+			),
+			as: .psql,
+			isDefault: false
+		)
+	}
 	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate())
 	application.migrations.add(CreateAnnouncements(), to: .psql)
 	application.queues.use(
