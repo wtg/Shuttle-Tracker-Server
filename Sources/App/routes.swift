@@ -70,31 +70,29 @@ func routes(_ application: Application) throws {
 		guard let data = (announcement.subject + announcement.body).data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
-		guard let keysDirectoryPath = ProcessInfo.processInfo.environment["KEYS_DIRECTORY"] else {
+		if try CryptographyUtilities.verify(signature: announcement.signature, of: data) {
+			try await announcement.save(on: request.db(.psql))
+			return announcement
+		} else {
+			throw Abort(.forbidden)
+		}
+	}
+	application.delete("announcements", ":id") { (request) -> String in
+		guard let id = request.parameters.get("id", as: UUID.self) else {
+			throw Abort(.badRequest)
+		}
+		let signature = try request.content.decode(Data.self)
+		guard let data = id.uuidString.data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
-		let keyFilePaths = try FileManager.default.contentsOfDirectory(atPath: keysDirectoryPath)
-			.filter { (filePath) in
-				return filePath.hasSuffix(".pem")
-			}
-		let keysDirectoryURL = URL(fileURLWithPath: keysDirectoryPath, isDirectory: true)
-		for keyFilePath in keyFilePaths {
-			let keyFileURL = keysDirectoryURL.appendingPathComponent(keyFilePath)
-			let publicKey: P256.Signing.PublicKey
-			let signature: P256.Signing.ECDSASignature
-			do {
-				let keyFileContents = try String(contentsOfFile: keyFileURL.path)
-				publicKey = try P256.Signing.PublicKey(pemRepresentation: keyFileContents)
-				signature = try P256.Signing.ECDSASignature(rawRepresentation: announcement.signature)
-			} catch {
-				continue
-			}
-			if publicKey.isValidSignature(signature, for: data) {
-				try await announcement.save(on: request.db(.psql))
-				return announcement
-			}
+		if try CryptographyUtilities.verify(signature: signature, of: data) {
+			try await Announcement.query(on: request.db(.psql))
+				.filter(\.$id == id)
+				.delete()
+			return id.uuidString
+		} else {
+			throw Abort(.forbidden)
 		}
-		throw Abort(.forbidden)
 	}
 	application.get("datafeed") { (_) in
 		return try String(contentsOf: Constants.datafeedURL)
