@@ -29,6 +29,37 @@ enum CoordinateUtilities {
 	
 }
 
+enum CryptographyUtilities {
+	
+	static func verify(signature signatureData: Data, of contentData: Data) throws -> Bool {
+		guard let keysDirectoryPath = ProcessInfo.processInfo.environment["KEYS_DIRECTORY"] else {
+			throw Abort(.internalServerError)
+		}
+		let keyFilePaths = try FileManager.default.contentsOfDirectory(atPath: keysDirectoryPath)
+			.filter { (filePath) in
+				return filePath.hasSuffix(".pem")
+			}
+		let keysDirectoryURL = URL(fileURLWithPath: keysDirectoryPath, isDirectory: true)
+		for keyFilePath in keyFilePaths {
+			let keyFileURL = keysDirectoryURL.appendingPathComponent(keyFilePath)
+			let publicKey: P256.Signing.PublicKey
+			let signature: P256.Signing.ECDSASignature
+			do {
+				let keyFileContents = try String(contentsOfFile: keyFileURL.path)
+				publicKey = try P256.Signing.PublicKey(pemRepresentation: keyFileContents)
+				signature = try P256.Signing.ECDSASignature(rawRepresentation: signatureData)
+			} catch {
+				continue
+			}
+			if publicKey.isValidSignature(signature, for: contentData) {
+				return true
+			}
+		}
+		return false
+	}
+	
+}
+
 extension Optional: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Wrapped: Codable { }
 
 extension Set: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Element: Codable { }
