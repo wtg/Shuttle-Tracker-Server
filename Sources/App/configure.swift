@@ -107,7 +107,7 @@ public func configure(_ application: Application) throws {
 			)
 		)
 	}
-	for busID in Buses.sharedInstance.allBusIDs {
+	for busID in Buses.shared.allBusIDs {
 		Task {
 			try await Bus(id: busID)
 				.save(on: application.db)

@@ -129,7 +129,7 @@ func routes(_ application: Application) throws {
 			}
 	}
 	application.get("buses", "all") { (_) in
-		return Buses.sharedInstance.allBusIDs
+		return Buses.shared.allBusIDs
 	}
 	application.get("buses", ":id") { (request) -> Bus.Location in
 		guard let id = request.parameters.get("id", as: Int.self) else {

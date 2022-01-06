@@ -34,7 +34,7 @@ class Buses: JSONProvider {
 	}
 	
 	/// The shared instance.
-	static let sharedInstance = Buses()
+	static let shared = Buses()
 	
 	/// A set of the IDs of all of the known buses.
 	let allBusIDs: Set<Int>

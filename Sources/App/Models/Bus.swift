@@ -141,7 +141,7 @@ extension Set where Element == Bus {
 					return nil
 				}
 				let backendID = String(rawLine[backendIDRange])
-				guard let id = Buses.sharedInstance.busIDMap[backendID] else {
+				guard let id = Buses.shared.busIDMap[backendID] else {
 					return nil
 				}
 				let formatter = DateFormatter()
