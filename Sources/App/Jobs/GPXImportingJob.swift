@@ -20,14 +20,16 @@ struct GPXImportingJob: AsyncScheduledJob {
 		guard let gpx = parser?.parsedData() else {
 			return
 		}
-		let routes = try await Route.query(on: context.application.db)
+		let routes = try await Route
+			.query(on: context.application.db)
 			.all()
 		for route in routes {
 			try await route.delete(on: context.application.db)
 		}
 		try await Route(from: gpx.tracks.first!.segments.first!)
 			.save(on: context.application.db)
-		let stops = try await Stop.query(on: context.application.db)
+		let stops = try await Stop
+			.query(on: context.application.db)
 			.all()
 		for stop in stops {
 			try await stop.delete(on: context.application.db)

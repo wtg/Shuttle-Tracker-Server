@@ -7,6 +7,7 @@
 
 import Foundation
 import Vapor
+import Fluent
 
 enum Constants {
 	
@@ -63,3 +64,15 @@ enum CryptographyUtilities {
 extension Optional: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Wrapped: Codable { }
 
 extension Set: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Element: Codable { }
+
+extension Collection where Element: Model {
+	
+	/// Save each model object in this collection.
+	/// - Parameter database: The database on which to save the model objects.
+	func save(on database: Database) async throws {
+		for object in self {
+			try await object.save(on: database)
+		}
+	}
+	
+}

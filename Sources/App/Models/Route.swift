@@ -48,7 +48,7 @@ final class Route: Model, Content, Collection {
 		return oldIndex + 1
 	}
 	
-	func check(location: Bus.Location) -> Bool {
+	func checkIfValid(location: Bus.Location) -> Bool {
 		return self.coordinates
 			.enumerated()
 			.compactMap { (offset, coordinate2) -> Double? in
@@ -72,18 +72,6 @@ final class Route: Model, Content, Collection {
 					partialResult = true
 				}
 			}
-	}
-	
-}
-
-extension Collection where Element == Route {
-	
-	/// Save each route object in this collection.
-	/// - Parameter database: The database on which to save the route objects.
-	func save(on database: Database) {
-		self.forEach { (route) in
-			_ = route.save(on: database)
-		}
 	}
 	
 }

@@ -67,7 +67,8 @@ func routes(_ application: Application) throws {
 		return Constants.apiVersion
 	}
 	application.get("announcements") { (request) in
-		return try await Announcement.query(on: request.db(.psql))
+		return try await Announcement
+			.query(on: request.db(.psql))
 			.all()
 	}
 	application.post("announcements") { (request) -> Announcement in
@@ -94,7 +95,8 @@ func routes(_ application: Application) throws {
 			throw Abort(.internalServerError)
 		}
 		if try CryptographyUtilities.verify(signature: deletionRequest.signature, of: data) {
-			try await Announcement.query(on: request.db(.psql))
+			try await Announcement
+				.query(on: request.db(.psql))
 				.filter(\.$id == id)
 				.delete()
 			return id.uuidString
@@ -106,18 +108,21 @@ func routes(_ application: Application) throws {
 		return try String(contentsOf: Constants.datafeedURL)
 	}
 	application.get("routes") { (request) in
-		return try await Route.query(on: request.db)
+		return try await Route
+			.query(on: request.db)
 			.all()
 	}
 	application.get("stops") { (request) in
-		return try await Stop.query(on: request.db)
+		return try await Stop
+			.query(on: request.db)
 			.all()
 	}
 	application.get("stops", ":shortname") { (request) in
 		return request.redirect(to: "/", type: .temporary)
 	}
 	application.get("buses") { (request) in
-		return try await Bus.query(on: request.db)
+		return try await Bus
+			.query(on: request.db)
 			.all()
 			.compactMap { (bus) in
 				return bus.resolved
@@ -130,7 +135,8 @@ func routes(_ application: Application) throws {
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}
-		let buses = try await Bus.query(on: request.db)
+		let buses = try await Bus
+			.query(on: request.db)
 			.filter(\.$id == id)
 			.all()
 		let locations = buses.flatMap { (bus) -> [Bus.Location] in
@@ -146,13 +152,15 @@ func routes(_ application: Application) throws {
 			throw Abort(.badRequest)
 		}
 		let location = try request.content.decode(Bus.Location.self)
-		let isValid = try await Route.query(on: request.db)
+		let isValid = try await Route
+			.query(on: request.db)
 			.first()?
-			.check(location: location) ?? false
+			.checkIfValid(location: location) ?? false
 		guard isValid else {
 			throw Abort(.conflict)
 		}
-		let bus = try await Bus.query(on: request.db)
+		let bus = try await Bus
+			.query(on: request.db)
 			.filter(\.$id == id)
 			.first()
 		guard let bus = bus else {
@@ -166,7 +174,8 @@ func routes(_ application: Application) throws {
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}
-		let bus = try await Bus.query(on: request.db)
+		let bus = try await Bus
+			.query(on: request.db)
 			.filter(\.$id == id)
 			.first()
 		guard let bus = bus else {
@@ -180,7 +189,8 @@ func routes(_ application: Application) throws {
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
 		}
-		let bus = try await Bus.query(on: request.db)
+		let bus = try await Bus
+			.query(on: request.db)
 			.filter(\.$id == id)
 			.first()
 		guard let bus = bus else {

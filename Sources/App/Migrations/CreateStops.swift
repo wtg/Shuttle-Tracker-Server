@@ -10,7 +10,8 @@ import Fluent
 struct CreateStops: AsyncMigration {
 	
 	func prepare(on database: Database) async throws {
-		try await database.schema(Stop.schema)
+		try await database
+			.schema(Stop.schema)
 			.id()
 			.field("name", .string, .required)
 			.field("coordinate", .dictionary, .required)
@@ -18,7 +19,8 @@ struct CreateStops: AsyncMigration {
 	}
 	
 	func revert(on database: Database) async throws {
-		try await database.schema(Stop.schema)
+		try await database
+			.schema(Stop.schema)
 			.delete()
 	}
 	

@@ -116,9 +116,9 @@ extension Collection where Element == Bus {
 	
 	/// Save each bus object in this collection.
 	/// - Parameter database: The database on which to save the bus objects.
-	func save(on database: Database) {
-		self.forEach { (bus) in
-			_ = bus.save(on: database)
+	func save(on database: Database) async throws {
+		for bus in self {
+			try await bus.save(on: database)
 		}
 	}
 	
@@ -132,7 +132,8 @@ extension Set where Element == Bus {
 	///   - busesCallback: A callback that's given a `Set<Bus>` instance with new bus objects. Note that these bus objects will **not** contain any user-reported location or congestion data and therefore must be separately merged with any existing bus data.
 	static func download(application: Application) async throws -> Set<Bus> {
 		let rawString = try String(contentsOf: Constants.datafeedURL)
-		let buses = rawString.split(separator: "\r\n")
+		let buses = rawString
+			.split(separator: "\r\n")
 			.dropFirst()
 			.dropLast()
 			.compactMap { (rawLine) -> Bus? in
@@ -199,7 +200,12 @@ extension Collection where Element == Bus.Location {
 			guard let userCoordinate = coordinate == zeroCoordinate ? nil : coordinate else {
 				return nil
 			}
-			return Bus.Location(id: UUID(), date: newestLocation?.date ?? Date(), coordinate: userCoordinate, type: .user)
+			return Bus.Location(
+				id: UUID(),
+				date: newestLocation?.date ?? Date(),
+				coordinate: userCoordinate,
+				type: .user
+			)
 		}
 	}
 	
@@ -218,11 +224,11 @@ extension Array: Mergeable where Element == Bus.Location {
 	/// - Parameter otherLocations: The other location data to merge into this array.
 	/// - Note: This method implements a requirement in the `Mergeable` protocol.
 	mutating func merge(with otherLocations: [Bus.Location]) {
-		otherLocations.forEach { (location) in
-			if let index = self.firstIndex(of: location) {
-				self.remove(at: index)
+		for otherLocation in otherLocations {
+			self.removeAll { (location) in
+				return location == otherLocation
 			}
-			self.append(location)
+			self.append(otherLocation)
 		}
 	}
 	

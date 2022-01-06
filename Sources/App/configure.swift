@@ -55,17 +55,22 @@ public func configure(_ application: Application) throws {
 	application.queues.use(
 		.fluent(useSoftDeletes: false)
 	)
-	application.queues.schedule(BusDownloadingJob())
+	application.queues
+		.schedule(BusDownloadingJob())
 		.minutely()
 		.at(0)
-	application.queues.schedule(GPXImportingJob())
+	application.queues
+		.schedule(GPXImportingJob())
 		.daily()
 		.at(.midnight)
-	application.queues.schedule(LocationRemovalJob())
+	application.queues
+		.schedule(LocationRemovalJob())
 		.everySecond()
-	application.queues.schedule(RestartJob())
+	application.queues
+		.schedule(RestartJob())
 		.at(Date() + 21600)
-	try application.autoMigrate()
+	try application
+		.autoMigrate()
 		.wait()
 	try application.queues.startInProcessJobs()
 	try application.queues.startScheduledJobs()

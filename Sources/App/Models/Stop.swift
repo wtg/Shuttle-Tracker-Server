@@ -37,15 +37,3 @@ final class Stop: Model, Content {
 	}
 	
 }
-
-extension Collection where Element == Stop {
-	
-	/// Save each stop object in this collection.
-	/// - Parameter database: The database on which to save the stop objects.
-	func save(on database: Database) {
-		self.forEach { (stop) in
-			_ = stop.save(on: database)
-		}
-	}
-	
-}
