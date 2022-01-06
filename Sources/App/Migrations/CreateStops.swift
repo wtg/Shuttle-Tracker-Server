@@ -7,6 +7,7 @@
 
 import Fluent
 
+/// A migration to create `Stop` records.
 struct CreateStops: AsyncMigration {
 	
 	func prepare(on database: Database) async throws {

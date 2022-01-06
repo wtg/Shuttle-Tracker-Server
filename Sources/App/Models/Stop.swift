@@ -25,9 +25,9 @@ final class Stop: Model, Content {
 	
 	init() { }
 	
-	/// Create a stop object from a GPX waypoint.
+	/// Creates a stop object from a GPX waypoint.
 	/// - Parameter gpxWaypoint: The GPX waypoint from which to create a stop object.
-	/// - Note: This initializer fails and returns `nil` if the provided `GPXWaypointProtocol` instance doesn't contain sufficient information to create a stop object.
+	/// - Note: This initializer fails and returns `nil` if the provided GPX waypoint doesn’t contain sufficient information to create a stop object.
 	init?(from gpxWaypoint: GPXWaypointProtocol) {
 		guard let name = gpxWaypoint.name, let coordinate = Coordinate(from: gpxWaypoint) else {
 			return nil

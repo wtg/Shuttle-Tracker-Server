@@ -7,6 +7,7 @@
 
 import Fluent
 
+/// A migration to create `Route` records.
 struct CreateRoutes: AsyncMigration {
 	
 	func prepare(on database: Database) async throws {

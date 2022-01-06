@@ -11,7 +11,9 @@ import Fluent
 
 enum Constants {
 	
-	/// The current version number for the API. Increment this value every time a breaking change is made to the public-facing API.
+	/// The current version number for the API.
+	///
+	/// Increment this value every time a breaking change is made to the public-facing API.
 	static let apiVersion: UInt = 1
 	
 	static let datafeedURL: URL = {
@@ -67,7 +69,7 @@ extension Set: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodab
 
 extension Collection where Element: Model {
 	
-	/// Save each model object in this collection.
+	/// Saves each model object in this collection.
 	/// - Parameter database: The database on which to save the model objects.
 	func save(on database: Database) async throws {
 		for object in self {

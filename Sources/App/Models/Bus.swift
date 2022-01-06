@@ -23,13 +23,14 @@ final class Bus: Hashable, Model {
 			
 		}
 		
-		/// An identifier that's used to update location data dynamically. Location reports from the same user during the same trip should all have the same value.
+		/// An identifier that’s used to update location data dynamically.
+		/// - Important: Location reports from the same user during the same trip should all have the same ID value.
 		@ID(custom: "id", generatedBy: .user) var id: UUID?
 		
 		/// A timestamp that indicates when this location datum was originally collected.
 		@Field(key: "date") var date: Date
 		
-		/// The geospatial coordinate that's associated with this location datum.
+		/// The geospatial coordinate that’s associated with this location datum.
 		@Field(key: "coordinate") var coordinate: Coordinate
 		
 		/// The type of location datum, which indicates how it was originally collected.
@@ -37,12 +38,13 @@ final class Bus: Hashable, Model {
 		
 		init() { }
 		
-		/// Create a new location datum.
+		/// Create a location datum.
 		/// - Parameters:
-		///   - id: An identifier that's used to update location data dynamically. Location reports from the same user during the same trip should all have the same value.
+		///   - id: An identifier that’s used to update location data dynamically.
 		///   - date: A timestamp that indicates when the location datum was originally collected.
-		///   - coordinate: The geospatial coordinate that's associated with the location datum.
+		///   - coordinate: The geospatial coordinate that’s associated with the location datum.
 		///   - type: The type of location datum, which indicates how it was originally collected.
+		/// - Important: Location reports from the same user during the same trip should all have the same ID value.
 		init(id: UUID, date: Date, coordinate: Coordinate, type: LocationType) {
 			self.id = id
 			self.date = date
@@ -56,10 +58,10 @@ final class Bus: Hashable, Model {
 		
 	}
 	
-	/// A simplified representation of a `Bus` instance that's suitable for returning as a response to incoming requests.
+	/// A simplified representation of a `Bus` instance that’s suitable to return as a response to incoming requests.
 	struct Resolved: Content {
 		
-		/// The physical bus's unique identifier.
+		/// The physical bus’s unique identifier.
 		var id: Int
 		
 		/// The current resolved location of the physical bus.
@@ -69,7 +71,7 @@ final class Bus: Hashable, Model {
 	
 	static let schema = "buses"
 	
-	/// A simplified representation of this `Bus` instance that's suitable for returning as a response to incoming requests.
+	/// A simplified representation of this bus that’s suitable to return as a response to incoming requests.
 	var resolved: Resolved? {
 		get {
 			guard let id = self.id else {
@@ -82,20 +84,20 @@ final class Bus: Hashable, Model {
 		}
 	}
 	
-	/// The physical bus's unique identifier.
+	/// The physical bus’s unique identifier.
 	@ID(custom: "id", generatedBy: .user) var id: Int?
 	
 	/// The location data for this bus.
 	@Field(key: "locations") var locations: [Location]
 	
-	/// The congestion data representation for this bus.
+	/// The congestion data for this bus.
 	@OptionalField(key: "congestion") var congestion: Int?
 	
 	init() { }
 	
-	/// Create a new bus object.
+	/// Creates a bus object.
 	/// - Parameters:
-	///   - id: The physical bus's unique identifier.
+	///   - id: The physical bus’s unique identifier.
 	///   - locations: The location data for the bus.
 	init(id: Int, locations: [Location] = []) {
 		self.id = id
@@ -112,24 +114,13 @@ final class Bus: Hashable, Model {
 	
 }
 
-extension Collection where Element == Bus {
-	
-	/// Save each bus object in this collection.
-	/// - Parameter database: The database on which to save the bus objects.
-	func save(on database: Database) async throws {
-		for bus in self {
-			try await bus.save(on: database)
-		}
-	}
-	
-}
-
 extension Set where Element == Bus {
 	
-	/// Download the latest system bus data.
+	/// Downloads the latest system bus data.
 	/// - Parameters:
 	///   - application: The current application object.
-	///   - busesCallback: A callback that's given a `Set<Bus>` instance with new bus objects. Note that these bus objects will **not** contain any user-reported location or congestion data and therefore must be separately merged with any existing bus data.
+	/// - Returns: The new bus objects with the latest data.
+	/// - Important: The returned bus objects do **not** contain any user-reported location or congestion data and therefore must be separately merged with any existing bus data.
 	static func download(application: Application) async throws -> Set<Bus> {
 		let rawString = try String(contentsOf: Constants.datafeedURL)
 		let buses = rawString
@@ -171,7 +162,7 @@ extension Set where Element == Bus {
 
 extension Collection where Element == Bus.Location {
 	
-	/// The resolved location datum from the bus's GPS hardware.
+	/// The resolved location datum from the bus’s GPS hardware.
 	var systemLocation: Bus.Location? {
 		get {
 			return self.reversed().first { (location) -> Bool in
@@ -222,7 +213,7 @@ extension Array: Mergeable where Element == Bus.Location {
 	
 	/// Merge other location data into this array.
 	/// - Parameter otherLocations: The other location data to merge into this array.
-	/// - Note: This method implements a requirement in the `Mergeable` protocol.
+	/// - Remark: This method implements a requirement in the `Mergeable` protocol.
 	mutating func merge(with otherLocations: [Bus.Location]) {
 		for otherLocation in otherLocations {
 			self.removeAll { (location) in

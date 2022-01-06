@@ -7,6 +7,7 @@
 
 import Fluent
 
+/// A migration to create `Announcement` records.
 struct CreateAnnouncements: AsyncMigration {
 	
 	func prepare(on database: Database) async throws {

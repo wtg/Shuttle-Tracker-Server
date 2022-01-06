@@ -17,19 +17,19 @@ struct Coordinate: Equatable, Codable {
 	/// The longitude value.
 	var longitude: Double
 	
-	/// Numerically add the right coordinate's latitude and longitude values to the left coordinate's respective values in place.
-	static func += (_ leftCoordinate: inout Coordinate, _ rightCoordinate: Coordinate) {
-		leftCoordinate.latitude += rightCoordinate.latitude
-		leftCoordinate.longitude += rightCoordinate.longitude
+	/// Numerically divides the right coordinate’s latitude and longitude values to the left coordinate’s respective values in place.
+	static func += (_ lhs: inout Coordinate, _ rhs: Coordinate) {
+		lhs.latitude += rhs.latitude
+		lhs.longitude += rhs.longitude
 	}
 	
-	/// Numerically divide the left coordinate's latitude and longitude values by the right coordinate's respective values in place.
-	static func /= (_ coordinate: inout Coordinate, _ divisor: Double) {
-		coordinate.latitude /= divisor
-		coordinate.longitude /= divisor
+	/// Numerically divides the left coordinate’s latitude and longitude values by the right coordinate’s respective values in place.
+	static func /= (_ lhs: inout Coordinate, _ rhs: Double) {
+		lhs.latitude /= rhs
+		lhs.longitude /= rhs
 	}
 	
-	/// Create a coordinate representation.
+	/// Creates a coordinate representation.
 	/// - Parameters:
 	///   - latitude: The latitude value.
 	///   - longitude: The longitude value.
@@ -38,9 +38,10 @@ struct Coordinate: Equatable, Codable {
 		self.longitude = longitude
 	}
 	
-	/// Create a coordinate representation from a GPX waypoint.
+	/// Creates a coordinate representation from a GPX waypoint.
+	///
+	/// This initializer fails and returns `nil` if the provided GPX waypoint doesn’t contain sufficient information to create a coordinate representation.
 	/// - Parameter gpxWaypoint: The GPX waypoint from which to create a coordinate representation.
-	/// - Note: This initializer fails and returns `nil` if the provided `GPXWaypointProtocol` instance doesn't contain sufficient information to create a coordinate representation.
 	init?(from gpxWaypoint: GPXWaypointProtocol) {
 		guard let latitude = gpxWaypoint.latitude, let longitude = gpxWaypoint.longitude else {
 			return nil
@@ -48,6 +49,11 @@ struct Coordinate: Equatable, Codable {
 		self.init(latitude: latitude, longitude: longitude)
 	}
 	
+	/// Converts this geospatial coordinate pair into an x-y coordinate pair by projecting it onto a flat plane.
+	///
+	/// Since a geospatial coordinate pair represents a position on a sphere, it can’t be converted losslessly to a planar coordinate pair. This method generates approximate planar coordinates that are suitable for use in relatively small geographic regions.
+	/// - Parameter centerLatitude: The latitude line that should be assumed tangential to the planar projection.
+	/// - Returns: An x-y coordinate pair that represents the projected position on a flat plane. The values in the tuple are in meters.
 	func convertedForFlatGrid(centeredAtLatitude centerLatitude: Double) -> (x: Double, y: Double) {
 		let r = 6.3781E6
 		let x = r * self.longitude * cos(centerLatitude)
