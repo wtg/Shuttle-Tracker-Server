@@ -14,6 +14,7 @@ struct CreateBuses: AsyncMigration {
 			.id()
 			.field("locations", .array(of: .custom(Bus.Location.self)), .required)
 			.field("congestion", .int)
+			.field("direction", .string)
 			.create()
 	}
 	

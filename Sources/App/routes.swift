@@ -190,4 +190,16 @@ func routes(_ application: Application) throws {
 		try await bus.update(on: request.db)
 		return bus.congestion
 	}
+	application.get("buses", ":id", "direction") { (request) -> Bus.Direction? in
+		guard let id = request.parameters.get("id", as: Int.self) else {
+			throw Abort(.badRequest)
+		}
+		let bus = try await Bus.query(on: request.db)
+			.filter(\.$id == id)
+			.first()
+		guard let bus = bus else {
+			throw Abort(.notFound)
+		}
+		return bus.direction
+	}
 }

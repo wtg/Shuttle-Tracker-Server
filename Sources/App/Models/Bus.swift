@@ -12,6 +12,14 @@ import JSONParser
 /// A representation of a shuttle bus.
 final class Bus: Hashable, Model {
 	
+	enum Direction: String, Codable {
+		
+		case a = "a"
+		
+		case b = "b"
+		
+	}
+	
 	/// A representation of a single location datum.
 	final class Location: Equatable, Content, Fields {
 		
@@ -91,15 +99,19 @@ final class Bus: Hashable, Model {
 	/// The congestion data representation for this bus.
 	@OptionalField(key: "congestion") var congestion: Int?
 	
+	/// The direction in which this bus is currently traveling along its route.
+	@OptionalEnum(key: "direction") var direction: Direction?
+	
 	init() { }
 	
 	/// Create a new bus object.
 	/// - Parameters:
 	///   - id: The physical bus's unique identifier.
 	///   - locations: The location data for the bus.
-	init(id: Int, locations: [Location] = []) {
+	init(id: Int, locations: [Location] = [], direction: Direction? = nil) {
 		self.id = id
 		self.locations = locations
+		self.direction = direction
 	}
 	
 	static func == (_ leftBus: Bus, _ rightBus: Bus) -> Bool {
@@ -108,6 +120,22 @@ final class Bus: Hashable, Model {
 	
 	func hash(into hasher: inout Hasher) {
 		hasher.combine(self.id)
+	}
+	
+	func updateDirection(on database: Database) async throws {
+		// TODO: Handle multiple routes
+		let route = try await Route
+			.query(on: database)
+			.first()
+		
+		let recentLocations = self.locations.filter { (location) in
+			return route?.check(location: location) ?? false && location.date.timeIntervalSinceNow > -600
+		}
+		let stops = try await Stop
+			.query(on: database)
+			.all()
+		
+		// TODO: Finish calculating direction
 	}
 	
 }

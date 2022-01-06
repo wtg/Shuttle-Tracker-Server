@@ -60,6 +60,86 @@ enum CryptographyUtilities {
 	
 }
 
-extension Optional: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Wrapped: Codable { }
+public protocol HasDefaultValue: ExpressibleByNilLiteral {
+	
+	static var defaultValue: Self { get }
+	
+}
+
+extension HasDefaultValue {
+	
+	public init(nilLiteral: ()) {
+		self = .defaultValue
+	}
+	
+}
+
+extension String: HasDefaultValue {
+	
+	public static let defaultValue = ""
+	
+}
+
+extension Int: HasDefaultValue {
+	
+	public static let defaultValue = 0
+	
+}
+
+extension Float: HasDefaultValue {
+	
+	public static let defaultValue: Float = 0
+	
+}
+
+extension Double: HasDefaultValue {
+	
+	public static let defaultValue: Double = 0
+	
+}
+
+extension Optional: HasDefaultValue {
+	
+	public static var defaultValue: Wrapped? {
+		get {
+			return nil
+		}
+	}
+	
+}
+
+extension Optional: RawRepresentable where Wrapped: RawRepresentable, Wrapped.RawValue: HasDefaultValue {
+	
+	public var rawValue: Wrapped.RawValue {
+		get {
+			if self == nil {
+				return .defaultValue
+			} else {
+				return self.unsafelyUnwrapped.rawValue
+			}
+		}
+	}
+	
+	public init?(rawValue: Wrapped.RawValue) {
+		self = Wrapped(rawValue: rawValue)
+	}
+	
+}
+
+extension Optional: CustomStringConvertible where Wrapped: CustomStringConvertible {
+	
+	public var description: String {
+		get {
+			if self == nil {
+				return .defaultValue
+			} else {
+				return self.unsafelyUnwrapped.description
+			}
+		}
+	}
+	
+}
 
 extension Set: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Element: Codable { }
+
+extension Optional: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Wrapped: Codable { }
