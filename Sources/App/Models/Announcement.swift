@@ -22,6 +22,12 @@ final class Announcement: Model, Content {
 		
 	}
 	
+	struct DeletionRequest: Decodable {
+		
+		let signature: Data
+		
+	}
+	
 	static let schema = "announcements"
 	
 	@ID var id: UUID?

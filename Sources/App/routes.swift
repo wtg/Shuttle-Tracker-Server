@@ -81,11 +81,12 @@ func routes(_ application: Application) throws {
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
 		}
-		let signature = try request.content.decode(Data.self)
+		let decoder = JSONDecoder()
+		let deletionRequest = try! request.content.decode(Announcement.DeletionRequest.self, using: decoder)
 		guard let data = id.uuidString.data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
-		if try CryptographyUtilities.verify(signature: signature, of: data) {
+		if try CryptographyUtilities.verify(signature: deletionRequest.signature, of: data) {
 			try await Announcement.query(on: request.db(.psql))
 				.filter(\.$id == id)
 				.delete()
