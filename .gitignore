@@ -2,3 +2,4 @@
 /.swiftpm/xcode/package.xcworkspace/
 *.paw
 *.xcscheme
+/.build/
