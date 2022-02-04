@@ -3,3 +3,5 @@
 *.paw
 *.xcscheme
 /.build/
+.vs/
+Package.resolved
