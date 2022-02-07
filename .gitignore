@@ -1,5 +1,6 @@
 .DS_Store
 /.swiftpm/xcode/package.xcworkspace/
+/.swiftpm/xcode/xcuserdata/
 *.paw
 *.xcscheme
 /.build/
