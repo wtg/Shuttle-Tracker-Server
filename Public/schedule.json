@@ -1,0 +1,13 @@
+{
+    "start": "2022-01-23T07:00:00.000Z",
+    "end": "2022-05-6T23:45:00.000Z",
+    "content": {
+      "Monday": {"start": "7:00", "end": "23:45"},
+      "Tuesday": {"start": "07:00", "end": "23:45"},
+      "Wednesday": {"start": "07:00", "end": "23:45"},
+      "Thursday": {"start": "07:00", "end": "23:45"},
+      "Friday": {"start": "07:00", "end": "23:45"},
+      "Saturday": {"start": "09:00", "end": "23:45"},
+      "Sunday": {"start": "09:00", "end": "8:00"}
+    }
+  }
