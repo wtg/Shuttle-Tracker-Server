@@ -14,12 +14,13 @@ import FoundationNetworking
 #endif
 
 func routes(_ application: Application) throws {
+	//Fetch user agent and redirect device to the appropriate version.
 	application.get { (request) -> Response in
 		guard let agent = request.headers["User-Agent"].first else {
 			return request.redirect(to: "/web")
 		}
 		let parser = UAParser(agent: agent)
-		switch parser.os?.name?.lowercased() {
+		switch parser.os?.name?.lowercased() { //Switch version used based on user device.
 		case "ios", "mac os":
 			return request.redirect(to: "/swiftui")
 		case "android":
@@ -28,6 +29,8 @@ func routes(_ application: Application) throws {
 			return request.redirect(to: "/web")
 		}
 	}
+
+	//Collection of redirects to certain versions of the app.
 	application.get("swiftui") { (request) in
 		return request.redirect(to: "https://apps.apple.com/us/app/shuttle-tracker/id1583503452")
 	}
@@ -63,15 +66,21 @@ func routes(_ application: Application) throws {
 	application.get("testflight") { (request) in
 		return request.redirect(to: "/swiftui/beta")
 	}
+
+	//Returns the current version number of the API (unsigned int).
 	application.get("version") { (_) in
 		return Constants.apiVersion
 	}
+
+	//Get current announcements.
 	application.get("announcements") { (request) in
 		return try await Announcement
 			.query(on: request.db(.psql))
 			.all()
-	}
-	application.post("announcements") { (request) -> Announcement in
+	} 
+
+	//Posts a new announcement after verifying it.
+	application.post("announcements") { (request) -> Announcement in 
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
 		let announcement = try request.content.decode(Announcement.self, using: decoder)
@@ -85,6 +94,8 @@ func routes(_ application: Application) throws {
 			throw Abort(.forbidden)
 		}
 	}
+
+	//Deletes a given announcement after verifying it.
 	application.delete("announcements", ":id") { (request) -> String in
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
@@ -104,22 +115,31 @@ func routes(_ application: Application) throws {
 			throw Abort(.forbidden)
 		}
 	}
+
+	//Returns the URL of the datafeed.
 	application.get("datafeed") { (_) in
 		return try String(contentsOf: Constants.datafeedURL)
 	}
+
+	//Attempts to fetch and return shuttle routes.
 	application.get("routes") { (request) in
 		return try await Route
 			.query(on: request.db)
 			.all()
 	}
+
+	//Attempts to fetch and return shuttle stops.
 	application.get("stops") { (request) in
 		return try await Stop
 			.query(on: request.db)
 			.all()
 	}
+
 	application.get("stops", ":shortname") { (request) in
 		return request.redirect(to: "/", type: .temporary)
 	}
+
+	//Attempts to fetch and return shuttles.
 	application.get("buses") { (request) in
 		return try await Bus
 			.query(on: request.db)
@@ -128,9 +148,12 @@ func routes(_ application: Application) throws {
 				return bus.resolved
 			}
 	}
+	//Attempts to fetch and return all shuttles.
 	application.get("buses", "all") { (_) in
 		return Buses.shared.allBusIDs
 	}
+
+	//Attempts to fetch and return a shuttle with a given ID.
 	application.get("buses", ":id") { (request) -> Bus.Location in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
@@ -147,6 +170,8 @@ func routes(_ application: Application) throws {
 		}
 		return location
 	}
+
+	//Attempts to correct the shuttle's location.
 	application.patch("buses", ":id") { (request) -> Bus.Location? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
@@ -173,6 +198,8 @@ func routes(_ application: Application) throws {
 		try await bus.update(on: request.db)
 		return bus.locations.resolved
 	}
+
+	//Indicates that a user has boarded the shuttle with the given ID.
 	application.put("buses", ":id", "board") { (request) -> Int? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
@@ -188,6 +215,8 @@ func routes(_ application: Application) throws {
 		try await bus.update(on: request.db)
 		return bus.congestion
 	}
+
+	//Indicates that a user has left the shuttle with the given ID.
 	application.put("buses", ":id", "leave") { (request) -> Int? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)

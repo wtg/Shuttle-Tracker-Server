@@ -50,8 +50,8 @@ public func configure(_ application: Application) throws {
 			isDefault: false
 		)
 	}
-	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate())
-	application.migrations.add(CreateAnnouncements(), to: .psql)
+	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate()) //add to default database
+	application.migrations.add(CreateAnnouncements(), CreateMilestones(), to: .psql) //add to persistent database
 	application.queues.use(
 		.fluent(useSoftDeletes: false)
 	)

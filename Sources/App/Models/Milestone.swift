@@ -2,51 +2,32 @@
 //  Milestone.swift
 //  Shuttle Tracker Server
 //
-//  Jose Luchsinger - 2/8/22
+//  Created by Jose Luchsinger on 2/8/22
 //	
+//	A "trip" is defined as every time someone boards a bus and creates a new identifier,
+//  and is considered complete when that identifier stops responding after a certain period.
 
 import Vapor
 import Fluent
 
 //	Defines the "Milestone" class, which tracks certain statistics and their progress towards a certain goal.
-final class Announcement: Model, Content {
+final class Milestone: Model, Content {
 	
-	/// Different types
-	enum MilestoneType: String, Codable {
-		
-		case none = "none"
-		
-	}
-	
-	/// A representation of a signed request to delete a particular announcement from the server.
-	struct DeletionRequest: Decodable {
-		
-		/// A cryptographic signature of the unique identifier of the announcement to be deleted.
-		let signature: Data
-		
-	}
-	
-	static let schema = "announcements"
+	static let schema = "milestones"
 	
 	@ID var id: UUID?
 	
-	/// The subject text of this announcement.
-	@Field(key: "subject") var subject: String
+	// Name of the milestone.
+	@Field(key: "name") var name: String
 	
-	/// The body text of this announcement.
-	@Field(key: "body") var body: String
-	
-	/// The date/time at which this announcement should begin being shown shown to users.
-	@Field(key: "start") var start: Date
-	
-	/// The date/time at which this announcement should finish being shown to users.
-	@Field(key: "end") var end: Date
-	
-	/// A cryptographic signature of the concatenation of the ``subject`` and ``body`` properties.
-	@Field(key: "signature") var signature: Data
-	
-	/// The type of schedule that should be used by clients to display this announcement to users.
-	@Enum(key: "schedule_type") var scheduleType: ScheduleType
+	// Description of the milestone.
+	@Field(key: "description") var description: String
+
+	// Keeps track of times the milestone criteria is met.
+	@Field(key: "count") var count: Int
+
+	//Upper bounds for count. Array of ints allows multiple goals/milestone "stages".
+	@Field(key: "goal") var goal: [Int]
 	
 	init() { }
 	
