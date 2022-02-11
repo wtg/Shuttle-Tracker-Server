@@ -5,9 +5,58 @@
 //  Created by Gabriel Jacoby-Cooper on 8/27/21.
 //
 
-import Foundation
 import Vapor
 import Fluent
+import CoreGPX
+import Turf
+
+typealias Coordinate = LocationCoordinate2D
+
+extension Coordinate: Codable {
+	
+	enum CodingKeys: CodingKey {
+		
+		case latitude, longitude
+		
+	}
+	
+	/// Creates a coordinate representation from a GPX waypoint.
+	///
+	/// This initializer fails and returns `nil` if the provided GPX waypoint doesn’t contain sufficient information to create a coordinate representation.
+	/// - Parameter gpxWaypoint: The GPX waypoint from which to create a coordinate representation.
+	init?(from gpxWaypoint: GPXWaypointProtocol) {
+		guard let latitude = gpxWaypoint.latitude, let longitude = gpxWaypoint.longitude else {
+			return nil
+		}
+		self.init(latitude: latitude, longitude: longitude)
+	}
+	
+	public init(from decoder: Decoder) throws {
+		let container = try decoder.container(keyedBy: CodingKeys.self)
+		let latitude = try container.decode(Double.self, forKey: .latitude)
+		let longitude = try container.decode(Double.self, forKey: .longitude)
+		self.init(latitude: latitude, longitude: longitude)
+	}
+	
+	/// Numerically divides the right coordinate’s latitude and longitude values to the left coordinate’s respective values in place.
+	static func += (_ lhs: inout Coordinate, _ rhs: Coordinate) {
+		lhs.latitude += rhs.latitude
+		lhs.longitude += rhs.longitude
+	}
+	
+	/// Numerically divides the left coordinate’s latitude and longitude values by the right coordinate’s respective values in place.
+	static func /= (_ lhs: inout Coordinate, _ rhs: Double) {
+		lhs.latitude /= rhs
+		lhs.longitude /= rhs
+	}
+	
+	public func encode(to encoder: Encoder) throws {
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encode(self.latitude, forKey: .latitude)
+		try container.encode(self.longitude, forKey: .longitude)
+	}
+	
+}
 
 enum Constants {
 	
@@ -24,11 +73,8 @@ enum Constants {
 		}
 	}()
 	
-}
-
-enum CoordinateUtilities {
-	
-	static let centerLatitude = 42.735
+	/// The maximum perpendicular distance, in meters, away from a route at which a coordinate is considered to be “on” that route.
+	static let isOnRouteThreshold: Double = 5
 	
 }
 
