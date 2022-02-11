@@ -26,10 +26,9 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/vapor/fluent-postgres-driver.git",
-			from: "2.0.0"
+			.upToNextMajor(from: "2.2.0")
 		),
 		.package(
-			name: "QueuesFluentDriver",
 			url: "https://github.com/m-barthelemy/vapor-queues-fluent-driver.git",
 			.upToNextMajor(from: "1.0.0")
 		),
@@ -44,6 +43,10 @@ let package = Package(
 		.package(
 			url: "https://github.com/malcommac/UAParserSwift.git",
 			.upToNextMajor(from: "1.2.0")
+		),
+		.package(
+			url: "https://github.com/mapbox/turf-swift.git",
+			.upToNextMajor(from: "2.2.0")
 		)
 	],
 	targets: [
@@ -67,8 +70,12 @@ let package = Package(
 					package: "fluent-postgres-driver"
 				),
 				.product(
+					name: "Queues",
+					package: "queues"
+				),
+				.product(
 					name: "QueuesFluentDriver",
-					package: "QueuesFluentDriver"
+					package: "vapor-queues-fluent-driver"
 				),
 				.product(
 					name: "CoreGPX",
@@ -81,6 +88,10 @@ let package = Package(
 				.product(
 					name: "UAParserSwift",
 					package: "UAParserSwift"
+				),
+				.product(
+					name: "Turf",
+					package: "turf-swift"
 				)
 			]
 		),
