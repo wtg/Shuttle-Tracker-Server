@@ -16,8 +16,8 @@ struct CreateMilestones: AsyncMigration {
 			.id()
 			.field("name", .string, .required)
 			.field("description", .string, .required)
-			.field("count", Int, .required)
-			.field("goal", [Int], .required)
+			.field("count", .int, .required)
+			.field("goal", .array(of: .int), .required)
 			.create()
 	}
 	
