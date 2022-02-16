@@ -37,6 +37,10 @@ let package = Package(
 			.revision("6ef3abe863a82a3be7552734f20080749554eae1")
 		),
 		.package(
+			url: "https://github.com/Gerzer/URLSessionBackport.git",
+			.revisionItem("bc4a1ecf383a9a34f72e2d88fd18990441b9d2f1")
+		),
+		.package(
 			url: "https://github.com/Gerzer/JSONParser.git",
 			.upToNextMajor(from: "1.3.0")
 		),
@@ -47,10 +51,6 @@ let package = Package(
 		.package(
 			url: "https://github.com/mapbox/turf-swift.git",
 			.upToNextMajor(from: "2.2.0")
-		),
-		.package(
-			url: "https://github.com/mochidev/URLSessionBackport.git",
-			.upToNextMajor(from: "0.2.0")
 		)
 	],
 	targets: [
@@ -86,6 +86,10 @@ let package = Package(
 					package: "CoreGPX"
 				),
 				.product(
+					name: "URLSessionBackport",
+					package: "URLSessionBackport"
+				),
+				.product(
 					name: "JSONParser",
 					package: "JSONParser"
 				),
@@ -96,10 +100,6 @@ let package = Package(
 				.product(
 					name: "Turf",
 					package: "turf-swift"
-				),
-				.product(
-					name: "URLSessionBackport",
-					package: "URLSessionBackport"
 				)
 			]
 		),
