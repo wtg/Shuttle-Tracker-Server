@@ -9,6 +9,11 @@ import Vapor
 import Fluent
 import CoreGPX
 import Turf
+import URLSessionBackport
+
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif // canImport(FoundationNetworking)
 
 typealias Coordinate = LocationCoordinate2D
 
@@ -125,7 +130,9 @@ extension Collection where Element: Model {
 	
 }
 
-#if os(Linux)
+// MARK: Compatibility shims for Linux and Windows
+
+#if os(Linux) || os(Windows)
 extension Date {
 	
 	static var now: Date {
@@ -135,4 +142,27 @@ extension Date {
 	}
 	
 }
-#endif // os(Linux)
+
+extension URL {
+	
+	typealias AsyncBytes = URLSession.Backport.AsyncBytes
+	
+	var asyncLines: AsyncLineSequence<AsyncBytes> {
+		get async throws {
+			let (bytes, _) = try await URLSession.shared.backport.bytes(from: self)
+			return bytes.lines
+		}
+	}
+	
+}
+#else // os(Linux) || os(Windows)
+extension URL {
+	
+	var asyncLines: AsyncLineSequence<URL.AsyncBytes> {
+		get async throws {
+			return self.lines
+		}
+	}
+	
+}
+#endif // os(Linux) || os(Windows)

@@ -19,7 +19,7 @@ enum Downloaders {
 	/// - Returns: The new bus objects.
 	/// - Important: The returned bus objects will **not** contain any user-reported location or congestion data and therefore must be separately merged with any existing bus data.
 	static func getBuses(on application: Application) async throws -> some AsyncSequence {
-		let buses = Constants.datafeedURL.lines
+		return try await Constants.datafeedURL.asyncLines
 			.dropFirst()
 			.compactMap { (line) -> Bus? in
 				guard let backendIDRange = line.range(of: #"(?<=(Vehicle\sID:))\d+"#, options: [.regularExpression]) else {
@@ -59,7 +59,6 @@ enum Downloaders {
 				let location = Bus.Location(id: UUID(), date: date, coordinate: coordinate, type: .system)
 				return Bus(id: id, locations: [location])
 			}
-		return buses
 	}
 	
 }

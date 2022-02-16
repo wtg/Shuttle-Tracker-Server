@@ -47,6 +47,10 @@ let package = Package(
 		.package(
 			url: "https://github.com/mapbox/turf-swift.git",
 			.upToNextMajor(from: "2.2.0")
+		),
+		.package(
+			url: "https://github.com/mochidev/URLSessionBackport.git",
+			.upToNextMajor(from: "0.2.0")
 		)
 	],
 	targets: [
@@ -56,6 +60,10 @@ let package = Package(
 				.product(
 					name: "Vapor",
 					package: "vapor"
+				),
+				.product(
+					name: "Queues",
+					package: "queues"
 				),
 				.product(
 					name: "Fluent",
@@ -68,10 +76,6 @@ let package = Package(
 				.product(
 					name: "FluentPostgresDriver",
 					package: "fluent-postgres-driver"
-				),
-				.product(
-					name: "Queues",
-					package: "queues"
 				),
 				.product(
 					name: "QueuesFluentDriver",
@@ -92,6 +96,10 @@ let package = Package(
 				.product(
 					name: "Turf",
 					package: "turf-swift"
+				),
+				.product(
+					name: "URLSessionBackport",
+					package: "URLSessionBackport"
 				)
 			]
 		),
