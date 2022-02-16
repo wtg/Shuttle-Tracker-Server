@@ -7,10 +7,12 @@
 
 import Fluent
 
+/// A migration to create `Bus` records.
 struct CreateBuses: AsyncMigration {
 	
 	func prepare(on database: Database) async throws {
-		try await database.schema(Bus.schema)
+		try await database
+			.schema(Bus.schema)
 			.id()
 			.field("locations", .array(of: .custom(Bus.Location.self)), .required)
 			.field("congestion", .int)
@@ -18,7 +20,8 @@ struct CreateBuses: AsyncMigration {
 	}
 	
 	func revert(on database: Database) async throws {
-		try await database.schema(Bus.schema)
+		try await database
+			.schema(Bus.schema)
 			.delete()
 	}
 	

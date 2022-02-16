@@ -1,4 +1,4 @@
 # Shuttle Tracker Server
-The server for the [Renssealer campus shuttle tracker](https://github.com/wtg/Shuttle-Tracker-SwiftUI), with crowd-sourced location data
+The server for the Renssealer campus shuttle tracker, with crowd-sourced location data
 
-Download the beta today: https://testflight.apple.com/join/GsmZkfgd
+Check out Shuttle Tracker today: https://shuttletracker.app

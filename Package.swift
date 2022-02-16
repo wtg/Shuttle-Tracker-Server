@@ -14,7 +14,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/vapor/queues.git",
-			.upToNextMajor(from: "1.8.1")
+			.upToNextMajor(from: "1.8.0")
 		),
 		.package(
 			url: "https://github.com/vapor/fluent.git",
@@ -25,7 +25,10 @@ let package = Package(
 			.upToNextMajor(from: "4.0.0")
 		),
 		.package(
-			name: "QueuesFluentDriver",
+			url: "https://github.com/vapor/fluent-postgres-driver.git",
+			.upToNextMajor(from: "2.2.0")
+		),
+		.package(
 			url: "https://github.com/m-barthelemy/vapor-queues-fluent-driver.git",
 			.upToNextMajor(from: "1.0.0")
 		),
@@ -36,6 +39,14 @@ let package = Package(
 		.package(
 			url: "https://github.com/Gerzer/JSONParser.git",
 			.upToNextMajor(from: "1.3.0")
+		),
+		.package(
+			url: "https://github.com/malcommac/UAParserSwift.git",
+			.upToNextMajor(from: "1.2.0")
+		),
+		.package(
+			url: "https://github.com/mapbox/turf-swift.git",
+			.upToNextMajor(from: "2.2.0")
 		)
 	],
 	targets: [
@@ -55,8 +66,16 @@ let package = Package(
 					package: "fluent-sqlite-driver"
 				),
 				.product(
+					name: "FluentPostgresDriver",
+					package: "fluent-postgres-driver"
+				),
+				.product(
+					name: "Queues",
+					package: "queues"
+				),
+				.product(
 					name: "QueuesFluentDriver",
-					package: "QueuesFluentDriver"
+					package: "vapor-queues-fluent-driver"
 				),
 				.product(
 					name: "CoreGPX",
@@ -65,15 +84,21 @@ let package = Package(
 				.product(
 					name: "JSONParser",
 					package: "JSONParser"
+				),
+				.product(
+					name: "UAParserSwift",
+					package: "UAParserSwift"
+				),
+				.product(
+					name: "Turf",
+					package: "turf-swift"
 				)
 			]
 		),
 		.executableTarget(
 			name: "Runner",
 			dependencies: [
-				.target(
-					name: "App"
-				)
+				.target(name: "App")
 			]
 		)
 	]

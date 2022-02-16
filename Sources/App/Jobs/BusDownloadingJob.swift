@@ -20,7 +20,8 @@ struct BusDownloadingJob: AsyncScheduledJob {
 		for try await newBus in newBuses {
 			allNewBuses.insert(newBus as! Bus)
 		}
-		let buses = try await Bus.query(on: context.application.db)
+		let buses = try await Bus
+			.query(on: context.application.db)
 			.all()
 		for bus in buses {
 			if let newBus = allNewBuses.remove(bus) {
@@ -28,7 +29,7 @@ struct BusDownloadingJob: AsyncScheduledJob {
 				try await bus.update(on: context.application.db)
 			}
 		}
-		allNewBuses.save(on: context.application.db)
+		try await allNewBuses.save(on: context.application.db)
 	}
 	
 }

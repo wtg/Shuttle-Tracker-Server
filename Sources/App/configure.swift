@@ -8,26 +8,69 @@
 import NIOSSL
 import Vapor
 import FluentSQLiteDriver
+import FluentPostgresDriver
 import Queues
 import QueuesFluentDriver
 
 public func configure(_ application: Application) throws {
-	application.middleware.use(CORSMiddleware(configuration: .default()))
-	application.middleware.use(FileMiddleware(publicDirectory: application.directory.publicDirectory))
-	application.databases.use(.sqlite(), as: .sqlite)
+	application.middleware.use(
+		CORSMiddleware(
+			configuration: .default()
+		)
+	)
+	application.middleware.use(
+		FileMiddleware(
+			publicDirectory: application.directory.publicDirectory
+		)
+	)
+	application.databases.use(
+		.sqlite(),
+		as: .sqlite,
+		isDefault: true
+	)
+	if let postgresURLString = ProcessInfo.processInfo.environment["DATABASE_URL"], let postgresURL = URL(string: postgresURLString) {
+		application.databases.use(
+			try .postgres(
+				url: postgresURL
+			),
+			as: .psql,
+			isDefault: false
+		)
+	} else {
+		let postgresHostname = ProcessInfo.processInfo.environment["POSTGRES_HOSTNAME"]!
+		let postgresUsername = ProcessInfo.processInfo.environment["POSTGRES_USERNAME"]!
+		let postgresPassword = ProcessInfo.processInfo.environment["POSTGRES_PASSWORD"] ?? ""
+		application.databases.use(
+			.postgres(
+				hostname: postgresHostname,
+				username: postgresUsername,
+				password: postgresPassword
+			),
+			as: .psql,
+			isDefault: false
+		)
+	}
 	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate())
-	application.queues.use(.fluent(useSoftDeletes: false))
-	application.queues.schedule(BusDownloadingJob())
+	application.migrations.add(CreateAnnouncements(), to: .psql)
+	application.queues.use(
+		.fluent(useSoftDeletes: false)
+	)
+	application.queues
+		.schedule(BusDownloadingJob())
 		.minutely()
 		.at(0)
-	application.queues.schedule(GPXImportingJob())
+	application.queues
+		.schedule(GPXImportingJob())
 		.daily()
 		.at(.midnight)
-	application.queues.schedule(LocationRemovalJob())
+	application.queues
+		.schedule(LocationRemovalJob())
 		.everySecond()
-	application.queues.schedule(RestartJob())
+	application.queues
+		.schedule(RestartJob())
 		.at(Date() + 21600)
-	try application.autoMigrate()
+	try application
+		.autoMigrate()
 		.wait()
 	try application.queues.startInProcessJobs()
 	try application.queues.startScheduledJobs()
@@ -64,7 +107,7 @@ public func configure(_ application: Application) throws {
 			)
 		)
 	}
-	for busID in Buses.sharedInstance.allBusIDs {
+	for busID in Buses.shared.allBusIDs {
 		Task {
 			try await Bus(id: busID)
 				.save(on: application.db)

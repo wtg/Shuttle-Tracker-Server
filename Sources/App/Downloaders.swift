@@ -15,9 +15,9 @@ import FoundationNetworking
 enum Downloaders {
 	
 	/// Download the latest system bus data.
-	/// - Parameters:
-	///   - application: The current application object.
-	///   - busesCallback: A callback that's given a `Set<Bus>` instance with new bus objects. Note that these bus objects will **not** contain any user-reported location or congestion data and therefore must be separately merged with any existing bus data.
+	/// - Parameter application: The current application object.
+	/// - Returns: The new bus objects.
+	/// - Important: The returned bus objects will **not** contain any user-reported location or congestion data and therefore must be separately merged with any existing bus data.
 	static func getBuses(on application: Application) async throws -> some AsyncSequence {
 		let buses = Constants.datafeedURL.lines
 			.dropFirst()
@@ -35,7 +35,9 @@ enum Downloaders {
 					return nil
 				}
 				let backendID = String(line[backendIDRange])
-				let id = Buses.sharedInstance.busIDMap[backendID]
+				guard let id = Buses.shared.busIDMap[backendID] else {
+					return nil
+				}
 				let formatter = DateFormatter()
 				formatter.dateFormat = "HHmmss'|'MMddyyyy"
 				formatter.timeZone = TimeZone(abbreviation: "UTC")!
