@@ -38,7 +38,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/Gerzer/URLSessionBackport.git",
-			.revisionItem("bc4a1ecf383a9a34f72e2d88fd18990441b9d2f1")
+			.revisionItem("9956d22c0a7b114e6ee4690161e7756702a975d7")
 		),
 		.package(
 			url: "https://github.com/Gerzer/JSONParser.git",
