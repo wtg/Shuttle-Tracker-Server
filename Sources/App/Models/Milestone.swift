@@ -15,8 +15,9 @@ final class Milestone: Model, Content {
 	
 	static let schema = "milestones"
 	
-	@ID var id: UUID?
-	
+	//
+	@ID var id: String?
+
 	// Name of the milestone.
 	@Field(key: "name") var name: String
 	

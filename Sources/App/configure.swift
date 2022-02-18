@@ -13,7 +13,7 @@ import Queues
 import QueuesFluentDriver
 
 public func configure(_ application: Application) throws {
-	application.middleware.use(
+	application.middleware.use( 
 		CORSMiddleware(
 			configuration: .default()
 		)

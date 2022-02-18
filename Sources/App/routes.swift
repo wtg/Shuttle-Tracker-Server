@@ -72,6 +72,32 @@ func routes(_ application: Application) throws {
 		return Constants.apiVersion
 	}
 
+	//Get current milestones.
+	application.get("milestones") { (request) in
+		return try await Milestone
+			.query(on: request.db(.psql))
+			.all()
+	} 
+
+	//Increment milestone with the given id.
+	application.put("milestones", ":id") { (request) -> Int? in
+		guard let id = request.parameters.get("id", as: String.self) else { //request milestone with given id
+			throw Abort(.badRequest)
+		}
+
+		let milestone = try await Milestone //fetch milestone from database using id
+			.query(on: request.db)
+			.filter(\.$id == id)
+			.first()
+		guard let milestone = milestone else {
+			throw Abort(.notFound)
+		}
+
+		milestone.count = milestone.count + 1 //increment count
+		try await milestone.update(on: request.db) //update milestone on the database
+		return milestone.count //return the new milestone count
+	}
+
 	//Get current announcements.
 	application.get("announcements") { (request) in
 		return try await Announcement

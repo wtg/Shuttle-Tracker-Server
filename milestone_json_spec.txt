@@ -1,0 +1,14 @@
+specification for milestones API:
+
+data: name, description, current count, goals
+
+[
+	//for each milestone:
+	{
+		"id": "milestn" //short identifier
+		"name": "Milestone name" //more detailed name
+		"description": "Short description" //detail!!!
+		"count": 0 //count for current milestone
+		"goals": [1] //number of goals
+	}
+]
