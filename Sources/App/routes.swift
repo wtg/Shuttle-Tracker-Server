@@ -93,7 +93,7 @@ func routes(_ application: Application) throws {
 			throw Abort(.badRequest)
 		}
 		let decoder = JSONDecoder()
-		let deletionRequest = try! request.content.decode(Announcement.DeletionRequest.self, using: decoder)
+		let deletionRequest = try request.content.decode(Announcement.DeletionRequest.self, using: decoder)
 		guard let data = id.uuidString.data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
