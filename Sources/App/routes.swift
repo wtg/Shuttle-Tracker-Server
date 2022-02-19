@@ -67,8 +67,8 @@ func routes(_ application: Application) throws {
 		return Constants.apiVersion
 	}
 	application.get("schedule") { (request) in
-        return request.redirect(to: "../../schedule.json")
-    }
+		return request.redirect(to: "/schedule.json")
+	}
 	application.get("announcements") { (request) in
 		return try await Announcement
 			.query(on: request.db(.psql))

@@ -1,33 +1,74 @@
 {
-  "schedules" :
-  [
-    {
-      "name": "Spring 2022", 
-      "start": "2022-01-23T07:00:00.000Z",
-      "end": "2022-05-6T23:45:00.000Z",
-      "content": {
-        "Monday": {"start": "7:00", "end": "23:45"},
-        "Tuesday": {"start": "07:00", "end": "23:45"},
-        "Wednesday": {"start": "07:00", "end": "23:45"},
-        "Thursday": {"start": "07:00", "end": "23:45"},
-        "Friday": {"start": "07:00", "end": "23:45"},
-        "Saturday": {"start": "09:00", "end": "23:45"},
-        "Sunday": {"start": "09:00", "end": "8:00"}
-      }
-    },
-    {
-      "name": "Term Year", 
-      "start": "2069-04-20T07:00:00.000Z",
-      "end": "2069-04-20T23:45:00.000Z",
-      "content": {
-        "Monday": {"start": "01:00", "end": "23:00"},
-        "Tuesday": {"start": "01:00", "end": "23:00"},
-        "Wednesday": {"start": "01:00", "end": "23:00"},
-        "Thursday": {"start": "01:00", "end": "23:00"},
-        "Friday": {"start": "01:00", "end": "23:00"},
-        "Saturday": {"start": "01:00", "end": "23:00"},
-        "Sunday": {"start": "01:00", "end": "23:00"}
-      }
-    }
-  ]
+	"schedules": [
+		{
+			"name": "Spring 2022",
+			"start": "2022-01-23T07:00:00.000Z",
+			"end": "2022-05-6T23:45:00.000Z",
+			"content": {
+				"monday": {
+					"start": "7:00",
+					"end": "23:45"
+				},
+				"tuesday": {
+					"start": "07:00",
+					"end": "23:45"
+				},
+				"wednesday": {
+					"start": "07:00",
+					"end": "23:45"
+				},
+				"thursday": {
+					"start": "07:00",
+					"end": "23:45"
+				},
+				"friday": {
+					"start": "07:00",
+					"end": "23:45"
+				},
+				"saturday": {
+					"start": "09:00",
+					"end": "23:45"
+				},
+				"sunday": {
+					"start": "09:00",
+					"end": "8:00"
+				}
+			}
+		},
+		{
+			"name": "Term Year",
+			"start": "2069-04-20T07:00:00.000Z",
+			"end": "2069-04-20T23:45:00.000Z",
+			"content": {
+				"monday": {
+					"start": "01:00",
+					"end": "23:00"
+				},
+				"tuesday": {
+					"start": "01:00",
+					"end": "23:00"
+				},
+				"wednesday": {
+					"start": "01:00",
+					"end": "23:00"
+				},
+				"thursday": {
+					"start": "01:00",
+					"end": "23:00"
+				},
+				"friday": {
+					"start": "01:00",
+					"end": "23:00"
+				},
+				"saturday": {
+					"start": "01:00",
+					"end": "23:00"
+				},
+				"sunday": {
+					"start": "01:00",
+					"end": "23:00"
+				}
+			}
+		}
+	]
 }
