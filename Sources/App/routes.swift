@@ -120,28 +120,21 @@ func routes(_ application: Application) throws {
 	application.get("stops", ":shortname") { (request) in
 		return request.redirect(to: "/", type: .temporary)
 	}
-    application.get("buses") { (request) -> [Bus.Resolved] in
-        let routes = try await Route
-            .query(on: request.db)
-            .all()
-        
+	application.get("buses") { (request) -> [Bus.Resolved] in
+		let routes = try await Route
+			.query(on: request.db)
+			.all()
 		return try await Bus
 			.query(on: request.db)
 			.all()
 			.compactMap { (bus) in
 				return bus.resolved
 			}
-            .filter({ resolved in
-                var isValid = false
-                for route in routes{
-                    
-                    if route.checkIfValid(location: resolved.location) {
-                        isValid = true
-                        break
-                    }
-                }
-                return isValid
-            })
+			.filter { (resolved) in
+				return !routes.allSatisfy { (route) in
+					return !route.checkIfValid(location: resolved.location)
+				}
+			}
 	}
 	application.get("buses", "all") { (_) in
 		return Buses.shared.allBusIDs
