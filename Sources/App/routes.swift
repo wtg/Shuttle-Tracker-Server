@@ -35,7 +35,7 @@ func routes(_ application: Application) throws {
 		return request.redirect(to: "https://testflight.apple.com/join/GsmZkfgd")
 	}
 	application.get("android") { (request) in
-		return request.redirect(to: "/web")
+		return request.redirect(to: "https://play.google.com/store/apps/details?id=edu.rpi.shuttletracker")
 	}
 	application.get("android", "beta") { (request) in
 		return request.redirect(to: "https://play.google.com/store/apps/details?id=edu.rpi.shuttletracker")
