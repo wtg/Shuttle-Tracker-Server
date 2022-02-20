@@ -15,8 +15,12 @@ final class Milestone: Model, Content {
 	
 	static let schema = "milestones"
 	
-	//
-	@ID var id: String?
+	//Unique identifier, for database use only. 
+	@ID var id: UUID?
+
+	//would like to merge id and short at some point.
+	// Shorthand name of the milestone. E.g. "Number of buses boarded" -> "busBoards".
+	@Field(key: "short") var short: String
 
 	// Name of the milestone.
 	@Field(key: "name") var name: String

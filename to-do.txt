@@ -1,0 +1,34 @@
+shuttle tracker - milestones
+
+-"shuttle-trip sessions"
+	-from boarding bus (crowdsourcing starts) to leaving bus - 1 trip
+		-add 1 every time trip begins
+		-keep cache of recent identifiers
+			-increment when new id is found
+			-where is cache kept?
+				-on database
+-use for number?
+	-global counter
+	-
+-PostgreSQL
+-API endpoint
+	-client app can fetch latest milestones
+	-going on postgre database (persistent)
+	-
+	
+-difference between routes and stops?
+-clientside milestones
+
+
+-make sure that milestones has an initializer that specifies all properties
+-in prepare function in migration, create new milestone object for testing
+-on each milestone, call .save(on database)
+-create new api endpoint to increment milestone (look at bus patch request)
+
+-use http request app (curl?)
+	-post request
+	-paste in json
+	-specify localhost.../milestones as path
+	-send get request to check if code is there
+	
+-server: milestones.short does not exist

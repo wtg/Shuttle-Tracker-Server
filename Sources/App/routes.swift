@@ -79,15 +79,21 @@ func routes(_ application: Application) throws {
 			.all()
 	} 
 
+	application.post("milestones") { (request) -> Milestone? in
+		let milestone = try request.content.decode(Milestone.self)
+		try await milestone.save(on: request.db(.psql))
+		return milestone
+	}
+	
 	//Increment milestone with the given id.
-	application.put("milestones", ":id") { (request) -> Int? in
-		guard let id = request.parameters.get("id", as: String.self) else { //request milestone with given id
+	application.patch("milestones", ":short") { (request) -> String? in
+		guard let short = request.parameters.get("short", as: String.self) else { //request milestone with given short
 			throw Abort(.badRequest)
 		}
 
-		let milestone = try await Milestone //fetch milestone from database using id
+		let milestone = try await Milestone //fetch milestone from database using short
 			.query(on: request.db)
-			.filter(\.$id == id)
+			.filter(\.$short == short)
 			.first()
 		guard let milestone = milestone else {
 			throw Abort(.notFound)
@@ -95,7 +101,8 @@ func routes(_ application: Application) throws {
 
 		milestone.count = milestone.count + 1 //increment count
 		try await milestone.update(on: request.db) //update milestone on the database
-		return milestone.count //return the new milestone count
+		//return milestone.count //return the new milestone count
+		return "Successfully incremented " + milestone.name
 	}
 
 	//Get current announcements.
