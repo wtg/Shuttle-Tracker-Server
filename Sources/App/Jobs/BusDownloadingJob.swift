@@ -17,8 +17,8 @@ struct BusDownloadingJob: AsyncScheduledJob {
 	func run(context: QueueContext) async throws {
 		let newBuses = try await Downloaders.getBuses(on: context.application)
 		var allNewBuses = Set<Bus>()
-		for try await newBus in newBuses {
-			allNewBuses.insert(newBus as! Bus)
+		for newBus in newBuses {
+			allNewBuses.insert(newBus)
 		}
 		let buses = try await Bus
 			.query(on: context.application.db)

@@ -37,10 +37,6 @@ let package = Package(
 			.revision("6ef3abe863a82a3be7552734f20080749554eae1")
 		),
 		.package(
-			url: "https://github.com/Gerzer/URLSessionBackport.git",
-			.revisionItem("9956d22c0a7b114e6ee4690161e7756702a975d7")
-		),
-		.package(
 			url: "https://github.com/Gerzer/JSONParser.git",
 			.upToNextMajor(from: "1.3.0")
 		),
@@ -84,10 +80,6 @@ let package = Package(
 				.product(
 					name: "CoreGPX",
 					package: "CoreGPX"
-				),
-				.product(
-					name: "URLSessionBackport",
-					package: "URLSessionBackport"
 				),
 				.product(
 					name: "JSONParser",
