@@ -114,52 +114,6 @@ final class Bus: Hashable, Model {
 	
 }
 
-extension Set where Element == Bus {
-	
-	/// Downloads the latest system bus data.
-	/// - Parameters:
-	///   - application: The current application object.
-	/// - Returns: The new bus objects with the latest data.
-	/// - Important: The returned bus objects do **not** contain any user-reported location or congestion data and therefore must be separately merged with any existing bus data.
-	static func download(application: Application) async throws -> Set<Bus> {
-		let rawString = try String(contentsOf: Constants.datafeedURL)
-		let buses = rawString
-			.split(separator: "\r\n")
-			.dropFirst()
-			.dropLast()
-			.compactMap { (rawLine) -> Bus? in
-				guard let backendIDRange = rawLine.range(of: #"(?<=(Vehicle\sID:))\d+"#, options: [.regularExpression]) else {
-					return nil
-				}
-				guard let latitudeRange = rawLine.range(of: #"(?<=(lat:))-?\d+\.\d+"#, options: [.regularExpression]), let latitude = Double(rawLine[latitudeRange]) else {
-					return nil
-				}
-				guard let longitudeRange = rawLine.range(of: #"(?<=(lon:))-?\d+\.\d+"#, options: [.regularExpression]), let longitude = Double(rawLine[longitudeRange]) else {
-					return nil
-				}
-				guard let timeRange = rawLine.range(of: #"(?<=(time:))\d+"#, options: [.regularExpression]), let dateRange = rawLine.range(of: #"(?<=(date:))\d{8}"#, options: [.regularExpression]) else {
-					return nil
-				}
-				let backendID = String(rawLine[backendIDRange])
-				guard let id = Buses.shared.busIDMap[backendID] else {
-					return nil
-				}
-				let formatter = DateFormatter()
-				formatter.dateFormat = "HHmmss'|'MMddyyyy"
-				formatter.timeZone = TimeZone(abbreviation: "UTC")!
-				let dateString = "\(rawLine[timeRange])|\(rawLine[dateRange])"
-				guard let date = formatter.date(from: dateString) else {
-					return nil
-				}
-				let coordinate = Coordinate(latitude: latitude, longitude: longitude)
-				let location = Bus.Location(id: UUID(), date: date, coordinate: coordinate, type: .system)
-				return Bus(id: id, locations: [location])
-			}
-		return Set(buses)
-	}
-	
-}
-
 extension Collection where Element == Bus.Location {
 	
 	/// The resolved location datum from the bus’s GPS hardware.
