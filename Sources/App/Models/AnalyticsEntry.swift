@@ -46,7 +46,7 @@ final class AnalyticsEntry: Model, Content{
         let colorBlindMode: Bool
         
         //This setting is only on web
-        let darkMode: Bool?
+        let darkMode: Bool
     }
 
     init () {}

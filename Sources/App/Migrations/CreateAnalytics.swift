@@ -14,7 +14,7 @@ struct CreateAnalytics: AsyncMigration {
 		try await database
 			.schema(Analytics.schema)
 			.field("uuid", .string, .required)
-			.field("date_sent", .datetime, .required) //may change this to .datetime
+			.field("date_sent", .datetime, .required)
 			.field("platform", .string, .required)
             .field("version", .string, .required)
             .field("used_board", .bool, .required)
