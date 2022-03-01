@@ -206,4 +206,9 @@ func routes(_ application: Application) throws {
 		try await bus.update(on: request.db)
 		return bus.congestion
 	}
+	//Analytics
+	application.post("analytics"){ (request) in 
+		
+		
+	}
 }

@@ -22,7 +22,7 @@ final class AnalyticsEntry: Model, Content{
     @Field(key: "uuid") var UUID: String
 
     //Date that the analytics data was last sent for this user (ISO 8601)
-    @Field(key: "date_sent") var dateSent: String
+    @Field(key: "date_sent") var dateSent: Date
 
     //What platform the user is on (iOS/Android/Web)
     @Field(key: "platform") var platform: String
@@ -40,12 +40,13 @@ final class AnalyticsEntry: Model, Content{
     @Field(key: "times_boarded") var timesBoarded: Int
 
     //Specific user settings, if True, setting is turned on
+    @Field(key: "user_settings") var userSettings: UserSettings
     struct UserSettings: Decodable {
         //This setting is on all platforms
         let colorBlindMode: Bool
         
         //This setting is only on web
-        let darkMode: Bool
+        let darkMode: Bool?
     }
 
     init () {}
