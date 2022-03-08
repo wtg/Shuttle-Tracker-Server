@@ -19,9 +19,7 @@ struct CreateMilestones: AsyncMigration {
 			.field("description", .string, .required)
 			.field("count", .int, .required)
 			.field("goal", .array(of: .int), .required)
-			.create()
-
-			
+			.create()			
 	}
 	
 	func revert(on database: Database) async throws {

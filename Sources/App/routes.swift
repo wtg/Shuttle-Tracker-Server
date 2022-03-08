@@ -79,20 +79,20 @@ func routes(_ application: Application) throws {
 			.all()
 	} 
 
-	application.post("milestones") { (request) -> Milestone? in
+	application.post("milestones") { (request) -> Milestone in
 		let milestone = try request.content.decode(Milestone.self)
 		try await milestone.save(on: request.db(.psql))
 		return milestone
 	}
 	
-	//Increment milestone with the given id.
-	application.patch("milestones", ":short") { (request) -> String? in
+	//Increment milestone with the given short.
+	application.patch("milestones", ":short") { (request) -> String in
 		guard let short = request.parameters.get("short", as: String.self) else { //request milestone with given short
 			throw Abort(.badRequest)
 		}
 
 		let milestone = try await Milestone //fetch milestone from database using short
-			.query(on: request.db)
+			.query(on: request.db(.psql))
 			.filter(\.$short == short)
 			.first()
 		guard let milestone = milestone else {
@@ -100,10 +100,29 @@ func routes(_ application: Application) throws {
 		}
 
 		milestone.count = milestone.count + 1 //increment count
-		try await milestone.update(on: request.db) //update milestone on the database
+		try await milestone.update(on: request.db(.psql)) //update milestone on the database
 		//return milestone.count //return the new milestone count
-		return "Successfully incremented " + milestone.name
+		return "Successfully incremented " + milestone.name + "\n"
 	}
+
+	//Delete a given milestone
+	/* swift is cruel and unfeeling and refuses to accept this code
+	application.delete("milestones", ":short") { (request) -> String in
+		guard let short = request.parameters.get("short", as: String.self) else { //request milestone with given short
+			throw Abort(.badRequest)
+		}
+
+		let milestone = try await Milestone //fetch milestone from database using short
+			.query(on: request.db(.psql))
+			.filter(\.$short == short)
+			.delete()
+		else {
+			throw Abort(.notFound)
+		}
+
+		return "Successfully deleted milestone " + short + "\n"
+	}
+	*/
 
 	//Get current announcements.
 	application.get("announcements") { (request) in

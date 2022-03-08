@@ -44,7 +44,12 @@ public func configure(_ application: Application) throws {
 			.postgres(
 				hostname: postgresHostname,
 				username: postgresUsername,
-				password: postgresPassword
+				password: postgresPassword,
+				// to-do: make new database as part of setup.
+				// leaving it as default here for the sake of compatibility,
+				// but milestones (and likely any other persistent values)
+				// need to be put into a non-default and unprotected (read: nukable) database.
+				// database: "shuttletracker" 
 			),
 			as: .psql,
 			isDefault: false
