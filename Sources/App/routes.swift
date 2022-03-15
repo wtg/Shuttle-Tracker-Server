@@ -38,7 +38,7 @@ func routes(_ application: Application) throws {
 		return request.redirect(to: "https://testflight.apple.com/join/GsmZkfgd")
 	}
 	application.get("android") { (request) in
-		return request.redirect(to: "/web")
+		return request.redirect(to: "https://play.google.com/store/apps/details?id=edu.rpi.shuttletracker")
 	}
 	application.get("android", "beta") { (request) in
 		return request.redirect(to: "https://play.google.com/store/apps/details?id=edu.rpi.shuttletracker")
@@ -70,6 +70,10 @@ func routes(_ application: Application) throws {
 	// Return the current version number of the API
 	application.get("version") { (_) in
 		return Constants.apiVersion
+	}
+	
+	application.get("schedule") { (request) in
+		return request.redirect(to: "/schedule.json")
 	}
 	
 	// Get the current milestones
@@ -149,7 +153,7 @@ func routes(_ application: Application) throws {
 			throw Abort(.badRequest)
 		}
 		let decoder = JSONDecoder()
-		let deletionRequest = try! request.content.decode(Announcement.DeletionRequest.self, using: decoder)
+		let deletionRequest = try request.content.decode(Announcement.DeletionRequest.self, using: decoder)
 		guard let data = id.uuidString.data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
