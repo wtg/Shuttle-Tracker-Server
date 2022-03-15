@@ -2,7 +2,7 @@
 //  Milestone.swift
 //  Shuttle Tracker Server
 //
-//  Created by Jose Luchsinger on 2/8/22
+//  Created by Jose Luchsinger on 2/8/22.
 //
 
 import Vapor

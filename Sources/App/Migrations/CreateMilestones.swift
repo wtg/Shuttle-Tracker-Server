@@ -2,7 +2,7 @@
 //  CreateMilestones.swift
 //  Shuttle Tracker Server
 //
-//  Jose Luchsinger
+//  Created by Jose Luchsinger on 2/11/22.
 //
 
 import Fluent
