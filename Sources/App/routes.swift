@@ -207,9 +207,11 @@ func routes(_ application: Application) throws {
 		return bus.congestion
 	}
 	//Analytics
-	application.post("analytics"){ (request) -> AnalyticsEntry in 
+	application.post("analyticsentries"){ (request) -> AnalyticsEntry in 
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
-		
+		let analyticsEntry = try request.content.decode(AnalyticsEntry.self, using: decoder)
+		try await analyticsEntry.save(on: request.db)
+		return analyticsEntry
 	}
 }

@@ -44,14 +44,15 @@ public func configure(_ application: Application) throws {
 			.postgres(
 				hostname: postgresHostname,
 				username: postgresUsername,
-				password: postgresPassword
+				password: postgresPassword,
+				database : "analyticsentries"
 			),
 			as: .psql,
 			isDefault: false
 		)
 	}
 	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate())
-	application.migrations.add(CreateAnnouncements(), to: .psql)
+	application.migrations.add(CreateAnnouncements(), CreateAnalytics(), to: .psql)
 	application.queues.use(
 		.fluent(useSoftDeletes: false)
 	)

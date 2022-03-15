@@ -5,21 +5,20 @@
 //  Created by Mahi Pasarkar on 2/18/2022.
 //
 
-//For more information read these documents:
-//Analytics Blueprint: https://docs.google.com/document/d/1fPYbemSem0jyjARmP1f_-OFf8ygnclxX1s0tsAg0gEs/edit
-//Sample JSON: https://docs.google.com/document/d/1SEF9Xt4keHo5Tf5Zy99QhsIYF3lD7z4PwLg7eZoHdAU/edit
-//Server-side Handling: https://docs.google.com/document/d/1wyaDWdDawTB-A_AH0PsizAaZ4cDAjgV0iYDRSpuifyM/edit
+//For more information read the wiki: https://github.com/wtg/Shuttle-Tracker-Server/wiki/Analytics
 
 import Vapor
 import Fluent
 import Foundation
 
-final class AnalyticsEntry: Model, Content{
+final class AnalyticsEntry: Model, Content {
 
     static let schema = "analyticsentries"
 
+    @ID var id: UUID?
+
     //UUID of user
-    @Field(key: "uuid") var UUID: String
+    @Field(key: "user_id") var userID: String
 
     //Date that the analytics data was last sent for this user (ISO 8601)
     @Field(key: "date_sent") var dateSent: Date
@@ -39,15 +38,15 @@ final class AnalyticsEntry: Model, Content{
     //Number of times user has used Board Bus per month. Will be reset every month
     @Field(key: "times_boarded") var timesBoarded: Int
 
-    //Specific user settings, if True, setting is turned on
-    @Field(key: "user_settings") var userSettings: UserSettings
-    struct UserSettings: Decodable {
+    struct UserSettings: Codable {
         //This setting is on all platforms
-        let colorBlindMode: Bool
+        let colorBlindMode: Bool?
         
         //This setting is only on web
-        let darkMode: Bool
+        let darkMode: Bool?
     }
+    //Specific user settings, if True, setting is turned on
+    @Field(key: "user_settings") var userSettings: UserSettings
 
     init () {}
 }
