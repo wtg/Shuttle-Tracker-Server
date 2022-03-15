@@ -40,6 +40,9 @@ public func configure(_ application: Application) throws {
 		let postgresHostname = ProcessInfo.processInfo.environment["POSTGRES_HOSTNAME"]!
 		let postgresUsername = ProcessInfo.processInfo.environment["POSTGRES_USERNAME"]!
 		let postgresPassword = ProcessInfo.processInfo.environment["POSTGRES_PASSWORD"] ?? ""
+		
+		// TODO: Make a new database during the setup process
+		// For now, we‘re using the defaul PostgreSQL database for deployment compatibility reasons, but we should in the future switch to a non-default, unprotected database.
 		application.databases.use(
 			.postgres(
 				hostname: postgresHostname,
@@ -50,8 +53,8 @@ public func configure(_ application: Application) throws {
 			isDefault: false
 		)
 	}
-	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate())
-	application.migrations.add(CreateAnnouncements(), to: .psql)
+	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate()) // Add to the default database
+	application.migrations.add(CreateAnnouncements(), CreateMilestones(), to: .psql) // Add to the persistent database
 	application.queues.use(
 		.fluent(useSoftDeletes: false)
 	)

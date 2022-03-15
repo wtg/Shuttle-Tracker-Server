@@ -1,0 +1,37 @@
+[
+	{
+		"name": "Spring 2022",
+		"start": "2022-01-23T07:00:00Z",
+		"end": "2022-05-6T23:45:00Z",
+		"content": {
+			"monday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"tuesday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"wednesday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"thursday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"friday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"saturday": {
+				"start": "9:00 AM",
+				"end": "11:45 PM"
+			},
+			"sunday": {
+				"start": "9:00 AM",
+				"end": "8:00 PM"
+			}
+		}
+	}
+]

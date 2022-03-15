@@ -52,7 +52,7 @@ final class Announcement: Model, Content {
 	/// The date/time at which this announcement should finish being shown to users.
 	@Field(key: "end") var end: Date
 	
-	/// A cryptographic signature of the concatenation of the ``subject`` and ``body`` properties.
+	/// A cryptographic signature of the concatenation of the `subject` and `body` properties.
 	@Field(key: "signature") var signature: Data
 	
 	/// The type of schedule that should be used by clients to display this announcement to users.

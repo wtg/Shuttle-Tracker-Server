@@ -47,6 +47,10 @@
 	<wpt lat="42.728698" lon="-73.675927">
 		<name>The Armory</name>
 	</wpt>
+	<wpt lat="42.725828" lon="-73.678490">
+		<time>2022-02-19T00:04:36Z</time>
+		<name>Tibbits Avenue</name>
+	</wpt>
 	<rte>
 		<name>Route</name>
 		<rtept lat="42.730777" lon="-73.677212">
