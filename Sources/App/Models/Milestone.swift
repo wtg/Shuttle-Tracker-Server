@@ -3,35 +3,40 @@
 //  Shuttle Tracker Server
 //
 //  Created by Jose Luchsinger on 2/8/22
-//	
-//	A "trip" is defined as every time someone boards a bus and creates a new identifier,
-//  and is considered complete when that identifier stops responding after a certain period.
+//
 
 import Vapor
 import Fluent
 
-//	Defines the "Milestone" class, which tracks certain statistics and their progress towards a certain goal.
+// A new “trip” is created every time someone boards a bus and creates a new identifier and is considered to be complete when that identifier stops responding after a certain period.
+
+/// A representation of a milestone for the Community Milestones feature, which tracks various statistics and their progress towards a specific goal.
 final class Milestone: Model, Content {
 	
 	static let schema = "milestones"
 	
-	//Unique identifier, for database use only. 
+	/// A unique identifier that’s used by the database.
 	@ID var id: UUID?
 
-	//would like to merge id and short at some point.
-	// Shorthand name of the milestone. E.g. "Number of buses boarded" -> "busBoards".
+	// TODO: Merge with the database identifier
+	/// The shorthand name of this milestone.
+	///
+	/// For example, the shorthand name of a milestone that tracks the number of times that any bus has been boarded might be set to `"boardBusCount"`.
 	@Field(key: "short") var short: String
 
-	// Name of the milestone.
+	/// The full name of this milestone.
 	@Field(key: "name") var name: String
 	
-	// Description of the milestone.
+	/// A human-readable description of this milestone.
 	@Field(key: "description") var description: String
 
-	// Keeps track of times the milestone criteria is met.
+	/// The number of times that this milestone’s incrementation criterium has been met.
 	@Field(key: "count") var count: Int
 
-	//Upper bounds for count. Array of ints allows multiple goals/milestone "stages".
+	/// The goals for this milestone.
+	///
+	/// A single milestone might contain multiple goals, each of which would be represented by a single element in the array.
+	/// - Important: The array might not always be sorted.
 	@Field(key: "goal") var goal: [Int]
 	
 	init() { }

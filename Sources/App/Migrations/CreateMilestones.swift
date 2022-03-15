@@ -7,7 +7,7 @@
 
 import Fluent
 
-/// Creates milestone records on server setup.
+/// A migration to create `Milestone` records.
 struct CreateMilestones: AsyncMigration {
 	
 	func prepare(on database: Database) async throws {

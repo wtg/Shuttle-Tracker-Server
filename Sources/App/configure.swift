@@ -40,16 +40,14 @@ public func configure(_ application: Application) throws {
 		let postgresHostname = ProcessInfo.processInfo.environment["POSTGRES_HOSTNAME"]!
 		let postgresUsername = ProcessInfo.processInfo.environment["POSTGRES_USERNAME"]!
 		let postgresPassword = ProcessInfo.processInfo.environment["POSTGRES_PASSWORD"] ?? ""
+		
+		// TODO: Make a new database during the setup process
+		// For now, we‘re using the defaul PostgreSQL database for deployment compatibility reasons, but we should in the future switch to a non-default, unprotected database.
 		application.databases.use(
 			.postgres(
 				hostname: postgresHostname,
 				username: postgresUsername,
-				password: postgresPassword,
-				// to-do: make new database as part of setup.
-				// leaving it as default here for the sake of compatibility,
-				// but milestones (and likely any other persistent values)
-				// need to be put into a non-default and unprotected (read: nukable) database.
-				// database: "shuttletracker" 
+				password: postgresPassword
 			),
 			as: .psql,
 			isDefault: false

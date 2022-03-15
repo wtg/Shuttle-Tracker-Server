@@ -14,13 +14,13 @@ import FoundationNetworking
 #endif
 
 func routes(_ application: Application) throws {
-	//Fetch user agent and redirect device to the appropriate version.
+	// Fetch the user-agent string and redirect the user to the appropriate app distribution
 	application.get { (request) -> Response in
 		guard let agent = request.headers["User-Agent"].first else {
 			return request.redirect(to: "/web")
 		}
 		let parser = UAParser(agent: agent)
-		switch parser.os?.name?.lowercased() { //Switch version used based on user device.
+		switch parser.os?.name?.lowercased() { // Switch on the user’s OS based on their user-agent string
 		case "ios", "mac os":
 			return request.redirect(to: "/swiftui")
 		case "android":
@@ -29,8 +29,8 @@ func routes(_ application: Application) throws {
 			return request.redirect(to: "/web")
 		}
 	}
-
-	//Collection of redirects to certain versions of the app.
+	
+	// Various redirects to certain distributions of the app
 	application.get("swiftui") { (request) in
 		return request.redirect(to: "https://apps.apple.com/us/app/shuttle-tracker/id1583503452")
 	}
@@ -66,52 +66,49 @@ func routes(_ application: Application) throws {
 	application.get("testflight") { (request) in
 		return request.redirect(to: "/swiftui/beta")
 	}
-
-	//Returns the current version number of the API (unsigned int).
+	
+	// Return the current version number of the API
 	application.get("version") { (_) in
 		return Constants.apiVersion
 	}
-
-	//Get current milestones.
+	
+	// Get the current milestones
 	application.get("milestones") { (request) in
 		return try await Milestone
 			.query(on: request.db(.psql))
 			.all()
 	} 
-
+	
 	application.post("milestones") { (request) -> Milestone in
 		let milestone = try request.content.decode(Milestone.self)
 		try await milestone.save(on: request.db(.psql))
 		return milestone
 	}
 	
-	//Increment milestone with the given short.
-	application.patch("milestones", ":short") { (request) -> String in
-		guard let short = request.parameters.get("short", as: String.self) else { //request milestone with given short
+	// Increment a milestone with the given shorthand name
+	application.patch("milestones", ":short") { (request) -> String in // TODO: Rename “short“ to “shortname“
+		guard let short = request.parameters.get("short", as: String.self) else { // Get the supplied shorthand name from the request URL
 			throw Abort(.badRequest)
 		}
-
-		let milestone = try await Milestone //fetch milestone from database using short
+		let milestone = try await Milestone // Fetch the first milestone from the database with the appropriate shorthand name
 			.query(on: request.db(.psql))
 			.filter(\.$short == short)
 			.first()
 		guard let milestone = milestone else {
 			throw Abort(.notFound)
 		}
-
-		milestone.count = milestone.count + 1 //increment count
-		try await milestone.update(on: request.db(.psql)) //update milestone on the database
-		//return milestone.count //return the new milestone count
-		return "Successfully incremented " + milestone.name + "\n"
+		
+		milestone.count += 1 // Increment the milestone’s counter
+		try await milestone.update(on: request.db(.psql)) // Update the milestone on the database
+		return "Successfully incremented milestone “\(milestone.name)”"
 	}
-
-	//Delete a given milestone
-	/* swift is cruel and unfeeling and refuses to accept this code
+	
+	// Delete a given milestone
+	/* Swift is cruel and unfeeling and refuses to accept this code
 	application.delete("milestones", ":short") { (request) -> String in
 		guard let short = request.parameters.get("short", as: String.self) else { //request milestone with given short
 			throw Abort(.badRequest)
 		}
-
 		let milestone = try await Milestone //fetch milestone from database using short
 			.query(on: request.db(.psql))
 			.filter(\.$short == short)
@@ -119,19 +116,18 @@ func routes(_ application: Application) throws {
 		else {
 			throw Abort(.notFound)
 		}
-
 		return "Successfully deleted milestone " + short + "\n"
 	}
 	*/
-
-	//Get current announcements.
+	
+	// Get the current announcements
 	application.get("announcements") { (request) in
 		return try await Announcement
 			.query(on: request.db(.psql))
 			.all()
-	} 
-
-	//Posts a new announcement after verifying it.
+	}
+	
+	// Post a new announcement after verifying it
 	application.post("announcements") { (request) -> Announcement in 
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
@@ -146,8 +142,8 @@ func routes(_ application: Application) throws {
 			throw Abort(.forbidden)
 		}
 	}
-
-	//Deletes a given announcement after verifying it.
+	
+	// Delete a given announcement after verifying it.
 	application.delete("announcements", ":id") { (request) -> String in
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
@@ -167,31 +163,31 @@ func routes(_ application: Application) throws {
 			throw Abort(.forbidden)
 		}
 	}
-
-	//Returns the URL of the datafeed.
+	
+	// Return the contents of the datafeed
 	application.get("datafeed") { (_) in
 		return try String(contentsOf: Constants.datafeedURL)
 	}
-
-	//Attempts to fetch and return shuttle routes.
+	
+	// Attempt to fetch and to return the shuttle routes
 	application.get("routes") { (request) in
 		return try await Route
 			.query(on: request.db)
 			.all()
 	}
-
-	//Attempts to fetch and return shuttle stops.
+	
+	// Attempt to fetch and to return the shuttle stops
 	application.get("stops") { (request) in
 		return try await Stop
 			.query(on: request.db)
 			.all()
 	}
-
+	
 	application.get("stops", ":shortname") { (request) in
 		return request.redirect(to: "/", type: .temporary)
 	}
-
-	//Attempts to fetch and return shuttles.
+	
+	// Attempt to fetch and to return the shuttle buses
 	application.get("buses") { (request) in
 		return try await Bus
 			.query(on: request.db)
@@ -200,12 +196,13 @@ func routes(_ application: Application) throws {
 				return bus.resolved
 			}
 	}
-	//Attempts to fetch and return all shuttles.
+	
+	// Attempt to fetch and to return a list of all of the known bus ID numbers
 	application.get("buses", "all") { (_) in
 		return Buses.shared.allBusIDs
 	}
-
-	//Attempts to fetch and return a shuttle with a given ID.
+	
+	// Attempt to fetch and to return a bus with a given ID number
 	application.get("buses", ":id") { (request) -> Bus.Location in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
@@ -222,8 +219,8 @@ func routes(_ application: Application) throws {
 		}
 		return location
 	}
-
-	//Attempts to correct the shuttle's location.
+	
+	// Attempt to update a bus’s location
 	application.patch("buses", ":id") { (request) -> Bus.Location? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
@@ -250,8 +247,8 @@ func routes(_ application: Application) throws {
 		try await bus.update(on: request.db)
 		return bus.locations.resolved
 	}
-
-	//Indicates that a user has boarded the shuttle with the given ID.
+	
+	// Indicates that a user has boarded the bus with the given ID number
 	application.put("buses", ":id", "board") { (request) -> Int? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
@@ -267,8 +264,8 @@ func routes(_ application: Application) throws {
 		try await bus.update(on: request.db)
 		return bus.congestion
 	}
-
-	//Indicates that a user has left the shuttle with the given ID.
+	
+	// Indicates that a user has left the bus with the given ID number
 	application.put("buses", ":id", "leave") { (request) -> Int? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
