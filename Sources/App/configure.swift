@@ -13,7 +13,7 @@ import Queues
 import QueuesFluentDriver
 
 public func configure(_ application: Application) throws {
-	application.middleware.use( 
+	application.middleware.use(
 		CORSMiddleware(
 			configuration: .default()
 		)
@@ -53,8 +53,8 @@ public func configure(_ application: Application) throws {
 			isDefault: false
 		)
 	}
-	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate()) //add to default database
-	application.migrations.add(CreateAnnouncements(), CreateMilestones(), to: .psql) //add to persistent database
+	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate()) // Add to the default database
+	application.migrations.add(CreateAnnouncements(), CreateMilestones(), to: .psql) // Add to the persistent database
 	application.queues.use(
 		.fluent(useSoftDeletes: false)
 	)

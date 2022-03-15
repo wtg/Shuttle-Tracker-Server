@@ -147,7 +147,7 @@ func routes(_ application: Application) throws {
 		}
 	}
 	
-	// Delete a given announcement after verifying it.
+	// Delete a given announcement after verifying it
 	application.delete("announcements", ":id") { (request) -> String in
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
@@ -252,7 +252,7 @@ func routes(_ application: Application) throws {
 		return bus.locations.resolved
 	}
 	
-	// Indicates that a user has boarded the bus with the given ID number
+	// Indicate that a user has boarded the bus with the given ID number
 	application.put("buses", ":id", "board") { (request) -> Int? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
@@ -269,7 +269,7 @@ func routes(_ application: Application) throws {
 		return bus.congestion
 	}
 	
-	// Indicates that a user has left the bus with the given ID number
+	// Indicate that a user has left the bus with the given ID number
 	application.put("buses", ":id", "leave") { (request) -> Int? in
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
