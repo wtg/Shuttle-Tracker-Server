@@ -10,6 +10,10 @@ import Fluent
 import CoreGPX
 import Turf
 
+#if canImport(FoundationNetworking)
+import FoundationNetworking
+#endif // canImport(FoundationNetworking)
+
 typealias Coordinate = LocationCoordinate2D
 
 extension Coordinate: Codable {
@@ -124,3 +128,17 @@ extension Collection where Element: Model {
 	}
 	
 }
+
+// MARK: Compatibility shims for Linux and Windows
+
+#if os(Linux) || os(Windows)
+extension Date {
+	
+	static var now: Date {
+		get {
+			return Date()
+		}
+	}
+	
+}
+#endif // os(Linux) || os(Windows)

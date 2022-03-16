@@ -58,6 +58,10 @@ let package = Package(
 					package: "vapor"
 				),
 				.product(
+					name: "Queues",
+					package: "queues"
+				),
+				.product(
 					name: "Fluent",
 					package: "fluent"
 				),
@@ -68,10 +72,6 @@ let package = Package(
 				.product(
 					name: "FluentPostgresDriver",
 					package: "fluent-postgres-driver"
-				),
-				.product(
-					name: "Queues",
-					package: "queues"
 				),
 				.product(
 					name: "QueuesFluentDriver",
