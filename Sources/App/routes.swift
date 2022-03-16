@@ -192,12 +192,20 @@ func routes(_ application: Application) throws {
 	}
 	
 	// Attempt to fetch and to return the shuttle buses
-	application.get("buses") { (request) in
+	application.get("buses") { (request) -> [Bus.Resolved] in
+		let routes = try await Route
+			.query(on: request.db)
+			.all()
 		return try await Bus
 			.query(on: request.db)
 			.all()
 			.compactMap { (bus) in
 				return bus.resolved
+			}
+			.filter { (resolved) in
+				return !routes.allSatisfy { (route) in
+					return !route.checkIfValid(location: resolved.location)
+				}
 			}
 	}
 	
