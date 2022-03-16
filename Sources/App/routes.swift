@@ -107,22 +107,18 @@ func routes(_ application: Application) throws {
 		return "Successfully incremented milestone “\(milestone.name)”"
 	}
 	
-	// Delete a given milestone
-	/* Swift is cruel and unfeeling and refuses to accept this code
+	//Delete a given milestone
 	application.delete("milestones", ":short") { (request) -> String in
-		guard let short = request.parameters.get("short", as: String.self) else { //request milestone with given short
-			throw Abort(.badRequest)
-		}
-		let milestone = try await Milestone //fetch milestone from database using short
-			.query(on: request.db(.psql))
-			.filter(\.$short == short)
-			.delete()
-		else {
-			throw Abort(.notFound)
-		}
-		return "Successfully deleted milestone " + short + "\n"
+	guard let short = request.parameters.get("short", as: String.self) else { //request milestone with given short
+		throw Abort(.badRequest)
 	}
-	*/
+
+	try await Milestone //fetch milestone from database using short
+		.query(on: request.db(.psql))
+		.filter(\.$short == short)
+		.delete()
+		return "Deleted milestone " + short + "\n"
+	}
 	
 	// Get the current announcements
 	application.get("announcements") { (request) in
