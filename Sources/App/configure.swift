@@ -42,12 +42,14 @@ public func configure(_ application: Application) throws {
 		let postgresPassword = ProcessInfo.processInfo.environment["POSTGRES_PASSWORD"] ?? ""
 		
 		// TODO: Make a new database during the setup process
-		// For now, we‘re using the defaul PostgreSQL database for deployment compatibility reasons, but we should in the future switch to a non-default, unprotected database.
+		// For now, we‘re using the default PostgreSQL database for deployment compatibility reasons,
+		// but we should in the future switch to a non-default, unprotected database.
 		application.databases.use(
 			.postgres(
 				hostname: postgresHostname,
 				username: postgresUsername,
-				password: postgresPassword
+				password: postgresPassword,
+				database: "shuttle_tracker" //underscore follows PostgreSQL convention
 			),
 			as: .psql,
 			isDefault: false
@@ -58,6 +60,8 @@ public func configure(_ application: Application) throws {
 	application.queues.use(
 		.fluent(useSoftDeletes: false)
 	)
+
+	//Schedule times for jobs and start them.
 	application.queues
 		.schedule(BusDownloadingJob())
 		.minutely()
@@ -77,6 +81,8 @@ public func configure(_ application: Application) throws {
 		.wait()
 	try application.queues.startInProcessJobs()
 	try application.queues.startScheduledJobs()
+
+
 	if FileManager.default.fileExists(atPath: "tls") {
 		print("TLS directory detected!")
 		try application.http.server.configuration.tlsConfiguration = .makeServerConfiguration(
