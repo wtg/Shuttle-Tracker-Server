@@ -5,67 +5,32 @@
 		"end": "2022-05-6T23:45:00Z",
 		"content": {
 			"monday": {
-				"start": "7:00",
-				"end": "23:45"
+				"start": "7:00 AM",
+				"end": "11:45 PM"
 			},
 			"tuesday": {
-				"start": "07:00",
-				"end": "23:45"
+				"start": "7:00 AM",
+				"end": "11:45 PM"
 			},
 			"wednesday": {
-				"start": "07:00",
-				"end": "23:45"
+				"start": "7:00 AM",
+				"end": "11:45 PM"
 			},
 			"thursday": {
-				"start": "07:00",
-				"end": "23:45"
+				"start": "7:00 AM",
+				"end": "11:45 PM"
 			},
 			"friday": {
-				"start": "07:00",
-				"end": "23:45"
+				"start": "7:00 AM",
+				"end": "11:45 PM"
 			},
 			"saturday": {
-				"start": "09:00",
-				"end": "23:45"
+				"start": "9:00 AM",
+				"end": "11:45 PM"
 			},
 			"sunday": {
-				"start": "09:00",
-				"end": "8:00"
-			}
-		}
-	},
-	{
-		"name": "Term Year",
-		"start": "2069-04-20T07:00:00Z",
-		"end": "2069-04-20T23:45:00Z",
-		"content": {
-			"monday": {
-				"start": "01:00",
-				"end": "23:00"
-			},
-			"tuesday": {
-				"start": "01:00",
-				"end": "23:00"
-			},
-			"wednesday": {
-				"start": "01:00",
-				"end": "23:00"
-			},
-			"thursday": {
-				"start": "01:00",
-				"end": "23:00"
-			},
-			"friday": {
-				"start": "01:00",
-				"end": "23:00"
-			},
-			"saturday": {
-				"start": "01:00",
-				"end": "23:00"
-			},
-			"sunday": {
-				"start": "01:00",
-				"end": "23:00"
+				"start": "9:00 AM",
+				"end": "8:00 PM"
 			}
 		}
 	}
