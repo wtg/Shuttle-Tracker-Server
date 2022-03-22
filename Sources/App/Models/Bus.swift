@@ -35,6 +35,8 @@ final class Bus: Hashable, Model {
 		
 		/// The type of location datum, which indicates how it was originally collected.
 		@Enum(key: "type") var type: LocationType
+
+		//Add a field for quality (float/double)
 		
 		init() { }
 		
@@ -124,9 +126,11 @@ extension Collection where Element == Bus.Location {
 			}
 		}
 	}
-	
+	/* This is where the final location is calculated
+		Edit this with quality now in mind
+	*/
 	/// The resolved location datum from user reports.
-	var userLocation: Bus.Location? {
+	var userLocation: Bus.Location? { 
 		get {
 			let userLocations = self.filter { (location) -> Bool in
 				return location.type == .user
