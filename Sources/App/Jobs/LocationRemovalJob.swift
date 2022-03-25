@@ -17,7 +17,8 @@ struct LocationRemovalJob: AsyncScheduledJob {
 		for bus in buses {
 			bus.locations
 				.filter { (location) in
-					return location.type == .user && location.date.timeIntervalSinceNow < -30
+					return location.type == .user && location.date.timeIntervalSinceNow < -20000 //change this to -30 when u push
+					//return location.type == .user && location.date.timeIntervalSinceNow < -30
 				}
 				.compactMap { (location) in
 					return bus.locations.firstIndex(of: location)

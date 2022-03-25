@@ -37,6 +37,7 @@ final class Bus: Hashable, Model {
 		@Enum(key: "type") var type: LocationType
 
 		//Add a field for quality (float/double)
+		@Field(key: "quality") var quality: Double?
 		
 		init() { }
 		
@@ -46,12 +47,14 @@ final class Bus: Hashable, Model {
 		///   - date: A timestamp that indicates when the location datum was originally collected.
 		///   - coordinate: The geospatial coordinate that’s associated with the location datum.
 		///   - type: The type of location datum, which indicates how it was originally collected.
+		///	  - quality: quality of the report, recalculated each time code makes a reference to the resolve location property
 		/// - Important: Location reports from the same user during the same trip should all have the same ID value.
-		init(id: UUID, date: Date, coordinate: Coordinate, type: LocationType) {
+		init(id: UUID, date: Date, coordinate: Coordinate, type: LocationType, quality: Double? = nil) {
 			self.id = id
 			self.date = date
 			self.coordinate = coordinate
 			self.type = type
+			self.quality = quality
 		}
 		
 		static func == (_ leftLocation: Bus.Location, _ rightLocation: Bus.Location) -> Bool {
@@ -126,7 +129,7 @@ extension Collection where Element == Bus.Location {
 			}
 		}
 	}
-	/* This is where the final location is calculated
+	/* This is where the final location is calculated--------------------------------------------------------------|
 		Edit this with quality now in mind
 	*/
 	/// The resolved location datum from user reports.
@@ -159,6 +162,7 @@ extension Collection where Element == Bus.Location {
 	}
 	
 	/// The final resolved location datum, which may or may not incorporate user-reported data.
+	// Calculate quality, this is called every time someone needs to get the value of the variable--------------------------
 	var resolved: Bus.Location? {
 		get {
 			return self.userLocation ?? self.systemLocation
