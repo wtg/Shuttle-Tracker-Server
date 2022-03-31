@@ -18,8 +18,8 @@ struct CreateAnnouncements: AsyncMigration {
 			.field("body", .string, .required)
 			.field("start", .datetime, .required)
 			.field("end", .datetime, .required)
-			.field("signature", .data, .required)
 			.field("schedule_type", .string, .required)
+			.field("signature", .data, .required)
 			.create()
 	}
 	
