@@ -84,40 +84,56 @@ func routes(_ application: Application) throws {
 	} 
 	
 	application.post("milestones") { (request) -> Milestone in
-		let milestone = try request.content.decode(Milestone.self)
-		try await milestone.save(on: request.db(.psql))
-		return milestone
+		print(request.body.string!)
+		let decoder = JSONDecoder()
+		let milestone = try request.content.decode(Milestone.self, using: decoder)
+		guard let data = (milestone.name + milestone.extendedDescription + milestone.goals.description).data(using: .utf8) else {
+			throw Abort(.internalServerError)
+		}
+		if try CryptographyUtilities.verify(signature: milestone.signature, of: data) {
+			try await milestone.save(on: request.db(.psql))
+			return milestone
+		} else {
+			throw Abort(.forbidden)
+		}
 	}
 	
-	// Increment a milestone with the given shorthand name
-	application.patch("milestones", ":short") { (request) -> String in // TODO: Rename “short“ to “shortname“
-		guard let short = request.parameters.get("short", as: String.self) else { // Get the supplied shorthand name from the request URL
+	// Increment a milestone with the given ID value
+	application.patch("milestones", ":id") { (request) -> Milestone in
+		guard let id = request.parameters.get("id", as: UUID.self) else { // Get the supplied ID value from the request URL
 			throw Abort(.badRequest)
 		}
-		let milestone = try await Milestone // Fetch the first milestone from the database with the appropriate shorthand name
+		let milestone = try await Milestone // Fetch the first milestone from the database with the appropriate ID value
 			.query(on: request.db(.psql))
-			.filter(\.$short == short)
+			.filter(\.$id == id)
 			.first()
 		guard let milestone = milestone else {
 			throw Abort(.notFound)
 		}
-		
-		milestone.count += 1 // Increment the milestone’s counter
+		milestone.progress += 1 // Increment the milestone’s counter
 		try await milestone.update(on: request.db(.psql)) // Update the milestone on the database
-		return "Successfully incremented milestone “\(milestone.name)”"
+		return milestone
 	}
 	
-	//Delete a given milestone
-	application.delete("milestones", ":short") { (request) -> String in
-	guard let short = request.parameters.get("short", as: String.self) else { //request milestone with given short
-		throw Abort(.badRequest)
-	}
-
-	try await Milestone //fetch milestone from database using short
-		.query(on: request.db(.psql))
-		.filter(\.$short == short)
-		.delete()
-		return "Deleted milestone " + short + "\n"
+	// Delete a given milestone
+	application.delete("milestones", ":id") { (request) -> String in
+		guard let id = request.parameters.get("id", as: UUID.self) else {
+			throw Abort(.badRequest)
+		}
+		let decoder = JSONDecoder()
+		let deletionRequest = try request.content.decode(Milestone.DeletionRequest.self, using: decoder)
+		guard let data = id.uuidString.data(using: .utf8) else {
+			throw Abort(.internalServerError)
+		}
+		if try CryptographyUtilities.verify(signature: deletionRequest.signature, of: data) {
+			try await Milestone
+				.query(on: request.db(.psql))
+				.filter(\.$id == id)
+				.delete()
+			return id.uuidString
+		} else {
+			throw Abort(.forbidden)
+		}
 	}
 	
 	// Get the current announcements
@@ -183,6 +199,7 @@ func routes(_ application: Application) throws {
 			.all()
 	}
 	
+	// TODO: Return something that’s actually useful
 	application.get("stops", ":shortname") { (request) in
 		return request.redirect(to: "/", type: .temporary)
 	}

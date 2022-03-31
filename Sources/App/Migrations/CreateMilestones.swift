@@ -14,12 +14,13 @@ struct CreateMilestones: AsyncMigration {
 		try await database
 			.schema(Milestone.schema)
 			.id()
-			.field("short", .string, .required)
 			.field("name", .string, .required)
-			.field("description", .string, .required)
-			.field("count", .int, .required)
-			.field("goal", .array(of: .int), .required)
-			.create()			
+			.field("extended_description", .string, .required)
+			.field("progress", .int, .required)
+			.field("progress_type", .string, .required)
+			.field("goals", .array(of: .int), .required)
+			.field("signature", .data, .required)
+			.create()
 	}
 	
 	func revert(on database: Database) async throws {

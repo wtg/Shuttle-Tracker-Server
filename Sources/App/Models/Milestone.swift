@@ -13,31 +13,41 @@ import Fluent
 /// A representation of a milestone for the Community Milestones feature, which tracks various statistics and their progress towards a specific goal.
 final class Milestone: Model, Content {
 	
+	/// A representation of a signed request to delete a particular milestone from the server.
+	struct DeletionRequest: Decodable {
+		
+		/// A cryptographic signature of the unique identifier of the milestone to be deleted.
+		let signature: Data
+		
+	}
+	
 	static let schema = "milestones"
 	
 	/// A unique identifier that’s used by the database.
 	@ID var id: UUID?
-
-	// TODO: Merge with the database identifier
-	/// The shorthand name of this milestone.
-	///
-	/// For example, the shorthand name of a milestone that tracks the number of times that any bus has been boarded might be set to `"boardBusCount"`.
-	@Field(key: "short") var short: String
-
+	
 	/// The full name of this milestone.
 	@Field(key: "name") var name: String
 	
 	/// A human-readable description of this milestone.
-	@Field(key: "description") var description: String
-
+	@Field(key: "extended_description") var extendedDescription: String
+	
 	/// The number of times that this milestone’s incrementation criterium has been met.
-	@Field(key: "count") var count: Int
-
+	@Field(key: "progress") var progress: Int
+	
+	/// A string that indicates the type of progress that this milestone tracks.
+	///
+	/// For example, the progress type of a milestone that tracks the number of times that any bus has been boarded might be set to `"BoardBusCount"`. All clients must agree on a list of acceptable values, but the server doesn’t need to care what values are, which is why this property is a string, not an enumeration.
+	@Field(key: "progress_type") var progressType: String
+	
 	/// The goals for this milestone.
 	///
 	/// A single milestone might contain multiple goals, each of which would be represented by a single element in the array.
 	/// - Important: The array might not always be sorted.
-	@Field(key: "goal") var goal: [Int]
+	@Field(key: "goals") var goals: [Int]
+	
+	/// A cryptographic signature of the concatenation of the `name` and `extendedDescription` properties as well as the string representation of the `goals` property, in that order.
+	@Field(key: "signature") var signature: Data
 	
 	init() { }
 	
