@@ -45,7 +45,7 @@ public func configure(_ application: Application) throws {
 				hostname: postgresHostname,
 				username: postgresUsername,
 				password: postgresPassword,
-				database : "analyticsentries"
+				database: "analyticsentries"
 			),
 			as: .psql,
 			isDefault: false
@@ -123,4 +123,4 @@ public func configure(_ application: Application) throws {
 			.run(context: application.queues.queue.context)
 	}
 	try routes(application)
-}
+	}

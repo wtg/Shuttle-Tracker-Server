@@ -45,8 +45,10 @@ final class AnalyticsEntry: Model, Content {
         //This setting is only on web
         let darkMode: Bool?
     }
+
     //Specific user settings, if True, setting is turned on
     @Field(key: "user_settings") var userSettings: UserSettings
+    
 
     init () {}
 }

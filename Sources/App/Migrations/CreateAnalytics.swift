@@ -14,13 +14,15 @@ struct CreateAnalytics: AsyncMigration {
 		try await database
 			.schema(AnalyticsEntry.schema)
 			.id()
+
 			.field("user_id", .string, .required)
 			.field("date_sent", .datetime, .required)
 			.field("platform", .string, .required)
             .field("version", .string, .required)
             .field("used_board", .bool, .required)
             .field("times_boarded", .int, .required)
-            .field("user_settings", .custom(AnalyticsEntry.UserSettings.self), .required)
+            .field("user_settings", .data, .required)
+
 			.create()
 	}
 	
@@ -29,7 +31,4 @@ struct CreateAnalytics: AsyncMigration {
 			.schema(AnalyticsEntry.schema)
 			.delete()
 	}
-
-
-
 }
