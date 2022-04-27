@@ -8,6 +8,7 @@ import Foundation
 class Credit{
     
     private data: [:]
+    private numUsers: Int
     
     
     init(){
@@ -16,6 +17,7 @@ class Credit{
     
     public func addUser(id: int){
         data[id] = 5
+        numUsers = numUsers + 1
     }
     
     public func search(id: int) -> Bool{
