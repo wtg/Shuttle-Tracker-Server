@@ -1,0 +1,25 @@
+{
+	"weekday.gpx": {
+		"days": [
+			"monday",
+			"tuesday",
+			"wednesday",
+			"thursday",
+			"friday"
+		],
+		"specialIntervals": [],
+		"doInvertSpecialIntervals": false
+	},
+	"weekday-testing.gpx": {
+		"days": [],
+		"specialIntervals": [],
+		"doInvertSpecialIntervals": true
+	},
+	"weekend.gpx": {
+		"days": [
+			"saturday",
+			"sunday"
+		],
+		"specialIntervals": []
+	}
+}

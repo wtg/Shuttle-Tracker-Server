@@ -15,6 +15,7 @@ struct CreateRoutes: AsyncMigration {
 			.schema(Route.schema)
 			.id()
 			.field("coordinates", .array(of: .custom(Coordinate.self)), .required)
+			.field("schedule", .dictionary, .required)
 			.create()
 	}
 	

@@ -84,7 +84,6 @@ func routes(_ application: Application) throws {
 	} 
 	
 	application.post("milestones") { (request) -> Milestone in
-		print(request.body.string!)
 		let decoder = JSONDecoder()
 		let milestone = try request.content.decode(Milestone.self, using: decoder)
 		guard let data = (milestone.name + milestone.extendedDescription + milestone.goals.description).data(using: .utf8) else {
@@ -190,6 +189,9 @@ func routes(_ application: Application) throws {
 		return try await Route
 			.query(on: request.db)
 			.all()
+			.filter { (route) in
+				return route.schedule.isActive
+			}
 	}
 	
 	// Attempt to fetch and to return the shuttle stops
@@ -197,6 +199,10 @@ func routes(_ application: Application) throws {
 		return try await Stop
 			.query(on: request.db)
 			.all()
+			.filter { (stop) in
+				return stop.schedule.isActive
+			}
+			.removingDuplicates()
 	}
 	
 	// TODO: Return something that’s actually useful
