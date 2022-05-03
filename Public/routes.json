@@ -1,5 +1,20 @@
 {
+	"old.gpx": {
+		"end": "2022-05-16T04:00:00Z",
+		"days": [
+			"monday",
+			"tuesday",
+			"wednesday",
+			"thursday",
+			"friday",
+			"saturday",
+			"sunday"
+		],
+		"specialIntervals": [],
+		"doInvertSpecialIntervals": true
+	},
 	"weekday.gpx": {
+		"start": "2022-05-16T04:00:00Z",
 		"days": [
 			"monday",
 			"tuesday",
@@ -8,18 +23,21 @@
 			"friday"
 		],
 		"specialIntervals": [],
-		"doInvertSpecialIntervals": false
-	},
-	"weekday-testing.gpx": {
-		"days": [],
-		"specialIntervals": [],
 		"doInvertSpecialIntervals": true
 	},
+	"weekday-testing.gpx": {
+		"start": "2022-05-16T04:00:00Z",
+		"days": [],
+		"specialIntervals": [],
+		"doInvertSpecialIntervals": false
+	},
 	"weekend.gpx": {
+		"start": "2022-05-16T04:00:00Z",
 		"days": [
 			"saturday",
 			"sunday"
 		],
-		"specialIntervals": []
+		"specialIntervals": [],
+		"doInvertSpecialIntervals": false
 	}
 }

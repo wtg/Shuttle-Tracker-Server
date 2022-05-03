@@ -82,7 +82,6 @@ struct GPXImportingJob: AsyncScheduledJob {
 			guard let gpx = parser?.parsedData() else {
 				return
 			}
-			print(gpx.routes.count)
 			for gpxRoute in gpx.routes {
 				try await Route(from: gpxRoute, withSchedule: schedule)
 					.save(on: context.application.db)
