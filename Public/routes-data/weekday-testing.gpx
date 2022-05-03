@@ -15,7 +15,7 @@
 		<name>West Hall</name>
 	</wpt>
 	<wpt lat="42.730952" lon="-73.678995">
-		<name><![CDATA[’87 Gymnasium]]></name>
+		<name>’87 Gymnasium</name>
 	</wpt>
 	<wpt lat="42.729276" lon="-73.673374">
 		<name>Barton Hall</name>
@@ -24,7 +24,6 @@
 		<name>East Campus Athletic Village</name>
 	</wpt>
 	<wpt lat="42.728083" lon="-73.673030">
-		<time>2022-05-02T22:41:35Z</time>
 		<name>Burdett Avenue</name>
 	</wpt>
 	<rte>
