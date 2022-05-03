@@ -62,6 +62,64 @@ extension Coordinate: Codable {
 	
 }
 
+/// A day of the week.
+enum Day: String, Codable {
+	
+	case monday, tuesday, wednesday, thursday, friday, saturday, sunday
+	
+	/// Computes the day of the week that’s associated with a given date.
+	/// - Parameter date: The date to use.
+	/// - Returns: The day of the week that’s associated with the given date, if one could be computed; otherwise, `nil`.
+	static func from(_ date: Date) -> Day? {
+		let components = Calendar.current.dateComponents([.weekday], from: date)
+		guard let weekday = components.weekday else {
+			return nil
+		}
+		switch weekday {
+		case 1:
+			return .sunday
+		case 2:
+			return .monday
+		case 3:
+			return .tuesday
+		case 4:
+			return .wednesday
+		case 5:
+			return .thursday
+		case 6:
+			return .friday
+		case 7:
+			return .saturday
+		default:
+			return nil
+		}
+	}
+	
+}
+
+extension Set where Element == Day {
+	
+	static let all: Self = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
+	
+}
+
+extension Array where Element: Equatable {
+	
+	func removingDuplicates(_ comparator: (Element, Element) throws -> Bool = (==)) rethrows -> Self {
+		var newArray: Self = []
+		for element in self {
+			let doesContainElement = try newArray.contains { (otherElement) in
+				return try comparator(element, otherElement)
+			}
+			if !doesContainElement {
+				newArray.append(element)
+			}
+		}
+		return newArray
+	}
+	
+}
+
 enum Constants {
 	
 	/// The current version number for the API.

@@ -2,7 +2,7 @@
 <gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="GPX Editor">
 	<metadata>
 		<name>Shuttle Route</name>
-		<desc>Fall 2021</desc>
+		<desc>Spring 2022</desc>
 		<bounds minlat="42.722735" minlon="-73.688580" maxlat="42.735587" maxlon="-73.663150"/>
 	</metadata>
 	<wpt lat="42.730246" lon="-73.676573">
@@ -48,7 +48,6 @@
 		<name>The Armory</name>
 	</wpt>
 	<wpt lat="42.725828" lon="-73.678490">
-		<time>2022-02-19T00:04:36Z</time>
 		<name>Tibbits Avenue</name>
 	</wpt>
 	<rte>
