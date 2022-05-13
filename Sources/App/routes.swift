@@ -257,13 +257,17 @@ func routes(_ application: Application) throws {
 			throw Abort(.badRequest)
 		}
 		let location = try request.content.decode(Bus.Location.self)
-		
-		// TODO: Handle multiple routes
 		let isValid = try await Route
 			.query(on: request.db)
-			.first()?
-			.checkIfValid(location: location) ?? false
-		
+			.all()
+			.filter { (route) in
+				return route.schedule.isActive
+			}
+			.reduce(into: false) { (partialResult, route) in
+				if route.checkIfValid(location: location) {
+					partialResult = true
+				}
+			}
 		guard isValid else {
 			throw Abort(.conflict)
 		}
