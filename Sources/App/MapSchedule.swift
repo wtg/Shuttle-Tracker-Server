@@ -23,22 +23,22 @@ struct MapSchedule: Codable {
 	}
 	
 	static let always = MapSchedule(
-		interval: DateInterval(
-			start: .distantPast,
-			end: .distantFuture
+		interval: DateUtilities.createInterval(
+			from: .distantPast,
+			to: .distantFuture
 		),
 		days: .all,
 		specialIntervals: []
 	)
 	
 	/// The normal date interval during which this schedule is active.
-	let interval: DateInterval
+	let interval: any DateIntervalProtocol
 	
 	/// The days of the week on which this schedule is active within the bounds its normal date interval.
 	let days: Set<Day>
 	
 	/// Special date intervals during which this schedule is active outside of its normal activity periods.
-	let specialIntervals: [DateInterval]
+	let specialIntervals: [any DateIntervalProtocol]
 	
 	/// Whether to invert the semantics of the special-interval array.
 	let doInvertSpecialIntervals: Bool
@@ -57,7 +57,7 @@ struct MapSchedule: Codable {
 				}
 			} else {
 				if self.interval.contains(.now) {
-					if let day = Day.from(.now) {
+					if let day = Day(from: .now) {
 						return self.days.contains(day)
 					} else {
 						return true
@@ -69,7 +69,7 @@ struct MapSchedule: Codable {
 		}
 	}
 	
-	init(interval: DateInterval, days: Set<Day>, specialIntervals: [DateInterval], doInvertSpecialIntervals: Bool = false) {
+	init(interval: any DateIntervalProtocol, days: Set<Day>, specialIntervals: [any DateIntervalProtocol], doInvertSpecialIntervals: Bool = false) {
 		self.interval = interval
 		self.days = days
 		self.specialIntervals = specialIntervals
@@ -78,18 +78,18 @@ struct MapSchedule: Codable {
 	
 	init(from decoder: Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
-		self.interval = DateInterval(
-			start: try container.decodeIfPresent(Date.self, forKey: .start) ?? .distantPast,
-			end: try container.decodeIfPresent(Date.self, forKey: .end) ?? .distantFuture
+		self.interval = DateUtilities.createInterval(
+			from: try container.decodeIfPresent(Date.self, forKey: .start) ?? .distantPast,
+			to: try container.decodeIfPresent(Date.self, forKey: .end) ?? .distantFuture
 		)
 		self.days = try container.decode(Set<Day>.self, forKey: .days)
 		var specialIntervalsContainer = try container.nestedUnkeyedContainer(forKey: .specialIntervals)
-		var specialIntervals: [DateInterval] = []
+		var specialIntervals: [any DateIntervalProtocol] = []
 		while !specialIntervalsContainer.isAtEnd {
 			let specialIntervalContainer = try specialIntervalsContainer.nestedContainer(keyedBy: CodingKeys.SpecialIntervals.self)
-			let specialInterval = DateInterval(
-				start: try specialIntervalContainer.decode(Date.self, forKey: .start),
-				end: try specialIntervalContainer.decode(Date.self, forKey: .end)
+			let specialInterval = DateUtilities.createInterval(
+				from: try specialIntervalContainer.decode(Date.self, forKey: .start),
+				to: try specialIntervalContainer.decode(Date.self, forKey: .end)
 			)
 			specialIntervals.append(specialInterval)
 		}

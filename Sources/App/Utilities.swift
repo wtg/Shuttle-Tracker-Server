@@ -42,7 +42,7 @@ extension Coordinate: Codable {
 		self.init(latitude: latitude, longitude: longitude)
 	}
 	
-	/// Numerically divides the right coordinate’s latitude and longitude values to the left coordinate’s respective values in place.
+	/// Numerically adds the right coordinate’s latitude and longitude values to the left coordinate’s respective values in place.
 	static func += (_ lhs: inout Coordinate, _ rhs: Coordinate) {
 		lhs.latitude += rhs.latitude
 		lhs.longitude += rhs.longitude
@@ -59,47 +59,6 @@ extension Coordinate: Codable {
 		try container.encode(self.latitude, forKey: .latitude)
 		try container.encode(self.longitude, forKey: .longitude)
 	}
-	
-}
-
-/// A day of the week.
-enum Day: String, Codable {
-	
-	case monday, tuesday, wednesday, thursday, friday, saturday, sunday
-	
-	/// Computes the day of the week that’s associated with a given date.
-	/// - Parameter date: The date to use.
-	/// - Returns: The day of the week that’s associated with the given date, if one could be computed; otherwise, `nil`.
-	static func from(_ date: Date) -> Day? {
-		let components = Calendar.current.dateComponents([.weekday], from: date)
-		guard let weekday = components.weekday else {
-			return nil
-		}
-		switch weekday {
-		case 1:
-			return .sunday
-		case 2:
-			return .monday
-		case 3:
-			return .tuesday
-		case 4:
-			return .wednesday
-		case 5:
-			return .thursday
-		case 6:
-			return .friday
-		case 7:
-			return .saturday
-		default:
-			return nil
-		}
-	}
-	
-}
-
-extension Set where Element == Day {
-	
-	static let all: Self = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
 	
 }
 
@@ -124,7 +83,7 @@ enum Constants {
 	
 	/// The current version number for the API.
 	///
-	/// Increment this value every time a breaking change is made to the public-facing API.
+	/// - Remark: Increment this value every time a breaking change is made to the public-facing API.
 	static let apiVersion: UInt = 1
 	
 	static let datafeedURL: URL = {
@@ -171,6 +130,8 @@ enum CryptographyUtilities {
 	
 }
 
+enum DateUtilities { }
+
 extension Optional: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Wrapped: Codable { }
 
 extension Set: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Element: Codable { }
@@ -187,7 +148,38 @@ extension Collection where Element: Model {
 	
 }
 
-// MARK: Compatibility shims for Linux and Windows
+// MARK: - Compatibility shims for Linux and Windows
+
+protocol DateIntervalProtocol {
+	
+	var start: Date { get }
+	
+	var end: Date { get }
+	
+	func contains(_ date: Date) -> Bool
+	
+}
+
+extension DateInterval: DateIntervalProtocol { }
+
+extension DateUtilities {
+	
+	/// Creates a date interval with an opaque concrete implementation.
+	///
+	/// The standard `DateInterval` structure from `Foundation` is partially broken on Linux and Windows, so this method will automatically select an appropriate concrete implementation that works properly on the target platform.
+	/// - Parameters:
+	///   - start: The start date.
+	///   - end: The end date.
+	/// - Returns: A value of some opaque type that conforms to `DateIntervalProtocol`.
+	static func createInterval(from start: Date, to end: Date) -> some DateIntervalProtocol {
+		#if os(Linux) || os(Windows)
+		return CompatibilityDateInterval(start: start, end: end)
+		#else // os(Linux) || os(Windows)
+		return DateInterval(start: start, end: end)
+		#endif // os(Linux) || os(Windows)
+	}
+	
+}
 
 #if os(Linux) || os(Windows)
 extension Date {
@@ -196,6 +188,23 @@ extension Date {
 		get {
 			return Date()
 		}
+	}
+	
+}
+
+struct CompatibilityDateInterval: DateIntervalProtocol {
+	
+	let start: Date
+	
+	let end: Date
+	
+	fileprivate init(start: Date, end: Date) {
+		self.start = start
+		self.end = end
+	}
+	
+	func contains(_ date: Date) -> Bool {
+		return date >= self.start && date <= self.end
 	}
 	
 }

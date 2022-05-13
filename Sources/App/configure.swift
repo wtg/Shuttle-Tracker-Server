@@ -30,9 +30,7 @@ public func configure(_ application: Application) async throws {
 	)
 	if let postgresURLString = ProcessInfo.processInfo.environment["DATABASE_URL"], let postgresURL = URL(string: postgresURLString) {
 		application.databases.use(
-			try .postgres(
-				url: postgresURL
-			),
+			try .postgres(url: postgresURL),
 			as: .psql,
 			isDefault: false
 		)
