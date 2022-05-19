@@ -18,17 +18,28 @@
 		"days": [
 			"monday",
 			"tuesday",
-			"wednesday",
 			"thursday",
 			"friday"
 		],
-		"specialIntervals": [],
+		"specialIntervals": [
+			{
+				"start": "2022-05-18T04:00:00Z",
+				"end": "2022-05-19T04:00:00Z"
+			}
+		],
 		"doInvertSpecialIntervals": true
 	},
 	"weekday-testing.gpx": {
 		"start": "2022-05-16T04:00:00Z",
-		"days": [],
-		"specialIntervals": [],
+		"days": [
+			"wednesday"
+		],
+		"specialIntervals": [
+			{
+				"start": "2022-05-23T04:00:00Z",
+				"end": "2022-05-24T04:00:00Z"
+			}
+		],
 		"doInvertSpecialIntervals": false
 	},
 	"weekend.gpx": {
