@@ -17,11 +17,9 @@ enum Day: String, Codable, CaseIterable {
 	/// This initializer fails and evaluates to `nil` when the day of the week that’s associated with the given date can’t be computed.
 	/// - Parameter date: The date to consider.
 	init?(from date: Date) {
-		let components = Calendar(identifier: .gregorian)
-			.dateComponents(
-				[.weekday],
-				from: date
-			)
+		var calendar = Calendar(identifier: .gregorian)
+		calendar.timeZone = TimeZone(identifier: "America/New_York")!
+		let components = calendar.dateComponents([.weekday], from: date)
 		guard let weekday = components.weekday else {
 			return nil
 		}
