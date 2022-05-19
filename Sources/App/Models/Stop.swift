@@ -32,7 +32,7 @@ final class Stop: Equatable, Model, Content {
 	///   - gpxWaypoint: The GPX waypoint from which to create a stop object.
 	///   - schedule: The schedule for when the stop will be active.
 	/// - Note: This initializer fails and returns `nil` if the provided GPX waypoint doesn’t contain sufficient information to create a stop object.
-	init?(from gpxWaypoint: GPXWaypointProtocol, withSchedule schedule: MapSchedule) {
+	init?(from gpxWaypoint: any GPXWaypointProtocol, withSchedule schedule: MapSchedule) {
 		guard let name = gpxWaypoint.name, let coordinate = Coordinate(from: gpxWaypoint) else {
 			return nil
 		}

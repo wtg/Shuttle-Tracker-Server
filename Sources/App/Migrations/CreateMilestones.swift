@@ -10,7 +10,7 @@ import Fluent
 /// A migration to create `Milestone` records.
 struct CreateMilestones: AsyncMigration {
 	
-	func prepare(on database: Database) async throws {
+	func prepare(on database: any Database) async throws {
 		try await database
 			.schema(Milestone.schema)
 			.id()
@@ -23,7 +23,7 @@ struct CreateMilestones: AsyncMigration {
 			.create()
 	}
 	
-	func revert(on database: Database) async throws {
+	func revert(on database: any Database) async throws {
 		try await database
 			.schema(Milestone.schema)
 			.delete()

@@ -14,7 +14,7 @@ struct MapSchedule: Codable {
 		
 		case start, end, days, specialIntervals, doInvertSpecialIntervals
 		
-		fileprivate enum SpecialIntervals: CodingKey {
+		enum SpecialInterval: CodingKey {
 			
 			case start, end
 			
@@ -76,7 +76,7 @@ struct MapSchedule: Codable {
 		self.doInvertSpecialIntervals = doInvertSpecialIntervals
 	}
 	
-	init(from decoder: Decoder) throws {
+	init(from decoder: any Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 		self.interval = DateUtilities.createInterval(
 			from: try container.decodeIfPresent(Date.self, forKey: .start) ?? .distantPast,
@@ -86,7 +86,7 @@ struct MapSchedule: Codable {
 		var specialIntervalsContainer = try container.nestedUnkeyedContainer(forKey: .specialIntervals)
 		var specialIntervals: [any DateIntervalProtocol] = []
 		while !specialIntervalsContainer.isAtEnd {
-			let specialIntervalContainer = try specialIntervalsContainer.nestedContainer(keyedBy: CodingKeys.SpecialIntervals.self)
+			let specialIntervalContainer = try specialIntervalsContainer.nestedContainer(keyedBy: CodingKeys.SpecialInterval.self)
 			let specialInterval = DateUtilities.createInterval(
 				from: try specialIntervalContainer.decode(Date.self, forKey: .start),
 				to: try specialIntervalContainer.decode(Date.self, forKey: .end)
@@ -97,29 +97,18 @@ struct MapSchedule: Codable {
 		self.doInvertSpecialIntervals = try container.decode(Bool.self, forKey: .doInvertSpecialIntervals)
 	}
 	
-	func encode(to encoder: Encoder) throws {
+	func encode(to encoder: any Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		try container.encode(self.interval.start, forKey: .start)
 		try container.encode(self.interval.end, forKey: .end)
 		try container.encode(self.days, forKey: .days)
 		var specialIntervalsContainer = container.nestedUnkeyedContainer(forKey: .specialIntervals)
 		for specialInterval in self.specialIntervals {
-			var specialIntervalContainer = specialIntervalsContainer.nestedContainer(keyedBy: CodingKeys.SpecialIntervals.self)
+			var specialIntervalContainer = specialIntervalsContainer.nestedContainer(keyedBy: CodingKeys.SpecialInterval.self)
 			try specialIntervalContainer.encode(specialInterval.start, forKey: .start)
 			try specialIntervalContainer.encode(specialInterval.end, forKey: .end)
 		}
 		try container.encode(self.doInvertSpecialIntervals, forKey: .doInvertSpecialIntervals)
 	}
-	
-//	static func + (_ lhs: MapSchedule, _ rhs: MapSchedule) -> MapSchedule {
-//		return MapSchedule(
-//			interval: DateInterval(
-//				start: lhs.interval.start < rhs.interval.start ? lhs.interval.start : rhs.interval.start,
-//				end: lhs.interval.end > rhs.interval.end ? lhs.interval.end : rhs.interval.end
-//			),
-//			days: lhs.days.union(rhs.days),
-//			specialIntervals: lhs.specialIntervals + rhs.specialIntervals
-//		)
-//	}
 	
 }

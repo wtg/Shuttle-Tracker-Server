@@ -28,14 +28,14 @@ extension Coordinate: Codable {
 	///
 	/// This initializer fails and returns `nil` if the provided GPX waypoint doesn’t contain sufficient information to create a coordinate representation.
 	/// - Parameter gpxWaypoint: The GPX waypoint from which to create a coordinate representation.
-	init?(from gpxWaypoint: GPXWaypointProtocol) {
+	init?(from gpxWaypoint: any GPXWaypointProtocol) {
 		guard let latitude = gpxWaypoint.latitude, let longitude = gpxWaypoint.longitude else {
 			return nil
 		}
 		self.init(latitude: latitude, longitude: longitude)
 	}
 	
-	public init(from decoder: Decoder) throws {
+	public init(from decoder: any Decoder) throws {
 		let container = try decoder.container(keyedBy: CodingKeys.self)
 		let latitude = try container.decode(Double.self, forKey: .latitude)
 		let longitude = try container.decode(Double.self, forKey: .longitude)
@@ -54,7 +54,7 @@ extension Coordinate: Codable {
 		lhs.longitude /= rhs
 	}
 	
-	public func encode(to encoder: Encoder) throws {
+	public func encode(to encoder: any Encoder) throws {
 		var container = encoder.container(keyedBy: CodingKeys.self)
 		try container.encode(self.latitude, forKey: .latitude)
 		try container.encode(self.longitude, forKey: .longitude)
@@ -140,7 +140,7 @@ extension Collection where Element: Model {
 	
 	/// Saves each model object in this collection.
 	/// - Parameter database: The database on which to save the model objects.
-	func save(on database: Database) async throws {
+	func save(on database: any Database) async throws {
 		for object in self {
 			try await object.save(on: database)
 		}
@@ -192,13 +192,13 @@ extension Date {
 	
 }
 
-struct CompatibilityDateInterval: DateIntervalProtocol {
+fileprivate struct CompatibilityDateInterval: DateIntervalProtocol {
 	
 	let start: Date
 	
 	let end: Date
 	
-	fileprivate init(start: Date, end: Date) {
+	init(start: Date, end: Date) {
 		self.start = start
 		self.end = end
 	}
