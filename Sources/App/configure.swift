@@ -110,7 +110,7 @@ public func configure(_ application: Application) async throws {
 		try await Bus(id: busID)
 			.save(on: application.db)
 	}
-	try await BusDownloadingJob()
+	try? await BusDownloadingJob()
 		.run(context: application.queues.queue.context)
 	try await GPXImportingJob()
 		.run(context: application.queues.queue.context)
