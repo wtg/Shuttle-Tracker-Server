@@ -1,4 +1,4 @@
-// swift-tools-version:5.6
+// swift-tools-version:5.7
 
 import PackageDescription
 
@@ -10,7 +10,7 @@ let package = Package(
 	dependencies: [
 		.package(
 			url: "https://github.com/vapor/vapor.git",
-			from: "4.50.0"
+			from: "4.65.0"
 		),
 		.package(
 			url: "https://github.com/vapor/queues.git",
