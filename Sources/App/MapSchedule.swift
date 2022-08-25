@@ -34,7 +34,7 @@ struct MapSchedule: Codable {
 	/// The normal date interval during which this schedule is active.
 	let interval: any DateIntervalProtocol
 	
-	/// The days of the week on which this schedule is active within the bounds its normal date interval.
+	/// The days of the week on which this schedule is active within the bounds of its normal date interval.
 	let days: Set<Day>
 	
 	/// Special date intervals during which this schedule is active outside of its normal activity periods.
