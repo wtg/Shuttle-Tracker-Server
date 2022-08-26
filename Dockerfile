@@ -1,7 +1,7 @@
 # ================================
 # Build image
 # ================================
-FROM swift:nightly-5.7-bionic as build
+FROM swift:5.6-bionic as build
 
 # Install OS updates and, if needed, sqlite3
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true \
