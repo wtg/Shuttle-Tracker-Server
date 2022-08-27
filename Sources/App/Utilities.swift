@@ -148,6 +148,29 @@ extension Collection where Element: Model {
 	
 }
 
+extension FILE: TextOutputStream {
+	
+	public mutating func write(_ string: String) {
+		fputs(string, &self)
+	}
+	
+}
+
+extension UnsafeMutablePointer: TextOutputStream where Pointee: TextOutputStream {
+	
+	public func write(_ string: String) {
+		self.pointee.write(string)
+	}
+	
+}
+
+func errorPrint(_ items: Any..., separator: String = " ", terminator: String = "\n") {
+	for item in items {
+		print(item, terminator: separator, to: &stderr)
+	}
+	print(terminator, terminator: "", to: &stderr)
+}
+
 // MARK: - Compatibility shims for Linux and Windows
 
 protocol DateIntervalProtocol {

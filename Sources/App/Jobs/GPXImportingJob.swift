@@ -43,21 +43,28 @@ struct GPXImportingJob: AsyncScheduledJob {
 			let decoder = JSONDecoder()
 			decoder.dateDecodingStrategy = .iso8601
 			let schedule: MapSchedule
-			if let routesInfoData = try? routesInfoParser.get(dataAt: routesFileURL.lastPathComponent, asCollection: [String: Any].self) {
+			do {
+				let routesInfoData = try routesInfoParser.get(dataAt: routesFileURL.lastPathComponent, asCollection: [String: Any].self)
 				schedule = try decoder.decode(MapSchedule.self, from: routesInfoData)
-			} else {
+			} catch let error {
+				errorPrint("Couldn’t decode map schedule for GPX file “\(routesFileURL.lastPathComponent)”: \(error)")
 				schedule = .always
 			}
 			let parser = GPXParser(withURL: routesFileURL)
 			guard let gpx = parser?.parsedData() else {
-				return
+				errorPrint("Couldn’t parse GPX file “\(routesFileURL.lastPathComponent)”")
+				continue
 			}
 			for gpxRoute in gpx.routes {
-				try await Route(from: gpxRoute, withSchedule: schedule)
-					.save(on: context.application.db)
-				for gpxWaypoint in gpx.waypoints {
-					try await Stop(from: gpxWaypoint, withSchedule: schedule)!
+				do {
+					try await Route(from: gpxRoute, schedule: schedule)
 						.save(on: context.application.db)
+					for gpxWaypoint in gpx.waypoints {
+						try await Stop(from: gpxWaypoint, withSchedule: schedule)!
+							.save(on: context.application.db)
+					}
+				} catch let error {
+					errorPrint("Couldn’t import GPX route from file “\(routesFileURL.lastPathComponent)”: \(error)")
 				}
 			}
 		}

@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="GPX Editor">
 	<metadata>
-		<name>Shuttle Route</name>
-		<desc>Spring 2022</desc>
+		<name>Spring ’22</name>
+		<author>
+			<name>Shuttle Tracker</name>
+		</author>
+		<copyright author="Rensselaer Center for Open Source">
+			<year>2022</year>
+		</copyright>
 		<bounds minlat="42.722735" minlon="-73.688580" maxlat="42.735587" maxlon="-73.663150"/>
 	</metadata>
 	<wpt lat="42.730246" lon="-73.676573">
