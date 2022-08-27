@@ -84,7 +84,7 @@ enum Constants {
 	/// The current version number for the API.
 	///
 	/// - Remark: Increment this value every time a breaking change is made to the public-facing API.
-	static let apiVersion: UInt = 1
+	static let apiVersion: UInt = 2
 	
 	static let datafeedURL: URL = {
 		if let itrakString = ProcessInfo.processInfo.environment["ITRAK"] {
