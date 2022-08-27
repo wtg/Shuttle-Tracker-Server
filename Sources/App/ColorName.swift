@@ -7,7 +7,7 @@
 
 enum ColorName: String, CaseIterable, Codable {
 	
-	case red, orange, yellow, green, blue, purple, pink, brown, gray
+	case red, orange, yellow, green, blue, purple, pink, gray
 	
 	static let sqlName = "ColorName"
 	
