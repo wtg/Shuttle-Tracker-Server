@@ -37,9 +37,6 @@
 	<wpt lat="42.731638" lon="-73.669710">
 		<name>B-Lot</name>
 	</wpt>
-	<wpt lat="42.731947" lon="-73.668020">
-		<name>East Campus Athletic Village</name>
-	</wpt>
 	<wpt lat="42.732719" lon="-73.665201">
 		<name>Stackwyck</name>
 	</wpt>
@@ -48,9 +45,6 @@
 	</wpt>
 	<wpt lat="42.735535" lon="-73.664404">
 		<name>RHAPS B</name>
-	</wpt>
-	<wpt lat="42.728698" lon="-73.675927">
-		<name>The Armory</name>
 	</wpt>
 	<wpt lat="42.725828" lon="-73.678490">
 		<name>Tibbits Avenue</name>
