@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="GPX Editor">
 	<metadata>
-		<name>Fall ’22 (Combined)</name>
+		<name>Fall ’22</name>
 		<author>
 			<name>Shuttle Tracker</name>
 		</author>
@@ -37,14 +37,20 @@
 	<wpt lat="42.731638" lon="-73.669710">
 		<name>B-Lot</name>
 	</wpt>
+	<wpt lat="42.731947" lon="-73.668020">
+		<name>East Campus Athletic Village</name>
+	</wpt>
 	<wpt lat="42.732719" lon="-73.665201">
 		<name>Stackwyck</name>
 	</wpt>
 	<wpt lat="42.734554" lon="-73.663474">
-		<name>Bryckwyck</name>
+		<name>Brycwyck</name>
 	</wpt>
 	<wpt lat="42.735535" lon="-73.664404">
-		<name>RHAP B</name>
+		<name>RHAPS B</name>
+	</wpt>
+	<wpt lat="42.728698" lon="-73.675927">
+		<name>The Armory</name>
 	</wpt>
 	<wpt lat="42.725828" lon="-73.678490">
 		<name>Tibbits Avenue</name>
@@ -59,7 +65,7 @@
 		<name>Colonie</name>
 	</wpt>
 	<rte>
-		<name>Combined Route</name>
+		<name>West Route</name>
 		<cmt>Blue</cmt>
 		<rtept lat="42.730777" lon="-73.677212">
 		</rtept>
@@ -234,6 +240,38 @@
 		<rtept lat="42.730428" lon="-73.676377">
 		</rtept>
 		<rtept lat="42.730505" lon="-73.676350">
+		</rtept>
+		<rtept lat="42.730606" lon="-73.676315">
+		</rtept>
+		<rtept lat="42.730606" lon="-73.676315">
+		</rtept>
+		<rtept lat="42.730676" lon="-73.676552">
+		</rtept>
+	</rte>
+	<rte>
+		<name>North Route</name>
+		<cmt>Red</cmt>
+		<rtept lat="42.730606" lon="-73.676315">
+		</rtept>
+		<rtept lat="42.730505" lon="-73.676350">
+		</rtept>
+		<rtept lat="42.730428" lon="-73.676377">
+		</rtept>
+		<rtept lat="42.730285" lon="-73.676426">
+		</rtept>
+		<rtept lat="42.730289" lon="-73.676455">
+		</rtept>
+		<rtept lat="42.730289" lon="-73.676455">
+		</rtept>
+		<rtept lat="42.730322" lon="-73.676659">
+		</rtept>
+		<rtept lat="42.730332" lon="-73.676657">
+		</rtept>
+		<rtept lat="42.730332" lon="-73.676657">
+		</rtept>
+		<rtept lat="42.730676" lon="-73.676552">
+		</rtept>
+		<rtept lat="42.730676" lon="-73.676552">
 		</rtept>
 		<rtept lat="42.730606" lon="-73.676315">
 		</rtept>
