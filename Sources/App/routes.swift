@@ -257,12 +257,13 @@ func routes(_ application: Application) throws {
 			throw Abort(.badRequest)
 		}
 		let location = try request.content.decode(Bus.Location.self)
-		let isValid = try await Route
+		let allRoutes = try await Route
 			.query(on: request.db)
 			.all()
 			.filter { (route) in
 				return route.schedule.isActive
 			}
+		let isValid = allRoutes
 			.reduce(into: false) { (partialResult, route) in
 				if route.checkIfValid(location: location) {
 					partialResult = true
@@ -279,6 +280,7 @@ func routes(_ application: Application) throws {
 			throw Abort(.notFound)
 		}
 		bus.locations.merge(with: [location])
+		bus.updateRoute(selecting: allRoutes)
 		try await bus.update(on: request.db)
 		return bus.locations.resolved
 	}

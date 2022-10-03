@@ -40,7 +40,7 @@ public func configure(_ application: Application) async throws {
 		let postgresPassword = ProcessInfo.processInfo.environment["POSTGRES_PASSWORD"] ?? ""
 		
 		// TODO: Make a new database during the setup process
-		// For now, we‘re using the default PostgreSQL database for deployment compatibility reasons, but we should in the future switch to a non-default, unprotected database.
+		// For now, we're using the default PostgreSQL database for deployment compatibility reasons, but we should in the future switch to a non-default, unprotected database.
 		application.databases.use(
 			.postgres(
 				hostname: postgresHostname,
@@ -64,9 +64,9 @@ public func configure(_ application: Application) async throws {
 		.schedule(GPXImportingJob())
 		.daily()
 		.at(.midnight)
-	application.queues
-		.schedule(LocationRemovalJob())
-		.everySecond()
+	//application.queues
+	//	.schedule(LocationRemovalJob())
+	//	.everySecond()
 	application.queues
 		.schedule(RestartJob())
 		.at(Date() + 21600)

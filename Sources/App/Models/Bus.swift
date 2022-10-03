@@ -32,7 +32,7 @@ final class Bus: Hashable, Model {
 		
 		/// The geospatial coordinate that’s associated with this location datum.
 		@Field(key: "coordinate") var coordinate: Coordinate
-		
+
 		/// The type of location datum, which indicates how it was originally collected.
 		@Enum(key: "type") var type: LocationType
 		
@@ -43,6 +43,7 @@ final class Bus: Hashable, Model {
 		///   - id: An identifier that’s used to update location data dynamically.
 		///   - date: A timestamp that indicates when the location datum was originally collected.
 		///   - coordinate: The geospatial coordinate that’s associated with the location datum.
+		///		- route: The route that the bus is taking associated with the location datum.
 		///   - type: The type of location datum, which indicates how it was originally collected.
 		/// - Important: Location reports from the same user during the same trip should all have the same ID value.
 		init(id: UUID, date: Date, coordinate: Coordinate, type: LocationType) {
@@ -90,6 +91,9 @@ final class Bus: Hashable, Model {
 	/// The location data for this bus.
 	@Field(key: "locations") var locations: [Location]
 	
+	/// The route that the bus is taking associated with the location datum.
+	@OptionalField(key: "route_UUID") var routeUUID: UUID?
+
 	/// The congestion data for this bus.
 	@OptionalField(key: "congestion") var congestion: Int?
 	
@@ -111,6 +115,61 @@ final class Bus: Hashable, Model {
 	func hash(into hasher: inout Hasher) {
 		hasher.combine(self.id)
 	}
+	// Update the Route that the bus is currently on
+	func updateRoute(selecting routes: [Route]) {		
+		// Calculate the average Coordinate across the stored location points to determine the distance of the 
+		// average direction of the bus to the nearest waypoint along a route.
+		print("fun")
+		var numCoordinates: Double = 0
+		var longitude: Double = 0
+		var latitude: Double = 0
+		for location in self.locations {
+			longitude += location.coordinate.longitude
+			latitude += location.coordinate.latitude
+			numCoordinates += 1
+		}
+		if (numCoordinates > 0){
+			longitude = longitude / numCoordinates
+			latitude = latitude / numCoordinates
+		}
+		else {
+			self.routeUUID = nil
+			return
+		}
+		let avgCoordinate = Coordinate(latitude: latitude, longitude: longitude)
+		print("cool")
+		var	minDist: Double = 9999
+		var dist: Double = 10000
+		var dist_x1: Double = -1
+		var dist_x2: Double = -1
+		var curRoute: Route? = nil
+		for route in routes {
+			for coordinate in route.coordinates {
+				dist_x1 = (coordinate.latitude-avgCoordinate.latitude)
+				dist_x2 = (coordinate.longitude-avgCoordinate.longitude)
+				dist = ((dist_x1*dist_x1) + (dist_x2*dist_x2)).squareRoot()
+				if (dist < minDist) {
+					minDist = dist
+					curRoute = route
+				}
+				else if (dist == minDist){
+					if (curRoute?.id != route.id){
+						// Two routes have overlapping points and the shuttle is therefore on an overlapping route
+						curRoute = nil
+					}
+				}
+			}
+		}
+		print("rip")
+		if (curRoute != nil){
+			self.routeUUID = curRoute?.id
+		}
+		else{
+			self.routeUUID = nil
+		}
+		print("success!")
+	}
+
 	
 }
 
@@ -178,3 +237,4 @@ extension Array: Mergeable where Element == Bus.Location {
 	}
 	
 }
+
