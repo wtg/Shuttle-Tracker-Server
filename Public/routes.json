@@ -80,7 +80,23 @@
 			"saturday",
 			"sunday"
 		],
-		"specialIntervals": [],
+		"specialIntervals": [
+			{
+				"start": "2022-10-07T04:00:00Z",
+				"end": "2022-10-09T04:00:00Z"
+			}
+		],
+		"doInvertSpecialIntervals": true
+	},
+	"fall22-combined-alumni.gpx": {
+		"start": "2022-08-24T04:00:00Z",
+		"days": [],
+		"specialIntervals": [
+			{
+				"start": "2022-10-07T04:00:00Z",
+				"end": "2022-10-09T04:00:00Z"
+			}
+		],
 		"doInvertSpecialIntervals": false
 	}
 }
