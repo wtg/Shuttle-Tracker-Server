@@ -43,7 +43,6 @@ final class Bus: Hashable, Model {
 		///   - id: An identifier that’s used to update location data dynamically.
 		///   - date: A timestamp that indicates when the location datum was originally collected.
 		///   - coordinate: The geospatial coordinate that’s associated with the location datum.
-		///		- route: The route that the bus is taking associated with the location datum.
 		///   - type: The type of location datum, which indicates how it was originally collected.
 		/// - Important: Location reports from the same user during the same trip should all have the same ID value.
 		init(id: UUID, date: Date, coordinate: Coordinate, type: LocationType) {
