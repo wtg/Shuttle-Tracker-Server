@@ -64,9 +64,9 @@ public func configure(_ application: Application) async throws {
 		.schedule(GPXImportingJob())
 		.daily()
 		.at(.midnight)
-	//application.queues
-	//	.schedule(LocationRemovalJob())
-	//	.everySecond()
+	application.queues
+		.schedule(LocationRemovalJob())
+		.everySecond()
 	application.queues
 		.schedule(RestartJob())
 		.at(Date() + 21600)
