@@ -119,7 +119,6 @@ final class Bus: Hashable, Model {
 	func updateRoute(selecting routes: [Route]) {		
 		// Calculate the average Coordinate across the stored location points to determine the distance of the 
 		// average direction of the bus to the nearest waypoint along a route.
-		print("fun")
 		var numCoordinates: Double = 0
 		var longitude: Double = 0
 		var latitude: Double = 0
@@ -134,10 +133,8 @@ final class Bus: Hashable, Model {
 		}
 		else {
 			self.routeUUID = nil
-			return
 		}
 		let avgCoordinate = Coordinate(latitude: latitude, longitude: longitude)
-		print("cool")
 		var	minDist: Double = 9999
 		var dist: Double = 10000
 		var dist_x1: Double = -1
@@ -160,14 +157,12 @@ final class Bus: Hashable, Model {
 				}
 			}
 		}
-		print("rip")
 		if (curRoute != nil){
 			self.routeUUID = curRoute?.id
 		}
 		else{
 			self.routeUUID = nil
 		}
-		print("success!")
 	}
 
 	
