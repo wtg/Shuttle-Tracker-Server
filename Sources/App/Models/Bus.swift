@@ -114,7 +114,7 @@ final class Bus: Hashable, Model {
 	func hash(into hasher: inout Hasher) {
 		hasher.combine(self.id)
 	}
-	// Update the Route that the bus is currently on
+	/// Update the Route that the bus is currently on
 	func updateRoute(selecting routes: [Route]) {		
 		// Calculate the average Coordinate across the stored location points to determine the distance of the 
 		// average direction of the bus to the nearest waypoint along a route.
@@ -126,45 +126,40 @@ final class Bus: Hashable, Model {
 			latitude += location.coordinate.latitude
 			numCoordinates += 1
 		}
-		if (numCoordinates > 0){
-			longitude = longitude / numCoordinates
-			latitude = latitude / numCoordinates
-		}
-		else {
+		if (numCoordinates == 0) {
 			self.routeUUID = nil
 		}
-		let avgCoordinate = Coordinate(latitude: latitude, longitude: longitude)
-		var	minDist: Double = 9999
-		var dist: Double = 10000
-		var dist_x1: Double = -1
-		var dist_x2: Double = -1
-		var curRoute: Route? = nil
-		for route in routes {
-			for coordinate in route.coordinates {
-				dist_x1 = (coordinate.latitude-avgCoordinate.latitude)
-				dist_x2 = (coordinate.longitude-avgCoordinate.longitude)
-				dist = ((dist_x1*dist_x1) + (dist_x2*dist_x2)).squareRoot()
-				if (dist < minDist) {
-					minDist = dist
-					curRoute = route
-				}
-				else if (dist == minDist){
-					if (curRoute?.id != route.id){
-						// Two routes have overlapping points and the shuttle is therefore on an overlapping route
-						curRoute = nil
+		else {
+			longitude = longitude / numCoordinates
+			latitude = latitude / numCoordinates
+			let avgCoordinate = Coordinate(latitude: latitude, longitude: longitude)
+			var	minDist: Double = Double.infinity
+			var curRoute: Route? = nil
+			for route in routes {
+				for coordinate in route.coordinates {
+					let dist_x1 = (coordinate.latitude-avgCoordinate.latitude)
+					let dist_x2 = (coordinate.longitude-avgCoordinate.longitude)
+					let dist = ((dist_x1*dist_x1) + (dist_x2*dist_x2)).squareRoot()
+					if (dist < minDist) {
+						minDist = dist
+						curRoute = route
+					}
+					else if (dist == minDist){
+						if (curRoute?.id != route.id){
+							// Two routes have overlapping points and the shuttle is therefore on an overlapping route
+							curRoute = nil
+						}
 					}
 				}
 			}
-		}
-		if (curRoute != nil){
-			self.routeUUID = curRoute?.id
-		}
-		else{
-			self.routeUUID = nil
+			if (curRoute != nil){
+				self.routeUUID = curRoute?.id
+			}
+			else{
+				self.routeUUID = nil
+			}
 		}
 	}
-
-	
 }
 
 extension Collection where Element == Bus.Location {
