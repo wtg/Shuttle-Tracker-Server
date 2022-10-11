@@ -35,8 +35,8 @@ final class AnalyticsEntry: Model, Content {
     //Whether user has ever used the Board Bus
     @Field(key: "used_board") var usedBoard: Bool
 
-    //Array of number of times user has used Board Bus per month. Starts at 0 each month
-    @Field(key: "times_boarded") var timesBoarded: [Int]
+    //Number of times user has used Board Bus per month. Will be reset every month
+    @Field(key: "times_boarded") var timesBoarded: Int
 
     struct UserSettings: Codable {
         //This setting is on all platforms

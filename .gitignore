@@ -5,5 +5,4 @@
 *.xcscheme
 /.build/
 .vs/
-/.vscode/
 Package.resolved
