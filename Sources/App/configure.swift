@@ -45,7 +45,7 @@ public func configure(_ application: Application) throws {
 				hostname: postgresHostname,
 				username: postgresUsername,
 				password: postgresPassword,
-				database: "analyticsentries"
+				database: "shuttle_tracker"
 			),
 			as: .psql,
 			isDefault: false
