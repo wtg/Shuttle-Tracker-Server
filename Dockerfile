@@ -39,7 +39,7 @@ RUN mv /build/Public ./Public && chmod -R a-w ./Public
 # ================================
 # Run image
 # ================================
-FROM swift:5.6-bionic-slim
+FROM swift:5.7-bionic-slim
 
 # Make sure all system packages are up to date.
 RUN export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && \
