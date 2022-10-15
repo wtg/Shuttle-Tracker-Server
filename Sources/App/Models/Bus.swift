@@ -96,6 +96,9 @@ final class Bus: Hashable, Model {
 	/// The congestion data for this bus.
 	@OptionalField(key: "congestion") var congestion: Int?
 	
+	/// The distance in meters which this bus has traveled along its current route
+	@OptionalField(key: "meters_traveled") var metersTraveled: Double?
+
 	/// The ID of route along which this bus is currently traveling.
 	@OptionalField(key: "route_id") var routeID: UUID?
 	
@@ -148,6 +151,16 @@ final class Bus: Hashable, Model {
 			}
 		}
 		self.routeID = selectedRoute?.id
+	}
+
+	/// Detect the distance traveled along the route which this bus is currently traveling
+	func detectDistanceTraveled()
+	{
+		// find cumulative distance from starting waypoint to nearest waypoint along the assigned route
+		
+		// find assigned route
+
+		// find cumulative distance traveled along assigned route
 	}
 }
 
