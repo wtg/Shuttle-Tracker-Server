@@ -223,7 +223,7 @@ func routes(_ application: Application) throws {
 			}
 			.filter { (resolved) in
 				return !routes.allSatisfy { (route) in
-					return !route.checkIfValid(location: resolved.location)
+					return !route.checkIsOnRoute(location: resolved.location)
 				}
 			}
 	}
@@ -257,19 +257,19 @@ func routes(_ application: Application) throws {
 			throw Abort(.badRequest)
 		}
 		let location = try request.content.decode(Bus.Location.self)
-		let allRoutes = try await Route
+		let activeRoutes = try await Route
 			.query(on: request.db)
 			.all()
 			.filter { (route) in
 				return route.schedule.isActive
 			}
-		let isValid = allRoutes
+		let isOnRoute = activeRoutes
 			.reduce(into: false) { (partialResult, route) in
-				if route.checkIfValid(location: location) {
+				if route.checkIsOnRoute(location: location) {
 					partialResult = true
 				}
 			}
-		guard isValid else {
+		guard isOnRoute else {
 			throw Abort(.conflict)
 		}
 		let bus = try await Bus
@@ -280,7 +280,7 @@ func routes(_ application: Application) throws {
 			throw Abort(.notFound)
 		}
 		bus.locations.merge(with: [location])
-		bus.updateRoute(selecting: allRoutes)
+		bus.detectRoute(selectingFrom: activeRoutes)
 		try await bus.update(on: request.db)
 		return bus.locations.resolved
 	}

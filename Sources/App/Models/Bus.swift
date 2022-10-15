@@ -67,6 +67,9 @@ final class Bus: Hashable, Model {
 		/// The current resolved location of the physical bus.
 		var location: Bus.Location
 		
+		/// The route along which the bus is currently traveling.
+		var routeID: UUID?
+		
 	}
 	
 	static let schema = "buses"
@@ -80,7 +83,7 @@ final class Bus: Hashable, Model {
 			guard let location = self.locations.resolved else {
 				return nil
 			}
-			return Resolved(id: id, location: location)
+			return Resolved(id: id, location: location, routeID: self.routeID)
 		}
 	}
 	
@@ -90,11 +93,11 @@ final class Bus: Hashable, Model {
 	/// The location data for this bus.
 	@Field(key: "locations") var locations: [Location]
 	
-	/// The route that the bus is taking associated with the location datum.
-	@OptionalField(key: "route_UUID") var routeUUID: UUID?
-
 	/// The congestion data for this bus.
 	@OptionalField(key: "congestion") var congestion: Int?
+	
+	/// The ID of route along which this bus is currently traveling.
+	@OptionalField(key: "route_id") var routeID: UUID?
 	
 	init() { }
 	
@@ -114,51 +117,37 @@ final class Bus: Hashable, Model {
 	func hash(into hasher: inout Hasher) {
 		hasher.combine(self.id)
 	}
-	/// Update the Route that the bus is currently on
-	func updateRoute(selecting routes: [Route]) {		
-		// Calculate the average Coordinate across the stored location points to determine the distance of the 
-		// average direction of the bus to the nearest waypoint along a route.
-		var numCoordinates: Double = 0
-		var longitude: Double = 0
-		var latitude: Double = 0
-		for location in self.locations {
-			longitude += location.coordinate.longitude
-			latitude += location.coordinate.latitude
-			numCoordinates += 1
+	
+	/// Detect the route along which this bus is currently traveling.
+	func detectRoute(selectingFrom routes: [Route]) {
+		guard !self.locations.isEmpty else {
+			self.routeID = nil
+			return
 		}
-		if (numCoordinates == 0) {
-			self.routeUUID = nil
-		}
-		else {
-			longitude = longitude / numCoordinates
-			latitude = latitude / numCoordinates
-			let avgCoordinate = Coordinate(latitude: latitude, longitude: longitude)
-			var	minDist: Double = Double.infinity
-			var curRoute: Route? = nil
-			for route in routes {
-				for coordinate in route.coordinates {
-					let dist_x1 = (coordinate.latitude-avgCoordinate.latitude)
-					let dist_x2 = (coordinate.longitude-avgCoordinate.longitude)
-					let dist = ((dist_x1*dist_x1) + (dist_x2*dist_x2)).squareRoot()
-					if (dist < minDist) {
-						minDist = dist
-						curRoute = route
-					}
-					else if (dist == minDist){
-						if (curRoute?.id != route.id){
-							// Two routes have overlapping points and the shuttle is therefore on an overlapping route
-							curRoute = nil
-						}
-					}
+		
+		// Calculate the mean Coordinate across the stored location data to determine the distance of the average direction of the bus to the nearest waypoint along a route
+		let meanCoordinate = self.locations.reduce(into: Coordinate.zero) { (partialResult, location) in
+			partialResult += location.coordinate
+		} / Double(self.locations.count)
+		
+		var minDelta: Double = Double.infinity
+		var selectedRoute: Route? = nil
+		for route in routes {
+			for coordinate in route.coordinates {
+				let latitudeDelta = coordinate.latitude - meanCoordinate.latitude
+				let longitudeDelta = coordinate.longitude - meanCoordinate.longitude
+				let delta = (pow(latitudeDelta, 2) + pow(longitudeDelta, 2)).squareRoot()
+				if (delta < minDelta) {
+					minDelta = delta
+					selectedRoute = route
+				} else if (delta == minDelta && selectedRoute?.id != route.id) {
+					// Two routes have overlapping points, so the bus is therefore on an overlapping route segment
+					selectedRoute = nil
+					break
 				}
 			}
-			if (curRoute != nil){
-				self.routeUUID = curRoute?.id
-			}
-			else{
-				self.routeUUID = nil
-			}
 		}
+		self.routeID = selectedRoute?.id
 	}
 }
 
