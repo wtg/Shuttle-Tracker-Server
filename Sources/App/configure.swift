@@ -70,6 +70,11 @@ public func configure(_ application: Application) throws {
 	application.queues
 		.schedule(RestartJob())
 		.at(Date() + 21600)
+	application.queues
+		.schedule(MonthlyReset())
+		.monthly()
+		.on(1)
+		.at(.midnight)
 	try application
 		.autoMigrate()
 		.wait()
