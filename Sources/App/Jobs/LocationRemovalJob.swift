@@ -17,6 +17,9 @@ struct LocationRemovalJob: AsyncScheduledJob {
 		let routes = try? await Route // Failing to query route objects shouldn’t cause this method to fail entirely
 			.query(on: context.application.db)
 			.all()
+			.filter { (route) in
+				return route.schedule.isActive
+			}
 		for bus in buses {
 			bus.locations
 				.filter { (location) in
