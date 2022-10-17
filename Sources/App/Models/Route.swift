@@ -117,7 +117,7 @@ final class Route: Model, Content, Collection {
 	/// Checks if the specified location is on this route.
 	/// - Parameter location: The location to check.
 	/// - Returns: `true` if the specified location is on this route; otherwise, `false`.
-	func checkIfValid(location: Bus.Location) -> Bool {
+	func checkIsOnRoute(location: Bus.Location) -> Bool {
 		let distance = LineString(self.coordinates)
 			.closestCoordinate(to: location.coordinate)?
 			.coordinate

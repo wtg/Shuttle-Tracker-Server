@@ -5,24 +5,26 @@
 //  Created by Gabriel Jacoby-Cooper on 8/27/21.
 //
 
-import Vapor
-import Fluent
 import CoreGPX
+import Fluent
 import Turf
+import Vapor
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif // canImport(FoundationNetworking)
 
-typealias Coordinate = LocationCoordinate2D
+public typealias Coordinate = LocationCoordinate2D
 
-extension Coordinate: Codable {
+extension Coordinate: Codable, AdditiveArithmetic {
 	
 	enum CodingKeys: CodingKey {
 		
 		case latitude, longitude
 		
 	}
+	
+	public static let zero = Coordinate(latitude: 0, longitude: 0)
 	
 	/// Creates a coordinate representation from a GPX waypoint.
 	///
@@ -42,14 +44,30 @@ extension Coordinate: Codable {
 		self.init(latitude: latitude, longitude: longitude)
 	}
 	
-	/// Numerically adds the right coordinate’s latitude and longitude values to the left coordinate’s respective values in place.
-	static func += (_ lhs: inout Coordinate, _ rhs: Coordinate) {
-		lhs.latitude += rhs.latitude
-		lhs.longitude += rhs.longitude
+	public static func + (lhs: Coordinate, rhs: Coordinate) -> Coordinate {
+		return Coordinate(
+			latitude: lhs.latitude + rhs.latitude,
+			longitude: lhs.longitude + rhs.longitude
+		)
 	}
 	
-	/// Numerically divides the left coordinate’s latitude and longitude values by the right coordinate’s respective values in place.
-	static func /= (_ lhs: inout Coordinate, _ rhs: Double) {
+	public static func - (lhs: Coordinate, rhs: Coordinate) -> Coordinate {
+		return Coordinate(
+			latitude: lhs.latitude - rhs.latitude,
+			longitude: lhs.longitude - rhs.longitude
+		)
+	}
+	
+	/// Numerically divides the left coordinate’s latitude and longitude values by a common divisor.
+	static func / (lhs: Coordinate, rhs: Double) -> Coordinate {
+		return Coordinate(
+			latitude: lhs.latitude / rhs,
+			longitude: lhs.longitude / rhs
+		)
+	}
+	
+	/// Numerically divides the left coordinate’s latitude and longitude values by a common divisor in-place.
+	static func /= (lhs: inout Coordinate, rhs: Double) {
 		lhs.latitude /= rhs
 		lhs.longitude /= rhs
 	}
@@ -199,7 +217,7 @@ extension DateUtilities {
 		return CompatibilityDateInterval(start: start, end: end)
 		#else // os(Linux) || os(Windows)
 		return DateInterval(start: start, end: end)
-		#endif // os(Linux) || os(Windows)
+		#endif
 	}
 	
 }
