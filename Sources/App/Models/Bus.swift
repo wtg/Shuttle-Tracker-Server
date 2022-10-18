@@ -5,9 +5,10 @@
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //
 
-import Vapor
 import Fluent
 import JSONParser
+import Turf
+import Vapor
 
 /// A representation of a shuttle bus.
 final class Bus: Hashable, Model {
@@ -123,31 +124,17 @@ final class Bus: Hashable, Model {
 	
 	/// Detect the route along which this bus is currently traveling.
 	func detectRoute(selectingFrom routes: [Route]) {
-		guard !self.locations.isEmpty else {
+		guard let location = self.locations.resolved else {
 			self.routeID = nil
 			return
 		}
-		
-		// Calculate the mean Coordinate across the stored location data to determine the distance of the average direction of the bus to the nearest waypoint along a route
-		let meanCoordinate = self.locations.reduce(into: Coordinate.zero) { (partialResult, location) in
-			partialResult += location.coordinate
-		} / Double(self.locations.count)
-		
-		var minDelta: Double = Double.infinity
-		var selectedRoute: Route? = nil
+		var selectedRoute: Route?
 		for route in routes {
-			for coordinate in route.coordinates {
-				let latitudeDelta = coordinate.latitude - meanCoordinate.latitude
-				let longitudeDelta = coordinate.longitude - meanCoordinate.longitude
-				let delta = (pow(latitudeDelta, 2) + pow(longitudeDelta, 2)).squareRoot()
-				if (delta < minDelta) {
-					minDelta = delta
-					selectedRoute = route
-				} else if (delta == minDelta && selectedRoute?.id != route.id) {
-					// Two routes have overlapping points, so the bus is therefore on an overlapping route segment
-					selectedRoute = nil
-					break
+			if route.checkIsOnRoute(location: location) {
+				guard selectedRoute == nil else {
+					return // Since the bus is currently in an overlapping portion of multiple routes, leave the existing route association as-is
 				}
+				selectedRoute = route
 			}
 		}
 		self.routeID = selectedRoute?.id
