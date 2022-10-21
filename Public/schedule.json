@@ -1,8 +1,8 @@
 [
 	{
 		"name": "Spring ’22",
-		"start": "2022-01-23T07:00:00Z",
-		"end": "2022-05-06T23:45:00Z",
+		"start": "2022-01-23T11:00:00Z",
+		"end": "2022-05-07T03:45:00Z",
 		"content": {
 			"monday": {
 				"start": "7:00 AM",
@@ -36,8 +36,8 @@
 	},
 	{
 		"name": "Summer ’22",
-		"start": "2022-05-23T07:00:00Z",
-		"end": "2022-08-19T23:45:00Z",
+		"start": "2022-05-23T11:00:00Z",
+		"end": "2022-08-20T03:45:00Z",
 		"content": {
 			"monday": {
 				"start": "7:00 AM",
@@ -66,6 +66,41 @@
 			"sunday": {
 				"start": "9:00 AM",
 				"end": "5:30 PM"
+			}
+		}
+	},
+	{
+		"name": "Fall ’22",
+		"start": "2022-08-29T11:00:00Z",
+		"end": "2022-12-10T06:30:00Z",
+		"content": {
+			"monday": {
+				"start": "7:00 AM",
+				"end": "12:00 AM"
+			},
+			"tuesday": {
+				"start": "7:00 AM",
+				"end": "12:00 AM"
+			},
+			"wednesday": {
+				"start": "7:00 AM",
+				"end": "12:00 AM"
+			},
+			"thursday": {
+				"start": "7:00 AM",
+				"end": "12:00 AM"
+			},
+			"friday": {
+				"start": "7:00 AM",
+				"end": "2:30 AM"
+			},
+			"saturday": {
+				"start": "9:00 AM",
+				"end": "2:30 AM"
+			},
+			"sunday": {
+				"start": "9:00 AM",
+				"end": "8:00 PM"
 			}
 		}
 	}
