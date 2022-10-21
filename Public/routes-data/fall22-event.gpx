@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="GPX Editor">
 	<metadata>
-		<name>Fall ’22 (Combined)</name>
+		<name>Special Event Routes</name>
+		<desc>Fall 2022</desc>
 		<author>
 			<name>Shuttle Tracker</name>
 		</author>
@@ -16,6 +17,9 @@
 	<wpt lat="42.727888" lon="-73.678127">
 		<name>Academy Hall</name>
 	</wpt>
+	<wpt lat="42.725828" lon="-73.678490">
+		<name>Tibbits Avenue</name>
+	</wpt>
 	<wpt lat="42.722881" lon="-73.679696">
 		<name>Polytechnic Residence Commons</name>
 	</wpt>
@@ -25,11 +29,8 @@
 	<wpt lat="42.731384" lon="-73.686298">
 		<name>Blitman Residence Commons</name>
 	</wpt>
-	<wpt lat="42.731427" lon="-73.681251">
-		<name>West Hall</name>
-	</wpt>
-	<wpt lat="42.730952" lon="-73.678995">
-		<name>’87 Gymnasium</name>
+	<wpt lat="42.733023" lon="-73.677650">
+		<name>Heffner Alumni House</name>
 	</wpt>
 	<wpt lat="42.729276" lon="-73.673374">
 		<name>Barton Hall</name>
@@ -37,20 +38,17 @@
 	<wpt lat="42.731638" lon="-73.669710">
 		<name>B-Lot</name>
 	</wpt>
+	<wpt lat="42.731362" lon="-73.666572">
+		<name>E-Lot</name>
+	</wpt>
 	<wpt lat="42.732719" lon="-73.665201">
-		<name>Stackwyck</name>
+		<name>Stacwyck</name>
 	</wpt>
 	<wpt lat="42.734554" lon="-73.663474">
 		<name>Bryckwyck</name>
 	</wpt>
 	<wpt lat="42.735535" lon="-73.664404">
 		<name>RHAP B</name>
-	</wpt>
-	<wpt lat="42.725828" lon="-73.678490">
-		<name>Tibbits Avenue</name>
-	</wpt>
-	<wpt lat="42.731362" lon="-73.666572">
-		<name>E-Lot</name>
 	</wpt>
 	<wpt lat="42.737002" lon="-73.666682">
 		<name>Georgian Court</name>
@@ -59,8 +57,8 @@
 		<name>Colonie</name>
 	</wpt>
 	<rte>
-		<name>Combined Route</name>
-		<cmt>Blue</cmt>
+		<name>Special Event West Route</name>
+		<cmt>Orange</cmt>
 		<rtept lat="42.730777" lon="-73.677212">
 		</rtept>
 		<rtept lat="42.727822" lon="-73.678042">
@@ -179,37 +177,37 @@
 		</rtept>
 		<rtept lat="42.733510" lon="-73.684852">
 		</rtept>
-		<rtept lat="42.733458" lon="-73.684806">
+		<rtept lat="42.733510" lon="-73.684852">
 		</rtept>
-		<rtept lat="42.733420" lon="-73.684742">
+		<rtept lat="42.733504" lon="-73.684440">
 		</rtept>
-		<rtept lat="42.733389" lon="-73.684613">
+		<rtept lat="42.733519" lon="-73.684294">
 		</rtept>
-		<rtept lat="42.733141" lon="-73.683479">
+		<rtept lat="42.733561" lon="-73.684078">
 		</rtept>
-		<rtept lat="42.732903" lon="-73.682544">
+		<rtept lat="42.733732" lon="-73.683434">
 		</rtept>
-		<rtept lat="42.732903" lon="-73.682544">
+		<rtept lat="42.733849" lon="-73.682989">
 		</rtept>
-		<rtept lat="42.732847" lon="-73.682426">
+		<rtept lat="42.733925" lon="-73.682671">
 		</rtept>
-		<rtept lat="42.732766" lon="-73.682318">
+		<rtept lat="42.733981" lon="-73.682387">
 		</rtept>
-		<rtept lat="42.732073" lon="-73.681685">
+		<rtept lat="42.733984" lon="-73.682237">
 		</rtept>
-		<rtept lat="42.731811" lon="-73.681500">
+		<rtept lat="42.733984" lon="-73.682237">
 		</rtept>
-		<rtept lat="42.731665" lon="-73.681435">
+		<rtept lat="42.733945" lon="-73.681876">
 		</rtept>
-		<rtept lat="42.731546" lon="-73.681338">
+		<rtept lat="42.733728" lon="-73.680778">
 		</rtept>
-		<rtept lat="42.731487" lon="-73.681218">
+		<rtept lat="42.733405" lon="-73.679125">
 		</rtept>
-		<rtept lat="42.731389" lon="-73.680835">
+		<rtept lat="42.733165" lon="-73.677518">
 		</rtept>
-		<rtept lat="42.731260" lon="-73.680304">
+		<rtept lat="42.733038" lon="-73.676566">
 		</rtept>
-		<rtept lat="42.731196" lon="-73.679968">
+		<rtept lat="42.733038" lon="-73.676566">
 		</rtept>
 		<rtept lat="42.730777" lon="-73.677212">
 		</rtept>
@@ -234,6 +232,38 @@
 		<rtept lat="42.730428" lon="-73.676377">
 		</rtept>
 		<rtept lat="42.730505" lon="-73.676350">
+		</rtept>
+		<rtept lat="42.730606" lon="-73.676315">
+		</rtept>
+		<rtept lat="42.730606" lon="-73.676315">
+		</rtept>
+		<rtept lat="42.730676" lon="-73.676552">
+		</rtept>
+	</rte>
+	<rte>
+		<name>North Route</name>
+		<cmt>Red</cmt>
+		<rtept lat="42.730606" lon="-73.676315">
+		</rtept>
+		<rtept lat="42.730505" lon="-73.676350">
+		</rtept>
+		<rtept lat="42.730428" lon="-73.676377">
+		</rtept>
+		<rtept lat="42.730285" lon="-73.676426">
+		</rtept>
+		<rtept lat="42.730289" lon="-73.676455">
+		</rtept>
+		<rtept lat="42.730289" lon="-73.676455">
+		</rtept>
+		<rtept lat="42.730322" lon="-73.676659">
+		</rtept>
+		<rtept lat="42.730332" lon="-73.676657">
+		</rtept>
+		<rtept lat="42.730332" lon="-73.676657">
+		</rtept>
+		<rtept lat="42.730676" lon="-73.676552">
+		</rtept>
+		<rtept lat="42.730676" lon="-73.676552">
 		</rtept>
 		<rtept lat="42.730606" lon="-73.676315">
 		</rtept>

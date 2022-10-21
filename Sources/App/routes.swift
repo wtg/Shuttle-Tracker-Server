@@ -215,6 +215,9 @@ func routes(_ application: Application) throws {
 		let routes = try await Route
 			.query(on: request.db)
 			.all()
+			.filter { (route) in
+				return route.schedule.isActive
+			}
 		return try await Bus
 			.query(on: request.db)
 			.all()
@@ -257,18 +260,15 @@ func routes(_ application: Application) throws {
 			throw Abort(.badRequest)
 		}
 		let location = try request.content.decode(Bus.Location.self)
-		let activeRoutes = try await Route
+		let routes = try await Route
 			.query(on: request.db)
 			.all()
 			.filter { (route) in
 				return route.schedule.isActive
 			}
-		let isOnRoute = activeRoutes
-			.reduce(into: false) { (partialResult, route) in
-				if route.checkIsOnRoute(location: location) {
-					partialResult = true
-				}
-			}
+		let isOnRoute = !routes.allSatisfy { (route) in
+			return !route.checkIsOnRoute(location: location)
+		}
 		guard isOnRoute else {
 			throw Abort(.conflict)
 		}
@@ -280,7 +280,7 @@ func routes(_ application: Application) throws {
 			throw Abort(.notFound)
 		}
 		bus.locations.merge(with: [location])
-		bus.detectRoute(selectingFrom: activeRoutes)
+		bus.detectRoute(selectingFrom: routes)
 		try await bus.update(on: request.db)
 		return bus.locations.resolved
 	}

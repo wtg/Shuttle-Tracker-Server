@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="GPX Editor">
 	<metadata>
-		<name>Summer ’22 (Weekend)</name>
+		<name>Weekend Route</name>
+		<desc>Summer 2022</desc>
 		<author>
 			<name>Shuttle Tracker</name>
 		</author>
@@ -14,7 +15,10 @@
 		<name>Student Union</name>
 	</wpt>
 	<wpt lat="42.727888" lon="-73.678127">
-		<name>15th Street</name>
+		<name>Academy Hall</name>
+	</wpt>
+	<wpt lat="42.731384" lon="-73.686298">
+		<name>Blitman Residence Commons</name>
 	</wpt>
 	<wpt lat="42.731427" lon="-73.681251">
 		<name>West Hall</name>
@@ -25,14 +29,12 @@
 	<wpt lat="42.729276" lon="-73.673374">
 		<name>Barton Hall</name>
 	</wpt>
-	<wpt lat="42.731384" lon="-73.686298">
-		<name>Blitman Residence Commons</name>
-	</wpt>
 	<wpt lat="42.728083" lon="-73.673030">
 		<name>Burdett Avenue</name>
 	</wpt>
 	<rte>
 		<name>Weekend Route</name>
+		<cmt>Red</cmt>
 		<rtept lat="42.730777" lon="-73.677212">
 		</rtept>
 		<rtept lat="42.727822" lon="-73.678042">

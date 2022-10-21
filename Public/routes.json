@@ -54,21 +54,6 @@
 		"specialIntervals": [],
 		"doInvertSpecialIntervals": false
 	},
-	"fall22-combined.gpx": {
-		"start": "2022-08-24T04:00:00Z",
-		"end": "2022-08-26T04:00:00Z",
-		"days": [
-			"monday",
-			"tuesday",
-			"wednesday",
-			"thursday",
-			"friday",
-			"saturday",
-			"sunday"
-		],
-		"specialIntervals": [],
-		"doInvertSpecialIntervals": false
-	},
 	"fall22.gpx": {
 		"start": "2022-08-26T04:00:00Z",
 		"days": [
@@ -92,7 +77,7 @@
 		],
 		"doInvertSpecialIntervals": true
 	},
-	"fall22-combined-heffner.gpx": {
+	"fall22-event.gpx": {
 		"start": "2022-08-24T04:00:00Z",
 		"days": [],
 		"specialIntervals": [

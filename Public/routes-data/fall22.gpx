@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="GPX Editor">
 	<metadata>
-		<name>Fall ’22</name>
+		<name>Routes</name>
+		<desc>Fall 2022</desc>
 		<author>
 			<name>Shuttle Tracker</name>
 		</author>
@@ -15,6 +16,9 @@
 	</wpt>
 	<wpt lat="42.727888" lon="-73.678127">
 		<name>Academy Hall</name>
+	</wpt>
+	<wpt lat="42.725828" lon="-73.678490">
+		<name>Tibbits Avenue</name>
 	</wpt>
 	<wpt lat="42.722881" lon="-73.679696">
 		<name>Polytechnic Residence Commons</name>
@@ -37,20 +41,17 @@
 	<wpt lat="42.731638" lon="-73.669710">
 		<name>B-Lot</name>
 	</wpt>
-	<wpt lat="42.732719" lon="-73.665201">
-		<name>Stackwyck</name>
-	</wpt>
-	<wpt lat="42.734554" lon="-73.663474">
-		<name>Brycwyck</name>
-	</wpt>
-	<wpt lat="42.735535" lon="-73.664404">
-		<name>RHAPS B</name>
-	</wpt>
-	<wpt lat="42.725828" lon="-73.678490">
-		<name>Tibbits Avenue</name>
-	</wpt>
 	<wpt lat="42.731362" lon="-73.666572">
 		<name>E-Lot</name>
+	</wpt>
+	<wpt lat="42.732719" lon="-73.665201">
+		<name>Stacwyck</name>
+	</wpt>
+	<wpt lat="42.734554" lon="-73.663474">
+		<name>Bryckwyck</name>
+	</wpt>
+	<wpt lat="42.735535" lon="-73.664404">
+		<name>RHAP B</name>
 	</wpt>
 	<wpt lat="42.737002" lon="-73.666682">
 		<name>Georgian Court</name>
