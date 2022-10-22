@@ -99,9 +99,6 @@ final class Bus: Hashable, Model {
 	
 	/// The distance in meters which this bus has traveled along its current route
 	@OptionalField(key: "meters_along_route") var metersAlongRoute: Double?
-
-	/// The most recent rtept which this bus has passed along its current route 
-	@OptionalField(key: "last_seen_rtept") var lastSeenRTEPT: Coordinate?
 	
 	/// The ID of route along which this bus is currently traveling.
 	@OptionalField(key: "route_id") var routeID: UUID?
