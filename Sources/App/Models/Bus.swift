@@ -98,8 +98,11 @@ final class Bus: Hashable, Model {
 	@OptionalField(key: "congestion") var congestion: Int?
 	
 	/// The distance in meters which this bus has traveled along its current route
-	@OptionalField(key: "meters_traveled") var metersTraveled: Double?
+	@OptionalField(key: "meters_along_route") var metersAlongRoute: Double?
 
+	/// The most recent rtept which this bus has passed along its current route 
+	@OptionalField(key: "last_seen_rtept") var lastSeenRTEPT: Coordinate?
+	
 	/// The ID of route along which this bus is currently traveling.
 	@OptionalField(key: "route_id") var routeID: UUID?
 	
@@ -142,6 +145,10 @@ final class Bus: Hashable, Model {
 
 	/// Detect the distance traveled along the route which this bus is currently traveling
 	func detectDistanceTraveled(along routes: [Route]) {
+		guard let location = self.locations.resolved else {
+			self.routeID = nil
+			return
+		}
 		guard let routeID = self.routeID else {
 			self.metersTraveled = 0.0
 			return
@@ -149,18 +156,10 @@ final class Bus: Hashable, Model {
 		// Note: There is implied coupling that if routeID is not nil then there must also be assigned location data for this bus
 
 		// find cumulative poly-line distance from the starting waypoint to the nearest passed waypoint along the assigned route + the distance the bus has traveled from the nearest passed waypoint to its current location
-		var lastDelta: Double = Double.infinity
 		for route in routes {
 			// detect the assigned route for this bus
 			if (routeID == route.id) {
-				let metersTraveled = 0
-				for (index, coordinate) in route.coordinates.enumerated() {
-					if (index == 0) {
-						let latitudeDelta = coordinate.latitude - route.locations.last.latitude
-						let longitudeDelta = coordinate.longitude - route.locations.last.longitude
-						lastDelta = (pow(latitudeDelta, 2) + pow(longitudeDelta, 2)).squareRoot()
-						continue
-					}
+				let metersAlongRoute = route.calculateDistanceAlongRoute(rtept: location)
 					// TODO: continuously sum distance traveled here
 
 					// TODO: find the nearest passed waypoint

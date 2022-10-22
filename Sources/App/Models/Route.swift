@@ -127,5 +127,27 @@ final class Route: Model, Content, Collection {
 		}
 		return distance < Constants.isOnRouteThreshold
 	}
-	
+	/// Calculates the distance a bus has traveled along the route from the provided location
+	/// - Parameter location: The location the bus is currently at
+	/// - Returns: The distance the bus has traveled along the route or -1 if the location is too far from the route
+	func calculateDistanceAlongRoute(location: Bus.Location) -> Double {
+		guard let nearestRTEPT = LineString(self.coordinates).closestCoordinate(to: rtept.coordinate)?.coordinate else {
+			return nil
+		}
+		if (nearestRTEPt.distance(to: location.coordinate) < Constants.isOnRouteThreshold) {
+			return -1
+		}
+		let distanceAlongRoute = 0
+		for (index, rtept) in self.coordinates.enumerated() {
+			if (rtept == nearestRTEPT) {
+				let distanceDeltaToPreviousRTEPT = location.distance(to: self.coordinates[index-1])
+				let distanceDeltaToNextRTEPT = location.distance(to: self.coordinates[index+1])
+				//TODO: Create algorithm to determine which rtept was just passed using previous rtept, nearestrtept, and nextrtept
+			}
+			else {
+				distanceAlongRoute += coordinate.distance(to: self.coordinates[index-1])
+			}
+		}
+		return distanceAlongRoute
+	}
 }
