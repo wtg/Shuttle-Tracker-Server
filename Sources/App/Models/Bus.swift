@@ -147,22 +147,17 @@ final class Bus: Hashable, Model {
 			return
 		}
 		guard let routeID = self.routeID else {
-			self.metersTraveled = 0.0
+			self.metersAlongRoute = 0.0
 			return
 		}
-		// Note: There is implied coupling that if routeID is not nil then there must also be assigned location data for this bus
-
-		// find cumulative poly-line distance from the starting waypoint to the nearest passed waypoint along the assigned route + the distance the bus has traveled from the nearest passed waypoint to its current location
 		for route in routes {
 			// detect the assigned route for this bus
 			if (routeID == route.id) {
-				let metersAlongRoute = route.calculateDistanceAlongRoute(rtept: location)
-					// TODO: continuously sum distance traveled here
-
-					// TODO: find the nearest passed waypoint
-					// TODO: sum the distance traveled from waypoint to waypoint only until the nearest passed waypoint
-				}
-				// TODO: sum the distance traveled with the distance from the nearest passed waypoint to the current bus location
+					guard let metersAlongRoute = route.calculateDistanceAlongRoute(location: location) else {
+						self.metersAlongRoute = 0.0
+						return
+					}
+					self.metersAlongRoute = metersAlongRoute
 			}
 		}
 	}

@@ -129,23 +129,96 @@ final class Route: Model, Content, Collection {
 	}
 	/// Calculates the distance a bus has traveled along the route from the provided location
 	/// - Parameter location: The location the bus is currently at
-	/// - Returns: The distance the bus has traveled along the route or -1 if the location is too far from the route
-	func calculateDistanceAlongRoute(location: Bus.Location) -> Double {
+	/// - Returns: The distance the bus has traveled along the route or nil if the location is too far from the route
+	func calculateDistanceAlongRoute(location: Bus.Location) -> Double ? {
 		guard let nearestRTEPT = LineString(self.coordinates).closestCoordinate(to: rtept.coordinate)?.coordinate else {
 			return nil
 		}
-		if (nearestRTEPt.distance(to: location.coordinate) < Constants.isOnRouteThreshold) {
-			return -1
+		if (nearestRTEPT.distance(to: location.coordinate) < Constants.isOnRouteThreshold) {
+			return nil
 		}
-		let distanceAlongRoute = 0
+		var distanceAlongRoute: Double?
 		for (index, rtept) in self.coordinates.enumerated() {
 			if (rtept == nearestRTEPT) {
-				let distanceDeltaToPreviousRTEPT = location.distance(to: self.coordinates[index-1])
-				let distanceDeltaToNextRTEPT = location.distance(to: self.coordinates[index+1])
-				//TODO: Create algorithm to determine which rtept was just passed using previous rtept, nearestrtept, and nextrtept
+				if (index == 0) {
+					// Note that 'x' is either 'x1' or 'x2'.
+					// Assume we have the following polyline:
+					// |--x1--|--x2--|
+					// ?      a      b
+					// return the distance from the first rtept to the current location, 'x', since the bus must have just passed the first rtept or did not yet pass the first rtept
+					distanceAlongRoute += nearestRTEPT.distance(to: location.coordinate) // distance(a,x)
+				}
+				else {
+					// If the current rtept is the nearest rtept, determine if the reported bus location is to the left or right of the nearest rtept
+					// (i.e. Assume we have the following polyline
+					// |-----|-----| --> |--x1--|--x2--| --> This algorithm determines whether the current bus location, 'x' is either 'x1' or 'x2' relative to the nearest rtept which is 'b'
+					// a     b     c     a      b      c
+					// )
+					// This step is needed in order to determine whether the distance the bus has traveled includes 'a' to 'x1' or instead 'b' to 'x2'
+					
+					// There are 3 cases:	1) distance(a,b) == distance(b,c)
+					// 										2) distance(a,b) < distance(b,c)
+					// 			 							3) distance(a,b) > distance(b,c) 
+
+					let deltaToPreviousRTEPT = nearestRTEPT.distance(to: self.coordinates[index-1]) // distance(a,b)
+					let deltaToNextRTEPT = nearestRTEPT.distance(to: self.coordinates[index+1]) // distance(b,c)
+					if (deltaToPreviousRTEPT == deltaToNextRTEPT) { // Case 1
+						if (self.coordinates[index-1].distance(to: location.coordinate) < self.coordinates[index+1].distance(to: location.coordinate)){ //distance(a,x) < distance(c,x)
+							// Assume the following polyline (for case 1):
+							// |--x1--|--x2--| 
+							// a      b      c
+							// if distance(a,x) < distance(x,c) then x = x1 which implies the bus has just passed rtept 'a' and that we must sum the remaining distance from 'a' to x==x1
+							distanceAlongRoute += self.coordinates[index-1].distance(to: location.coordinate) // distance(a,x)
+						}
+						else {
+							// Otherwise x == x2 which implies the bus has just passed rtept 'b' and that we must sum the remaining distance from 'b' to x==x2
+							distanceAlongRoute += nearestRTEPT.distance(to: location.coordinate) // distance(b,x)
+						}
+					}
+					else if (deltaToPreviousRTEPT < deltaToNextRTEPT){ // Case 2
+						let delta1 = self.coordinates[index+1].distance(to: nearestRTEPT) - self.coordinates[index-1].distance(to: location.coordinate) // distance(b,c) - distance(a,x)
+						let delta2 = self.coordinates[index+1].distance(to: nearestRTEPT) - self.coordinates[index-1].distance(to: nearestRTEPT) // distance(b,c) - distance(a,x)
+						if (delta1 < delta2) {
+							// Assume the following polyline (for case 2):
+							// |--x1--|--x2-------| 
+							// a      b           c
+							// Suppose we have delta1 < delta2. By direct proof the following is true (for brevity assume distance(...) == d(...)):
+							// delta1 = d(b,c) - d(a,x)
+							// delta2 = d(b,c) - d(a,b)
+							// delta1 < delta2 --> d(b,c) - d(a,x) < d(b,c) - d(a,b) --> -d(a,x) < -d(a,b) --> d(a,x) > d(a,b)
+							// if delta1 < delta2 then d(a,x) > d(a,b) then x = x2 which implies the bus has just passed rtept 'b' and that we must sum the remaining distance from 'b' to x==x2
+							distanceAlongRoute += nearestRTEPT.distance(to: location.coordinate) // distance(b,x)
+						}
+						else {
+							// Otherwise x == x1 which implies the bus has just passed rtept 'a' and that we must sum the remaining distance from 'a' to x==x1
+							distanceAlongRoute += self.coordinates[index-1].distance(to: location.coordinate) // distance(a,x)
+						}
+					}
+					else { // Case 3
+						let delta1 = self.coordinates[index-1].distance(to: nearestRTEPT) - self.coordinates[index+1].distance(to: location.coordinate) // distance(a,b) - distance(c,x)
+						let delta2 = self.coordinates[index-1].distance(to: nearestRTEPT) - self.coordinates[index+1].distance(to: nearestRTEPT) // distance(a,b) - distance(b,c)
+						if (delta1 < delta2) {
+							// Assume the following polyline (for case 3):
+							// |-------x1--|--x2--| 
+							// a           b      c
+							// Suppose we have delta1 < delta2. By direct proof the following is true (for brevity assume distance(...) == d(...)):
+							// delta1 = d(a,b) - d(c,x)
+							// delta2 = d(a,b) - d(b,c)
+							// delta1 < delta2 --> d(a,b) - d(c,x) < d(a,b) - d(b,c) --> -d(c,x) < -d(b,c) --> d(c,x) > d(b,c)
+							// if delta1 < delta2 then d(c,x) > d(b,c) then x = x1 which implies the bus has just passed rtept 'a' and that we must sum the remaining distance from 'a' to x==x1
+							distanceAlongRoute += self.coordinates[index-1].distance(to: location.coordinate) // distance(a,x)
+						}
+						else {
+							// Otherwise x == x2 which implies the bus has just passed rtept 'b' and that we must sum the remaining distance from 'b' to x==x2
+							distanceAlongRoute += nearestRTEPT.distance(to: location.coordinate) // distance(b,x)
+						}
+					}
+				}
+				break;
 			}
-			else {
-				distanceAlongRoute += coordinate.distance(to: self.coordinates[index-1])
+			else if (index != 0){
+				// cumulatively sum the polyline distance from the previous rtept to the current rtept
+				distanceAlongRoute += rtept.distance(to: self.coordinates[index-1])
 			}
 		}
 		return distanceAlongRoute
