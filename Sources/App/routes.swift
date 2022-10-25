@@ -211,7 +211,19 @@ func routes(_ application: Application) throws {
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
 		let analyticsEntry = try request.content.decode(AnalyticsEntry.self, using: decoder)
-		try await analyticsEntry.save(on: request.db)
+		try await analyticsEntry.save(on: request.db(.psql))
 		return analyticsEntry
+	}
+	application.get("analyticsentries", "average") { (request) -> Int? in
+		return try await AnalyticsEntry
+			.query(on: request.db(.psql))
+			.filter(\.$timesBoarded != 0)
+			.average(\.$timesBoarded)
+	}
+	application.get("analyticsentries", ":id") { (request) -> AnalyticsEntry? in
+		return try await AnalyticsEntry
+			.query(on: request.db(.psql))
+			.filter(\.$userID == request.parameters.get("id")!)
+			.first()
 	}
 }

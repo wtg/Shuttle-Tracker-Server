@@ -1,0 +1,14 @@
+{
+    "id": "35a9c479-98f8-418f-a1c5-1b49b624100d",
+    "userID": "35a9c479-98f8-418f-a1c5-1b49b624100d",
+    "dateSent": "2022-10-25T21:11:20+0000",
+    "platform": "iOS",
+    "version": "iOS 15.3.1",
+    "appVersion": "1.6",
+    "usedBoard": true,
+    "timesBoarded": 3,
+    "userSettings": {
+       "colorBlindMode": false,
+       "darkMode": true
+    }
+}
