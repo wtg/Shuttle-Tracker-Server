@@ -141,23 +141,22 @@ final class Bus: Hashable, Model {
 	}
 
 	/// Detect the distance traveled along the route which this bus is currently traveling
-	func detectDistanceTraveled(along routes: [Route]) {
+	func detectDistanceTraveled(selectingFrom routes: [Route]) {
 		guard let location = self.locations.resolved else {
 			self.routeID = nil
 			return
 		}
 		guard let routeID = self.routeID else {
-			self.metersAlongRoute = 0.0
+			self.metersAlongRoute = nil
 			return
 		}
 		for route in routes {
-			// detect the assigned route for this bus
 			if (routeID == route.id) {
-					guard let metersAlongRoute = route.calculateDistanceAlongRoute(location: location) else {
-						self.metersAlongRoute = 0.0
-						return
-					}
-					self.metersAlongRoute = metersAlongRoute
+				guard let metersAlongRoute = route.calculateDistanceAlongRoute(location: location) else {
+					self.metersAlongRoute = nil
+					return
+				}
+				self.metersAlongRoute = metersAlongRoute
 			}
 		}
 	}
@@ -224,6 +223,7 @@ extension Array: Mergeable where Element == Bus.Location {
 			}
 			self.append(otherLocation)
 		}
+
 	}
 	
 }

@@ -113,7 +113,7 @@ final class Route: Model, Content, Collection {
 	func index(after oldIndex: Int) -> Int {
 		return oldIndex + 1
 	}
-	
+
 	/// Checks if the specified location is on this route.
 	/// - Parameter location: The location to check.
 	/// - Returns: `true` if the specified location is on this route; otherwise, `false`.
@@ -130,14 +130,12 @@ final class Route: Model, Content, Collection {
 	/// Calculates the distance a bus has traveled along the route from the provided location
 	/// - Parameter location: The location the bus is currently at
 	/// - Returns: The distance the bus has traveled along the route or nil if the location is too far from the route
-	func calculateDistanceAlongRoute(location: Bus.Location) -> Double ? {
-		guard let nearestRTEPT = LineString(self.coordinates).closestCoordinate(to: rtept.coordinate)?.coordinate else {
+	func calculateDistanceAlongRoute(location: Bus.Location) -> Double? {
+		let RTELineString = LineString(self.coordinates)
+		guard let nearestRTEPT = RTELineString.closestVertex(to: location.coordinate) else {
 			return nil
 		}
-		if (nearestRTEPT.distance(to: location.coordinate) < Constants.isOnRouteThreshold) {
-			return nil
-		}
-		var distanceAlongRoute: Double?
+		var distanceAlongRoute: Double = 0
 		for (index, rtept) in self.coordinates.enumerated() {
 			if (rtept == nearestRTEPT) {
 				if (index == 0) {
@@ -219,7 +217,7 @@ final class Route: Model, Content, Collection {
 			else if (index != 0){
 				// cumulatively sum the polyline distance from the previous rtept to the current rtept
 				distanceAlongRoute += rtept.distance(to: self.coordinates[index-1])
-			}
+			} 
 		}
 		return distanceAlongRoute
 	}

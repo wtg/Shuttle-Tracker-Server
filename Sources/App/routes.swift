@@ -281,6 +281,7 @@ func routes(_ application: Application) throws {
 		}
 		bus.locations.merge(with: [location])
 		bus.detectRoute(selectingFrom: activeRoutes)
+		bus.detectDistanceTraveled(selectingFrom: activeRoutes)
 		try await bus.update(on: request.db)
 		return bus.locations.resolved
 	}

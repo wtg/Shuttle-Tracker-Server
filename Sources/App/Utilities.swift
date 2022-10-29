@@ -80,6 +80,26 @@ extension Coordinate: Codable, AdditiveArithmetic {
 	
 }
 
+extension LineString {
+	func closestVertex(to coordinate: LocationCoordinate2D) -> LocationCoordinate2D? {		
+		guard coordinates.count > 0 else {
+				return nil
+		}
+		
+		var closestCoordinate: LocationCoordinate2D?
+		var maxDistance: LocationDistance = Double.infinity
+
+		for index in 0..<coordinates.count - 1 {
+				let distance = coordinate.distance(to: coordinates[index])
+				if distance < maxDistance {
+						closestCoordinate = coordinates[index]
+						maxDistance = distance
+				}
+		}
+		return closestCoordinate
+	} 
+}
+
 extension Array where Element: Equatable {
 	
 	func removingDuplicates(_ comparator: (Element, Element) throws -> Bool = (==)) rethrows -> Self {
