@@ -20,12 +20,20 @@ struct BusDownloadingJob: AsyncScheduledJob {
 		for newBus in newBuses {
 			allNewBuses.insert(newBus)
 		}
+		let activeRoutes = try await Route
+			.query(on: context.application.db)
+			.all()
+			.filter { (route) in
+				return route.schedule.isActive
+			}
 		let buses = try await Bus
 			.query(on: context.application.db)
 			.all()
 		for bus in buses {
 			if let newBus = allNewBuses.remove(bus) {
 				bus.locations.merge(with: newBus.locations)
+				bus.detectRoute(selectingFrom: activeRoutes)
+				bus.detectDistanceTraveled(selectingFrom: activeRoutes)
 				try await bus.update(on: context.application.db)
 			}
 		}

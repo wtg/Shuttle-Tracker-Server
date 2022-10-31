@@ -127,7 +127,7 @@ final class Route: Model, Content, Collection {
 		}
 		return distance < Constants.isOnRouteThreshold
 	}
-	/// Calculates the distance a bus has traveled along the route from the provided location
+	/// Calculates the total distance a bus has traveled along the route from the first rtept to the provided location
 	/// - Parameter location: The location the bus is currently at
 	/// - Returns: The distance the bus has traveled along the route or nil if the location is too far from the route
 	func calculateDistanceAlongRoute(location: Bus.Location) -> Double? {
@@ -217,6 +217,9 @@ final class Route: Model, Content, Collection {
 			else if (index != 0){
 				// cumulatively sum the polyline distance from the previous rtept to the current rtept
 				distanceAlongRoute += rtept.distance(to: self.coordinates[index-1])
+				print("From ("+String(self.coordinates[index-1].latitude)+","+String(self.coordinates[index-1].longitude)+") to ("+String(rtept.latitude)+","+String(rtept.longitude)+")")
+				print("Has distance: "+String(rtept.distance(to: self.coordinates[index-1])))
+				print("Total Distance so far: "+String(distanceAlongRoute))
 			} 
 		}
 		return distanceAlongRoute

@@ -157,6 +157,7 @@ final class Bus: Hashable, Model {
 					return
 				}
 				self.metersAlongRoute = metersAlongRoute
+				print(self)
 			}
 		}
 	}
