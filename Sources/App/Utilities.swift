@@ -171,10 +171,15 @@ extension Optional: Content, RequestDecodable, ResponseEncodable, AsyncRequestDe
 
 extension Set: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Element: Codable { }
 
-extension Array where Element: Equatable {
+extension Sequence where Element: Equatable {
 	
-	func uniqued(comparingBy comparator: (Element, Element) throws -> Bool = (==)) rethrows -> Self {
-		var newArray: Self = []
+	/// Returns an array with the unique elements of this sequence.
+	///
+	/// This method doesn’t guarantee anything about which of any two non-unique elements will remain.
+	/// - Parameter comparator: A closure that determines whether two elements are unique from each other.
+	/// - Returns: An array with only the unique elements of this sequence.
+	func uniqued(comparingBy comparator: (Element, Element) throws -> Bool = (==)) rethrows -> [Element] {
+		var newArray: [Element] = []
 		for element in self {
 			let doesContainElement = try newArray.contains { (otherElement) in
 				return try comparator(element, otherElement)
