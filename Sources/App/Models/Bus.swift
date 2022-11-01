@@ -157,7 +157,10 @@ final class Bus: Hashable, Model {
 					return
 				}
 				self.metersAlongRoute = metersAlongRoute
-				print(self)
+				print("Assume we start on: "+route.name)
+				print("This route starts at: "+String(route.coordinates[0].latitude)+","+String(route.coordinates[0].longitude))
+				print("Bus is at: "+String(location.coordinate.latitude)+","+String(location.coordinate.longitude))
+				print("Traveled: "+String(metersAlongRoute)+" meters")
 			}
 		}
 	}
