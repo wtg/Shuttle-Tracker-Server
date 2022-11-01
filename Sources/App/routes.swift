@@ -210,7 +210,20 @@ func routes(_ application: Application) throws {
 	application.post("analyticsentries"){ (request) -> AnalyticsEntry in 
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
-		let analyticsEntry = try request.content.decode(AnalyticsEntry.self, using: decoder)
+		let jsonEntry = try request.content.decode(JSONEntry.self, using: decoder)
+		let analyticsEntry = try await AnalyticsEntry
+			.find(jsonEntry.id, on request.db(.psql))
+		if (analyticsEntry == nil) {
+			analyticsEntry = AnalyticsEntry()
+		}
+		let analyticsEntry.userID = jsonEntry.id
+		let analyticsEntry.dateSent = jsonEntry.date
+		let analyticsEntry.platform = jsonEntry.platform
+		let analyticsEntry.osVersion = jsonEntry.osVersion
+		let analyticsEntry.appVersion = jsonEntry.appVersion
+		let analyticsEntry.userSettings = jsonEntry.settings
+		let analyticsEntry.usedBoard = jsonEntry.boardBusStatistics.hasUsedBoardBus
+		let analyticsEntry.timesBoarded = jsonEntry.boardBusStatistics.boardBusCount
 		try await analyticsEntry.save(on: request.db(.psql))
 		return analyticsEntry
 	}
@@ -222,8 +235,6 @@ func routes(_ application: Application) throws {
 	}
 	application.get("analyticsentries", ":id") { (request) -> AnalyticsEntry? in
 		return try await AnalyticsEntry
-			.query(on: request.db(.psql))
-			.filter(\.$userID == request.parameters.get("id")!)
-			.first()
+			.find(request.parameters.get("id"), on: request.db(.psql))
 	}
 }
