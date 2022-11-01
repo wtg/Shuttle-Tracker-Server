@@ -30,4 +30,3 @@ struct CreateMilestones: AsyncMigration {
 	}
 	
 }
-

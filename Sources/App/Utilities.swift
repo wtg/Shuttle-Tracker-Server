@@ -80,23 +80,6 @@ extension Coordinate: Codable, AdditiveArithmetic {
 	
 }
 
-extension Array where Element: Equatable {
-	
-	func removingDuplicates(_ comparator: (Element, Element) throws -> Bool = (==)) rethrows -> Self {
-		var newArray: Self = []
-		for element in self {
-			let doesContainElement = try newArray.contains { (otherElement) in
-				return try comparator(element, otherElement)
-			}
-			if !doesContainElement {
-				newArray.append(element)
-			}
-		}
-		return newArray
-	}
-	
-}
-
 enum Constants {
 	
 	/// The current version number for the API.
@@ -104,6 +87,7 @@ enum Constants {
 	/// - Remark: Increment this value every time a breaking change is made to the public-facing API.
 	static let apiVersion: UInt = 3
 	
+	/// The URL of the GPS data-feed.
 	static let datafeedURL: URL = {
 		if let itrakString = ProcessInfo.processInfo.environment["ITRAK"] {
 			return URL(string: itrakString)!
@@ -119,6 +103,14 @@ enum Constants {
 
 enum CryptographyUtilities {
 	
+	/// Verifies the ECDSA signature of the given data.
+	///
+	/// This method checks the given signature against each of the public-key files with the `.pem` extension in the top level of the directory path that's specified in the `KEYS_DIRECTORY` process environment variable. Verification succeeds if the signature is valid for at least one of the public keys.
+	/// - Throws: If the `KEYS_DIRECTORY` environment variable is undefined or if it doesn’t contain the path to a valid directory.
+	/// - Parameters:
+	///   - signatureData: The ECDSA signature.
+	///   - contentData: The data.
+	/// - Returns: `true` if the signature is valid for the given data; otherwise, `false`.
 	static func verify(signature signatureData: Data, of contentData: Data) throws -> Bool {
 		guard let keysDirectoryPath = ProcessInfo.processInfo.environment["KEYS_DIRECTORY"] else {
 			throw Abort(.internalServerError)
@@ -154,6 +146,23 @@ extension Optional: Content, RequestDecodable, ResponseEncodable, AsyncRequestDe
 
 extension Set: Content, RequestDecodable, ResponseEncodable, AsyncRequestDecodable, AsyncResponseEncodable where Element: Codable { }
 
+extension Array where Element: Equatable {
+	
+	func uniqued(comparingBy comparator: (Element, Element) throws -> Bool = (==)) rethrows -> Self {
+		var newArray: Self = []
+		for element in self {
+			let doesContainElement = try newArray.contains { (otherElement) in
+				return try comparator(element, otherElement)
+			}
+			if !doesContainElement {
+				newArray.append(element)
+			}
+		}
+		return newArray
+	}
+	
+}
+
 extension Collection where Element: Model {
 	
 	/// Saves each model object in this collection.
@@ -165,6 +174,8 @@ extension Collection where Element: Model {
 	}
 	
 }
+
+extension UUID: Content { }
 
 extension FILE: TextOutputStream {
 	
