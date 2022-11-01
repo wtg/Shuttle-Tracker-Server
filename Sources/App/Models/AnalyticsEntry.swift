@@ -30,13 +30,15 @@ final class AnalyticsEntry: Model, Content {
     //E.g. for iOS: "15.3.1"
     //For Web, write browser 
     //e.g "Chrome" or "Firefox" or "Other" (You can include more browsers than this)
-    @Field(key: "version") var version: String
+    @Field(key: "osVersion") var osVersion: String?
+
+    @Field(key: "appVersion") var appVersion: String?
 
     //Whether user has ever used the Board Bus
-    @Field(key: "used_board") var usedBoard: Bool
+    @Field(key: "used_board") var usedBoard: Bool?
 
     //Number of times user has used Board Bus per month. Will be reset every month
-    @Field(key: "times_boarded") var timesBoarded: Int
+    @Field(key: "times_boarded") var timesBoarded: Int?
 
     struct UserSettings: Codable {
         //This setting is on all platforms
@@ -48,7 +50,31 @@ final class AnalyticsEntry: Model, Content {
 
     //Specific user settings, if True, setting is turned on
     @Field(key: "user_settings") var userSettings: UserSettings
-    
 
     init () {}
+}
+
+// DTO that maps json variable names to AnalyticsEntry
+final class JSONEntry: Model, Content {
+    var id: String
+    var date: Date
+    var platform: String
+    var osVersion: String?
+    var appVersion: String?
+
+    struct UserSettings: Codable {
+        let colorBlindMode: Bool?
+        
+        let darkMode: Bool?
+    }
+
+    var settings: UserSettings
+
+    struct BoardBusStatistics: Codable {
+        let hasUsedBoardBus: Bool
+
+        let boardBusCount: Int
+    }
+
+    var boardBusStatistics: BoardBusStatistics?
 }
