@@ -1,0 +1,15 @@
+{
+    "id": "35a9c479-98f8-418f-a1c5-1b49b624100d",
+    "date": "2022-02-15",
+    "platform": "iOS",
+    "osVersion": "15.3.1",
+    "appVersion": "1.6",
+    "settings": {
+        "colorBlindMode": false,
+        "darkMode": true
+    },
+    "boardBusStatistics": {
+        "hasUsedBoardBus": true,
+        "boardBusCount": 3
+    }
+}
