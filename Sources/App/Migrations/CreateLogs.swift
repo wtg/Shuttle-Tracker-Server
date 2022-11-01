@@ -15,6 +15,7 @@ struct CreateLogs: AsyncMigration {
 			.schema(Log.schema)
 			.id()
 			.field("content", .string, .required)
+			.field("client_platform", Log.ClientPlatform.representation(for: database), .required)
 			.field("date", .datetime, .required)
 			.create()
 	}

@@ -25,12 +25,23 @@ final class Log: Model, Content {
 		
 	}
 	
+	enum ClientPlatform: String, Codable, DatabaseEnum {
+		
+		case ios, macos, android, web
+		
+		static let name = "ClientPlatform"
+		
+	}
+	
 	static let schema = "logs"
 	
 	@ID var id: UUID?
 	
 	/// The content of this log.
 	@Field(key: "content") private(set) var content: String
+	
+	/// The client platform that submitted this log.
+	@Enum(key: "client_platform") private(set) var clientPlatform: ClientPlatform
 	
 	/// The timestamp of this log.
 	@Field(key: "date") var date: Date
