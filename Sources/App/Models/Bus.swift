@@ -124,35 +124,58 @@ final class Bus: Hashable, Model {
 	
 	/// Detect the route along which this bus is currently traveling.
 	func detectRoute(selectingFrom routes: [Route]) {
+		print("------------------Beginning Route Assignment Algo--------------------------")
 		guard let location = self.locations.resolved else {
 			self.routeID = nil
 			return
 		}
+		print("location in detectRoute is: "+String(location.coordinate.latitude)+","+String(location.coordinate.longitude))
 		var selectedRoute: Route?
 		for route in routes {
+			print("before checkIsOnRoute")
+			print(selectedRoute ?? "nil")
 			if route.checkIsOnRoute(location: location) {
 				guard selectedRoute == nil else {
+					print("returning since selectedroute==nil")
 					return // Since the bus is currently in an overlapping portion of multiple routes, leave the existing route association as-is
 				}
 				selectedRoute = route
 			}
+			print("after checkIsOnRoute")
+			print(selectedRoute ?? "nil")
 		}
+		print("route id before change: ")
+		print(self.routeID ?? "nil")
+		print("Final selected route: ")
+		print(selectedRoute ?? "nil")
 		self.routeID = selectedRoute?.id
+		print("route id after change: ")
+		print(self.routeID ?? "nil")
 	}
 
 	/// Detect the distance traveled along the route which this bus is currently traveling
 	func detectDistanceTraveled(selectingFrom routes: [Route]) {
+		print("------------------Beginning Distance Assignment Algo--------------------------")
 		guard let location = self.locations.resolved else {
 			self.routeID = nil
 			return
 		}
+		let userLocations = self.locations.filter { (location) -> Bool in
+			return location.type == .user
+		}
+		let systemLocations = self.locations.filter { (location) -> Bool in
+				return location.type == .system
+		}
 		guard let routeID = self.routeID else {
 			self.metersAlongRoute = nil
+			print("routeID is null")
 			return
 		}
 		for route in routes {
 			if (routeID == route.id) {
-				guard let metersAlongRoute = route.calculateDistanceAlongRoute(location: location) else {
+				print("on enter we have route: "+route.name)
+				guard let metersAlongRoute = route.calculateDistanceAlongRoute(location: location, locationHistory: userLocations.count > 0 ? userLocations : systemLocations) else {
+					print("No distance could be calculated")
 					self.metersAlongRoute = nil
 					return
 				}

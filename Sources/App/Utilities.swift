@@ -78,9 +78,12 @@ extension Coordinate: Codable, AdditiveArithmetic {
 		try container.encode(self.longitude, forKey: .longitude)
 	}
 	
+
 }
 
 extension LineString {
+	/// Return the 1st closestVertex in the linestring. 
+	/// Note that the first duplicate is returned if there are duplicate coordinates in the linestring
 	func closestVertex(to coordinate: LocationCoordinate2D) -> LocationCoordinate2D? {		
 		guard coordinates.count > 0 else {
 				return nil
@@ -97,7 +100,19 @@ extension LineString {
 				}
 		}
 		return closestCoordinate
-	} 
+	}
+	func find(vertex coordinate: LocationCoordinate2D) -> Int? {
+		guard coordinates.count > 0 else {
+			return nil
+		}
+		/// Find the first occurrence of the coordinate
+		for index in 0..<coordinates.count - 1 {
+			if (coordinate == coordinates[index] ){
+				return index
+			}
+		}
+		return nil
+	}
 }
 
 extension Array where Element: Equatable {
