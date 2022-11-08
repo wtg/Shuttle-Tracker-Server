@@ -1,15 +1,13 @@
 {
     "id": "f7d3b53b-829b-4888-8d12-ad32de71f9c3",
-    "date": "2022-02-15",
+    "dateSent": "2022-11-01T20:31:57+0000",
     "platform": "Android",
     "osVersion": "12.0",
     "appVersion": "1.6",
-    "settings": {
-    "colorBlindMode": false,
-    "darkMode": true
+    "userSettings": {
+        "colorBlindMode": false,
+        "darkMode": true
     },
-    "boardBusStatistics": {
-        "hasUsedBoardBus": true,
-        "boardBusCount": 3
-    }
+    "usedBoard": true,
+    "timesBoarded": 3
 }
