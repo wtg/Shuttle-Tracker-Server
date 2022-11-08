@@ -210,24 +210,14 @@ func routes(_ application: Application) throws {
 	application.post("analyticsentries"){ (request) -> AnalyticsEntry in 
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
-		let jsonEntry = try request.content.decode(JSONEntry.self, using: decoder)
-		let analyticsEntry = try await AnalyticsEntry
-			.find(jsonEntry.id, on request.db(.psql))
-		if (analyticsEntry == nil) {
-			analyticsEntry = AnalyticsEntry()
-		}
-		let analyticsEntry.userID = jsonEntry.id
-		let analyticsEntry.dateSent = jsonEntry.date
-		let analyticsEntry.platform = jsonEntry.platform
-		let analyticsEntry.osVersion = jsonEntry.osVersion
-		let analyticsEntry.appVersion = jsonEntry.appVersion
-		let analyticsEntry.userSettings = jsonEntry.settings
-		let analyticsEntry.usedBoard = jsonEntry.boardBusStatistics.hasUsedBoardBus
-		let analyticsEntry.timesBoarded = jsonEntry.boardBusStatistics.boardBusCount
+		let analyticsEntry = try request.content.decode(AnalyticsEntry.self, using: decoder)
 		try await analyticsEntry.save(on: request.db(.psql))
 		return analyticsEntry
 	}
 	application.get("analyticsentries", "average") { (request) -> Int? in
+		let userSettings = AnalyticsEntry.UserSettings()
+		let newEntry = AnalyticsEntry(platform: "IOS", osVersion: "13.0", userSettings: userSettings)
+		try await newEntry.save(on: request.db(.psql))
 		return try await AnalyticsEntry
 			.query(on: request.db(.psql))
 			.filter(\.$timesBoarded != 0)

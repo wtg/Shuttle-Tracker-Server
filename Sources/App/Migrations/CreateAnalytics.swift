@@ -15,13 +15,14 @@ struct CreateAnalytics: AsyncMigration {
 			.schema(AnalyticsEntry.schema)
 			.id()
 
-			.field("user_id", .string, .required)
+			.field("user_id", .string)
 			.field("date_sent", .datetime, .required)
-			.field("platform", .string, .required)
-            .field("version", .string, .required)
+			.field("platform", .string)
+            .field("osVersion", .string)
+			.field("appVersion", .string, .required)
             .field("used_board", .bool, .required)
             .field("times_boarded", .int, .required)
-            .field("user_settings", .data, .required)
+            .field("user_settings", .dictionary)
 
 			.create()
 	}

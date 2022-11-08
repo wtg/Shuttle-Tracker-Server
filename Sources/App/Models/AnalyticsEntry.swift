@@ -18,7 +18,7 @@ final class AnalyticsEntry: Model, Content {
     @ID var id: UUID?
 
     //UUID of user
-    @Field(key: "user_id") var userID: String
+    @Field(key: "user_id") var userID: String?
 
     //Date that the analytics data was last sent for this user (ISO 8601)
     @Field(key: "date_sent") var dateSent: Date
@@ -30,7 +30,7 @@ final class AnalyticsEntry: Model, Content {
     //E.g. for iOS: "15.3.1"
     //For Web, write browser 
     //e.g "Chrome" or "Firefox" or "Other" (You can include more browsers than this)
-    @Field(key: "osVersion") var osVersion: String?
+    @Field(key: "osVersion") var osVersion: String
 
     @Field(key: "appVersion") var appVersion: String?
 
@@ -46,14 +46,28 @@ final class AnalyticsEntry: Model, Content {
         
         //This setting is only on web
         let darkMode: Bool?
+
+        init () {
+            colorBlindMode = false
+            darkMode = false
+        }
     }
 
     //Specific user settings, if True, setting is turned on
     @Field(key: "user_settings") var userSettings: UserSettings
 
     init () {}
+
+    init(platform: String, osVersion: String, userSettings: UserSettings) {
+        self.id = UUID()
+        self.dateSent = Date()
+        self.osVersion  = osVersion
+        self.platform = platform
+        self.userSettings = userSettings
+    }
 }
 
+/*
 // DTO that maps json variable names to AnalyticsEntry
 final class JSONEntry: Model, Content {
     var id: String
@@ -77,4 +91,4 @@ final class JSONEntry: Model, Content {
     }
 
     var boardBusStatistics: BoardBusStatistics?
-}
+} */
