@@ -85,8 +85,7 @@ func routes(_ application: Application) throws {
 	
 	// Post a new milestone after verifying the request
 	application.post("milestones") { (request) -> Milestone in
-		let decoder = JSONDecoder()
-		let milestone = try request.content.decode(Milestone.self, using: decoder)
+		let milestone = try request.content.decode(Milestone.self)
 		guard let data = (milestone.name + milestone.extendedDescription + milestone.goals.description).data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
@@ -120,7 +119,7 @@ func routes(_ application: Application) throws {
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
 		}
-		let deletionRequest = try request.content.decode(Milestone.DeletionRequest.self, using: JSONDecoder())
+		let deletionRequest = try request.content.decode(Milestone.DeletionRequest.self)
 		guard let data = id.uuidString.data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
@@ -143,10 +142,8 @@ func routes(_ application: Application) throws {
 	}
 	
 	// Post a new announcement after verifying the request
-	application.post("announcements") { (request) -> Announcement in 
-		let decoder = JSONDecoder()
-		decoder.dateDecodingStrategy = .iso8601
-		let announcement = try request.content.decode(Announcement.self, using: decoder)
+	application.post("announcements") { (request) -> Announcement in
+		let announcement = try request.content.decode(Announcement.self)
 		guard let data = (announcement.subject + announcement.body).data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
@@ -163,7 +160,7 @@ func routes(_ application: Application) throws {
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
 		}
-		let deletionRequest = try request.content.decode(Announcement.DeletionRequest.self, using: JSONDecoder())
+		let deletionRequest = try request.content.decode(Announcement.DeletionRequest.self)
 		guard let data = id.uuidString.data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
@@ -186,9 +183,7 @@ func routes(_ application: Application) throws {
 	}
 	
 	application.post("logs") { (request) in
-		let decoder = JSONDecoder()
-		decoder.dateDecodingStrategy = .iso8601
-		let log = try request.content.decode(Log.self, using: decoder)
+		let log = try request.content.decode(Log.self)
 		log.id = UUID()
 		try await log.save(on: request.db(.psql))
 		return log.id
@@ -220,7 +215,7 @@ func routes(_ application: Application) throws {
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
 		}
-		let deletionRequest = try request.content.decode(Log.DeletionRequest.self, using: JSONDecoder())
+		let deletionRequest = try request.content.decode(Log.DeletionRequest.self)
 		guard let data = id.uuidString.data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
