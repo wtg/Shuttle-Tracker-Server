@@ -198,7 +198,7 @@ func routes(_ application: Application) throws {
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
 		}
-		let retrievalRequest = try request.content.decode(Log.RetrievalRequest.self, using: JSONDecoder())
+		let retrievalRequest = try request.query.decode(Log.RetrievalRequest.self)
 		guard let data = id.uuidString.data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
