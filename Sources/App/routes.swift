@@ -215,13 +215,15 @@ func routes(_ application: Application) throws {
 		return analyticsEntry
 	}
 	application.get("analyticsentries", "average") { (request) -> Int? in
-		let userSettings = AnalyticsEntry.UserSettings()
-		let newEntry = AnalyticsEntry(platform: "IOS", osVersion: "13.0", userSettings: userSettings)
-		try await newEntry.save(on: request.db(.psql))
 		return try await AnalyticsEntry
 			.query(on: request.db(.psql))
 			.filter(\.$timesBoarded != 0)
 			.average(\.$timesBoarded)
+	}
+	application.get("analyticsentries", "count") { (request) -> Int? in
+		return try await AnalyticsEntry
+			.query(on: request.db(.psql))
+			.count()
 	}
 	application.get("analyticsentries", ":id") { (request) -> AnalyticsEntry? in
 		return try await AnalyticsEntry

@@ -17,12 +17,12 @@ struct CreateAnalytics: AsyncMigration {
 
 			.field("user_id", .string)
 			.field("date_sent", .datetime, .required)
-			.field("platform", .string)
-            .field("osVersion", .string)
-			.field("appVersion", .string, .required)
-            .field("used_board", .bool, .required)
-            .field("times_boarded", .int, .required)
-            .field("user_settings", .dictionary)
+			.field("platform", .string, .required)
+            .field("osVersion", .string, .required)
+			.field("appVersion", .string)
+            .field("used_board", .bool)
+            .field("times_boarded", .int)
+            .field("user_settings", .dictionary, .required)
 
 			.create()
 	}

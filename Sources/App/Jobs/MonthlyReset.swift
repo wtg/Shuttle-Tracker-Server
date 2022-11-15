@@ -4,6 +4,9 @@
 //
 //  Created by Mohammed Kalefa on 10/11/22.
 //
+// Calculate some basic statistics
+// Reset boardbus count
+// Delete entries older than 6 months
 
 import Foundation
 import Queues
