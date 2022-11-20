@@ -136,7 +136,6 @@ final class Bus: Hashable, Model {
 			print(selectedRoute ?? "nil")
 			if route.checkIsOnRoute(location: location) {
 				guard selectedRoute == nil else {
-					print("returning since selectedroute==nil")
 					return // Since the bus is currently in an overlapping portion of multiple routes, leave the existing route association as-is
 				}
 				selectedRoute = route
