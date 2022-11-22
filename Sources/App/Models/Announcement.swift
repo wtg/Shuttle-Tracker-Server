@@ -31,7 +31,7 @@ final class Announcement: Model, Content {
 	/// A representation of a signed request to delete a particular announcement from the server.
 	struct DeletionRequest: Decodable {
 		
-		/// A cryptographic signature of the unique identifier of the announcement to be deleted.
+		/// A cryptographic signature of the unique identifier of the announcement to delete.
 		let signature: Data
 		
 	}

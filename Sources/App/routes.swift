@@ -83,9 +83,9 @@ func routes(_ application: Application) throws {
 			.all()
 	} 
 	
+	// Post a new milestone after verifying the request
 	application.post("milestones") { (request) -> Milestone in
-		let decoder = JSONDecoder()
-		let milestone = try request.content.decode(Milestone.self, using: decoder)
+		let milestone = try request.content.decode(Milestone.self)
 		guard let data = (milestone.name + milestone.extendedDescription + milestone.goals.description).data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
@@ -114,13 +114,12 @@ func routes(_ application: Application) throws {
 		return milestone
 	}
 	
-	// Delete a given milestone
-	application.delete("milestones", ":id") { (request) -> String in
+	// Delete a given milestone after verifying the request
+	application.delete("milestones", ":id") { (request) in
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
 		}
-		let decoder = JSONDecoder()
-		let deletionRequest = try request.content.decode(Milestone.DeletionRequest.self, using: decoder)
+		let deletionRequest = try request.content.decode(Milestone.DeletionRequest.self)
 		guard let data = id.uuidString.data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
@@ -129,7 +128,7 @@ func routes(_ application: Application) throws {
 				.query(on: request.db(.psql))
 				.filter(\.$id == id)
 				.delete()
-			return id.uuidString
+			return id
 		} else {
 			throw Abort(.forbidden)
 		}
@@ -142,11 +141,9 @@ func routes(_ application: Application) throws {
 			.all()
 	}
 	
-	// Post a new announcement after verifying it
-	application.post("announcements") { (request) -> Announcement in 
-		let decoder = JSONDecoder()
-		decoder.dateDecodingStrategy = .iso8601
-		let announcement = try request.content.decode(Announcement.self, using: decoder)
+	// Post a new announcement after verifying the request
+	application.post("announcements") { (request) -> Announcement in
+		let announcement = try request.content.decode(Announcement.self)
 		guard let data = (announcement.subject + announcement.body).data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
@@ -158,18 +155,72 @@ func routes(_ application: Application) throws {
 		}
 	}
 	
-	// Delete a given announcement after verifying it
-	application.delete("announcements", ":id") { (request) -> String in
+	// Delete a given announcement after verifying the request
+	application.delete("announcements", ":id") { (request) in
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
 		}
-		let decoder = JSONDecoder()
-		let deletionRequest = try request.content.decode(Announcement.DeletionRequest.self, using: decoder)
+		let deletionRequest = try request.content.decode(Announcement.DeletionRequest.self)
 		guard let data = id.uuidString.data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
 		if try CryptographyUtilities.verify(signature: deletionRequest.signature, of: data) {
 			try await Announcement
+				.query(on: request.db(.psql))
+				.filter(\.$id == id)
+				.delete()
+			return id
+		} else {
+			throw Abort(.forbidden)
+		}
+	}
+	
+	application.get("logs") { (request) in
+		try await Log
+			.query(on: request.db(.psql))
+			.sort(\.$date)
+			.all(\.$id)
+	}
+	
+	application.post("logs") { (request) in
+		let log = try request.content.decode(Log.self)
+		log.id = UUID()
+		try await log.save(on: request.db(.psql))
+		return log.id
+	}
+	
+	application.get("logs", ":id") { (request) in
+		guard let id = request.parameters.get("id", as: UUID.self) else {
+			throw Abort(.badRequest)
+		}
+		let retrievalRequest = try request.query.decode(Log.RetrievalRequest.self)
+		guard let data = id.uuidString.data(using: .utf8) else {
+			throw Abort(.internalServerError)
+		}
+		if try CryptographyUtilities.verify(signature: retrievalRequest.signature, of: data) {
+			let log = try await Log
+				.query(on: request.db(.psql))
+				.filter(\.$id == id)
+				.first()
+			guard let log else {
+				throw Abort(.notFound)
+			}
+			return log
+		} else {
+			throw Abort(.forbidden)
+		}
+	}
+	
+	application.delete("logs", ":id") { (request) in
+		guard let id = request.parameters.get("id", as: UUID.self) else {
+			throw Abort(.badRequest)
+		}
+		let deletionRequest = try request.content.decode(Log.DeletionRequest.self)
+		guard let data = id.uuidString.data(using: .utf8) else {
+			throw Abort(.internalServerError)
+		}
+		if try CryptographyUtilities.verify(signature: deletionRequest.signature, of: data) {
+			try await Log
 				.query(on: request.db(.psql))
 				.filter(\.$id == id)
 				.delete()
@@ -179,7 +230,7 @@ func routes(_ application: Application) throws {
 		}
 	}
 	
-	// Return the contents of the datafeed
+	// Return the contents of the data-feed
 	application.get("datafeed") { (_) in
 		return try String(contentsOf: Constants.datafeedURL)
 	}
@@ -202,7 +253,7 @@ func routes(_ application: Application) throws {
 			.filter { (stop) in
 				return stop.schedule.isActive
 			}
-			.removingDuplicates()
+			.uniqued()
 	}
 	
 	// TODO: Return something that’s actually useful
