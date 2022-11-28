@@ -46,7 +46,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/Gerzer/CoreGPX.git",
-			revision: "6ef3abe863a82a3be7552734f20080749554eae1"
+			revision: "b94989c4b07d63b0caf0d4af2366da1f436ee0c2"
 		)
 	],
 	targets: [
