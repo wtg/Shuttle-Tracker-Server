@@ -45,8 +45,8 @@ let package = Package(
 			from: "1.3.0"
 		),
 		.package(
-			url: "https://github.com/Gerzer/CoreGPX.git",
-			revision: "b94989c4b07d63b0caf0d4af2366da1f436ee0c2"
+			url: "https://github.com/vincentneo/CoreGPX.git",
+			from: "0.9.2"
 		)
 	],
 	targets: [
