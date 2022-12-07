@@ -250,6 +250,31 @@ func routes(_ application: Application) throws {
 		}
 		return location
 	}
+
+	// Attempt to create and return a Progress structure for a given bus's progress along a route
+	application.get("buses", ":id", "progress") { (request) -> Bus.Progress? in
+		guard let id = request.parameters.get("id", as: Int.self) else {
+			throw Abort(.badRequest)
+		}
+		let bus = try await Bus
+			.query(on: request.db)
+			.filter(\.$id == id)
+			.first()
+		guard let bus = bus else {
+			throw Abort(.notFound)
+		}
+		guard let routeID = bus.routeID else {
+			throw Abort(.notFound)
+		}
+		let currentRoute = try await Route
+			.query(on: request.db)
+			.filter(\.$id == routeID)
+			.first()
+		guard let currentRoute = currentRoute else {
+			throw Abort(.notFound)
+		}
+		return bus.progress(with: currentRoute)
+	}
 	
 	// Attempt to update a bus’s location
 	application.patch("buses", ":id") { (request) -> Bus.Location? in

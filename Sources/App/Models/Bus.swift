@@ -73,6 +73,19 @@ final class Bus: Hashable, Model {
 		
 	}
 	
+	/// A representation of the `Progress` a `Bus` instance has traveled along a route
+	struct Progress: Content {
+		
+		/// The route along which the bus is currently traveling.
+		var routeID: UUID?
+
+		/// The number of meters along the route which the bus has currently traveled
+		var metersAlongRoute: Double
+
+		/// The total number of meters the current route measures
+		var totalMetersAlongRoute: Double
+	}
+
 	static let schema = "buses"
 	
 	/// A simplified representation of this bus that’s suitable to return as a response to incoming requests.
@@ -86,6 +99,25 @@ final class Bus: Hashable, Model {
 			}
 			return Resolved(id: id, location: location, routeID: self.routeID)
 		}
+	}
+
+	/// A simplified representation of the progress along a route for this bus that's suitable to return as a response to incoming requests.
+	func progress(with currentRoute: Route) -> Progress? {
+		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		print(self)
+		guard let routeID = self.routeID else {
+			print("routeID failed!!!")
+			return nil
+		} 
+		guard let metersAlongRoute = self.metersAlongRoute else {
+			print("metersAlongRoute failed!!!")
+			return nil
+		}
+		let totalMetersAlongRoute = currentRoute.measureTotalMetersAlongRoute()
+		print("Route ID: " + String(routeID))
+		print("Meters Along Route: " + String(metersAlongRoute))
+		print("Total Meters Along Route: " + String(totalMetersAlongRoute))
+		return Progress(routeID: routeID, metersAlongRoute: metersAlongRoute, totalMetersAlongRoute: totalMetersAlongRoute)
 	}
 	
 	/// The physical bus’s unique identifier.
@@ -129,27 +161,18 @@ final class Bus: Hashable, Model {
 			self.routeID = nil
 			return
 		}
-		print("location in detectRoute is: "+String(location.coordinate.latitude)+","+String(location.coordinate.longitude))
 		var selectedRoute: Route?
 		for route in routes {
-			print("before checkIsOnRoute")
-			print(selectedRoute ?? "nil")
 			if route.checkIsOnRoute(location: location) {
 				guard selectedRoute == nil else {
 					return // Since the bus is currently in an overlapping portion of multiple routes, leave the existing route association as-is
 				}
 				selectedRoute = route
 			}
-			print("after checkIsOnRoute")
-			print(selectedRoute ?? "nil")
 		}
-		print("route id before change: ")
-		print(self.routeID ?? "nil")
 		print("Final selected route: ")
 		print(selectedRoute ?? "nil")
 		self.routeID = selectedRoute?.id
-		print("route id after change: ")
-		print(self.routeID ?? "nil")
 	}
 
 	/// Detect the distance traveled along the route which this bus is currently traveling

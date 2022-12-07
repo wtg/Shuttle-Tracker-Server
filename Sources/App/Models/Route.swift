@@ -125,17 +125,32 @@ final class Route: Model, Content, Collection {
 		guard let debug = LineString(self.coordinates)
 			.closestCoordinate(to: location.coordinate)?
 			.coordinate else { 
-				print("can't get closest coordinate on linestring") 
 				return false }
 		guard let distance = distance else {
-			print(".distance failed guard check")
 			return false
 		}
-		print("From "+String(location.coordinate.latitude)+","+String(location.coordinate.longitude))
-		print("The closest coordinate on linestring is: "+String(debug.latitude)+","+String(debug.longitude))
-		print("Dist is: " + String(distance) + " and threshold is: " + String(Constants.isOnRouteThreshold))
-		print(self)
 		return distance < Constants.isOnRouteThreshold
+	}
+
+	/// Calculates the total distance along a route given in meters from start to end back to start
+	func measureTotalMetersAlongRoute() -> LocationDistance {
+		let endRtePtLocation = self.coordinates.last;
+		var distanceAlongRoute: LocationDistance = 0.0
+		var endRtePtNotFound = true;
+		// Measure the distance in meters from the start of the route to the end of the route representation
+		for (index, rtept) in self.coordinates.enumerated() {
+			if (index != 0) {
+				distanceAlongRoute += rtept.distance(to: self.coordinates[index-1])
+				// Measure the distance in meters from the end of the route representation back to the start of the route
+				if (endRtePtNotFound) {
+					distanceAlongRoute += rtept.distance(to: self.coordinates[index-1])
+					if (endRtePtLocation == rtept) {
+						endRtePtNotFound = false;
+					}
+				}
+			}
+		}
+		return distanceAlongRoute
 	}
 	/// Calculates the total distance a bus has traveled along the route from the first rtept to the provided location
 	/// - Parameter location: The location the bus is currently at
