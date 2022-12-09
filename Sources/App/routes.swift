@@ -211,14 +211,20 @@ func routes(_ application: Application) throws {
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
 		let analyticsEntry = try request.content.decode(AnalyticsEntry.self, using: decoder)
-		try await analyticsEntry.save(on: request.db(.psql))
+		try await analyticsEntry.update(on: request.db(.psql))
 		return analyticsEntry
 	}
-	application.get("analyticsentries", "average") { (request) -> Int? in
-		return try await AnalyticsEntry
+	application.get("analyticsentries", "average") { (request) -> Double? in
+		var sum = 0.0
+		var count = 0.0
+		let analyticsentries = try await AnalyticsEntry
 			.query(on: request.db(.psql))
-			.filter(\.$timesBoarded != 0)
-			.average(\.$timesBoarded)
+			.all()
+		for analyticsentry in analyticsentries {
+			sum += Double(analyticsentry.timesBoarded ?? 0)
+			count += 1
+		}
+		return (sum / count)
 	}
 	application.get("analyticsentries", "count") { (request) -> Int? in
 		return try await AnalyticsEntry
