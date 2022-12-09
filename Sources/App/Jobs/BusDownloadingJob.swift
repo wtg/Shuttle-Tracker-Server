@@ -32,8 +32,8 @@ struct BusDownloadingJob: AsyncScheduledJob {
 		for bus in buses {
 			if let newBus = allNewBuses.remove(bus) {
 				bus.locations.merge(with: newBus.locations)
-				//bus.detectRoute(selectingFrom: activeRoutes)
-				//bus.detectDistanceTraveled(selectingFrom: activeRoutes)
+				bus.detectRoute(selectingFrom: activeRoutes)
+				bus.detectDistanceTraveled(selectingFrom: activeRoutes)
 				try await bus.update(on: context.application.db)
 			}
 		}
