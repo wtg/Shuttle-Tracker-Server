@@ -1,0 +1,2 @@
+#!/bin/bash
+for f in *.json; do curl -d @$f -X POST http://127.0.0.1:8080/analyticsentries; done
