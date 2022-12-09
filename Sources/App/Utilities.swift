@@ -148,7 +148,7 @@ enum Constants {
 	}()
 	
 	/// The maximum perpendicular distance, in meters, away from a route at which a coordinate is considered to be “on” that route.
-	static let isOnRouteThreshold: Double = 10
+	static let isOnRouteThreshold: Double = 20
 	
 }
 
