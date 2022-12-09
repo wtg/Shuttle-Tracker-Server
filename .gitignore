@@ -7,3 +7,4 @@
 .vs/
 .vscode/
 Package.resolved
+.vscode/launch.json
