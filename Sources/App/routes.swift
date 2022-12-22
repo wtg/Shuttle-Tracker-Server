@@ -5,9 +5,10 @@
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //
 
-import Vapor
+import Algorithms
 import Fluent
 import UAParserSwift
+import Vapor
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
@@ -250,13 +251,14 @@ func routes(_ application: Application) throws {
 	
 	// Attempt to fetch and to return the shuttle stops
 	application.get("stops") { (request) in
-		return try await Stop
+		let stops = try await Stop
 			.query(on: request.db)
 			.all()
 			.filter { (stop) in
 				return stop.schedule.isActive
 			}
 			.uniqued()
+		return Array(stops)
 	}
 	
 	// TODO: Return something that’s actually useful

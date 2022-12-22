@@ -11,7 +11,7 @@ import CoreGPX
 import JSONParser
 
 /// A representation of a shuttle stop.
-final class Stop: Equatable, Model, Content {
+final class Stop: Equatable, Hashable, Model, Content {
 	
 	static let schema = "stops"
 	
@@ -39,6 +39,10 @@ final class Stop: Equatable, Model, Content {
 		self.name = name
 		self.coordinate = coordinate
 		self.schedule = schedule
+	}
+	
+	func hash(into hasher: inout Hasher) {
+		hasher.combine(self.id)
 	}
 	
 	static func == (_ lhs: Stop, _ rhs: Stop) -> Bool {
