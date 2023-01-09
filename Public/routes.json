@@ -56,6 +56,7 @@
 	},
 	"fall22.gpx": {
 		"start": "2022-08-26T04:00:00Z",
+		"end": "2022-12-10T04:00:00Z",
 		"days": [
 			"monday",
 			"tuesday",
@@ -91,5 +92,19 @@
 			}
 		],
 		"doInvertSpecialIntervals": false
+	},
+	"spring23.gpx": {
+		"start": "2023-01-09T04:00:00Z",
+		"days": [
+			"monday",
+			"tuesday",
+			"wednesday",
+			"thursday",
+			"friday",
+			"saturday",
+			"sunday"
+		],
+		"specialIntervals": [],
+		"doInvertSpecialIntervals": true
 	}
 }
