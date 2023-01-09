@@ -42,7 +42,7 @@ final class Stop: Equatable, Hashable, Model, Content {
 	}
 	
 	func hash(into hasher: inout Hasher) {
-		hasher.combine(self.id)
+		hasher.combine(self.name) // Hashing the ID could potentially violate Hashable’s invariants when the ID is determined by the database, so we hash the name instead. This means that stop names must be globally unique, which doesn’t seem to be too far-fetched as an assumption/requirement.
 	}
 	
 	static func == (_ lhs: Stop, _ rhs: Stop) -> Bool {
