@@ -103,5 +103,40 @@
 				"end": "8:00 PM"
 			}
 		}
+	},
+	{
+		"name": "Spring ’23",
+		"start": "2023-01-09T11:00:00Z",
+		"end": "2023-05-05T04:30:00Z",
+		"content": {
+			"monday": {
+				"start": "7:00 AM",
+				"end": "12:30 AM"
+			},
+			"tuesday": {
+				"start": "7:00 AM",
+				"end": "12:30 AM"
+			},
+			"wednesday": {
+				"start": "7:00 AM",
+				"end": "12:30 AM"
+			},
+			"thursday": {
+				"start": "7:00 AM",
+				"end": "12:30 AM"
+			},
+			"friday": {
+				"start": "7:00 AM",
+				"end": "12:30 AM"
+			},
+			"saturday": {
+				"start": "9:00 AM",
+				"end": "12:30 AM"
+			},
+			"sunday": {
+				"start": "9:00 AM",
+				"end": "8:30 PM"
+			}
+		}
 	}
 ]
