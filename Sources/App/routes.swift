@@ -206,33 +206,64 @@ func routes(_ application: Application) throws {
 		try await bus.update(on: request.db)
 		return bus.congestion
 	}
-	//Analytics
-	application.post("analyticsentries"){ (request) -> AnalyticsEntry in 
+	
+	// MARK: - Analytics
+	
+	application.get("analytics", "entries") { (request) in
+		var query = AnalyticsEntry
+			.query(on: request.db(.psql))
+		if let userID: UUID = request.query["userid"] {
+			query = query.filter(\.$userID == userID)
+		} else if request.query[String.self, at: "userid"] != nil {
+			throw Abort(.badRequest)
+		}
+		return try await query.all()
+	}
+	
+	application.post("analytics", "entries") { (request) in
 		let decoder = JSONDecoder()
 		decoder.dateDecodingStrategy = .iso8601
 		let analyticsEntry = try request.content.decode(AnalyticsEntry.self, using: decoder)
-		try await analyticsEntry.update(on: request.db(.psql))
+		try await analyticsEntry.save(on: request.db(.psql))
 		return analyticsEntry
 	}
-	application.get("analyticsentries", "average") { (request) -> Double? in
-		var sum = 0.0
-		var count = 0.0
-		let analyticsentries = try await AnalyticsEntry
-			.query(on: request.db(.psql))
-			.all()
-		for analyticsentry in analyticsentries {
-			sum += Double(analyticsentry.timesBoarded ?? 0)
-			count += 1
+	
+	application.get("analytics", "entries", ":id") { (request) -> AnalyticsEntry in
+		let entry = try await AnalyticsEntry.find(
+			request.parameters.get("id"),
+			on: request.db(.psql)
+		)
+		guard let entry else {
+			throw Abort(.notFound)
 		}
-		return (sum / count)
+		return entry
 	}
-	application.get("analyticsentries", "count") { (request) -> Int? in
+	
+	application.get("analytics", "entries", "count") { (request) in
 		return try await AnalyticsEntry
 			.query(on: request.db(.psql))
 			.count()
 	}
-	application.get("analyticsentries", ":id") { (request) -> AnalyticsEntry? in
+	
+	application.get("analytics", "userids") { (request) in
 		return try await AnalyticsEntry
-			.find(request.parameters.get("id"), on: request.db(.psql))
+			.query(on: request.db(.psql))
+			.unique()
+			.all(\.$userID)
+			.compactMap { return $0 } // Remove nil elements
 	}
+	
+	application.get("analytics", "boardbus", "average") { (request) in
+		let entries = try await AnalyticsEntry
+			.query(on: request.db(.psql))
+			.filter(\.$userID != nil)
+			.sort(\.$date, .descending)
+			.all()
+			.uniqued { return $0.userID }
+		let sum = entries.reduce(into: 0) { (partialResult, entry) in
+			partialResult += entry.boardBusCount ?? 0
+		}
+		return Double(sum) / Double(entries.count)
+	}
+	
 }

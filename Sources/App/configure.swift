@@ -44,15 +44,14 @@ public func configure(_ application: Application) throws {
 			.postgres(
 				hostname: postgresHostname,
 				username: postgresUsername,
-				password: postgresPassword,
-				database: "shuttle_tracker"
+				password: postgresPassword
 			),
 			as: .psql,
 			isDefault: false
 		)
 	}
 	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate())
-	application.migrations.add(CreateAnnouncements(), CreateAnalytics(), to: .psql)
+	application.migrations.add(CreateAnnouncements(), CreateAnalyticsEntries(), to: .psql)
 	application.queues.use(
 		.fluent(useSoftDeletes: false)
 	)
@@ -70,11 +69,6 @@ public func configure(_ application: Application) throws {
 	application.queues
 		.schedule(RestartJob())
 		.at(Date() + 21600)
-	application.queues
-		.schedule(MonthlyReset())
-		.monthly()
-		.on(1)
-		.at(.midnight)
 	try application
 		.autoMigrate()
 		.wait()
