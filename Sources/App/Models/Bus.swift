@@ -5,9 +5,10 @@
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //
 
-import Vapor
 import Fluent
 import JSONParser
+import Turf
+import Vapor
 
 /// A representation of a shuttle bus.
 final class Bus: Hashable, Model {
@@ -32,7 +33,7 @@ final class Bus: Hashable, Model {
 		
 		/// The geospatial coordinate that’s associated with this location datum.
 		@Field(key: "coordinate") var coordinate: Coordinate
-		
+
 		/// The type of location datum, which indicates how it was originally collected.
 		@Enum(key: "type") var type: LocationType
 		
@@ -67,6 +68,9 @@ final class Bus: Hashable, Model {
 		/// The current resolved location of the physical bus.
 		var location: Bus.Location
 		
+		/// The route along which the bus is currently traveling.
+		var routeID: UUID?
+		
 	}
 	
 	static let schema = "buses"
@@ -80,7 +84,7 @@ final class Bus: Hashable, Model {
 			guard let location = self.locations.resolved else {
 				return nil
 			}
-			return Resolved(id: id, location: location)
+			return Resolved(id: id, location: location, routeID: self.routeID)
 		}
 	}
 	
@@ -92,6 +96,9 @@ final class Bus: Hashable, Model {
 	
 	/// The congestion data for this bus.
 	@OptionalField(key: "congestion") var congestion: Int?
+	
+	/// The ID of route along which this bus is currently traveling.
+	@OptionalField(key: "route_id") var routeID: UUID?
 	
 	init() { }
 	
@@ -112,52 +119,23 @@ final class Bus: Hashable, Model {
 		hasher.combine(self.id)
 	}
 	
-}
-
-extension Set where Element == Bus {
-	
-	/// Downloads the latest system bus data.
-	/// - Parameters:
-	///   - application: The current application object.
-	/// - Returns: The new bus objects with the latest data.
-	/// - Important: The returned bus objects do **not** contain any user-reported location or congestion data and therefore must be separately merged with any existing bus data.
-	static func download(application: Application) async throws -> Set<Bus> {
-		let rawString = try String(contentsOf: Constants.datafeedURL)
-		let buses = rawString
-			.split(separator: "\r\n")
-			.dropFirst()
-			.dropLast()
-			.compactMap { (rawLine) -> Bus? in
-				guard let backendIDRange = rawLine.range(of: #"(?<=(Vehicle\sID:))\d+"#, options: [.regularExpression]) else {
-					return nil
+	/// Detect the route along which this bus is currently traveling.
+	func detectRoute(selectingFrom routes: [Route]) {
+		guard let location = self.locations.resolved else {
+			self.routeID = nil
+			return
+		}
+		var selectedRoute: Route?
+		for route in routes {
+			if route.checkIsOnRoute(location: location) {
+				guard selectedRoute == nil else {
+					return // Since the bus is currently in an overlapping portion of multiple routes, leave the existing route association as-is
 				}
-				guard let latitudeRange = rawLine.range(of: #"(?<=(lat:))-?\d+\.\d+"#, options: [.regularExpression]), let latitude = Double(rawLine[latitudeRange]) else {
-					return nil
-				}
-				guard let longitudeRange = rawLine.range(of: #"(?<=(lon:))-?\d+\.\d+"#, options: [.regularExpression]), let longitude = Double(rawLine[longitudeRange]) else {
-					return nil
-				}
-				guard let timeRange = rawLine.range(of: #"(?<=(time:))\d+"#, options: [.regularExpression]), let dateRange = rawLine.range(of: #"(?<=(date:))\d{8}"#, options: [.regularExpression]) else {
-					return nil
-				}
-				let backendID = String(rawLine[backendIDRange])
-				guard let id = Buses.shared.busIDMap[backendID] else {
-					return nil
-				}
-				let formatter = DateFormatter()
-				formatter.dateFormat = "HHmmss'|'MMddyyyy"
-				formatter.timeZone = TimeZone(abbreviation: "UTC")!
-				let dateString = "\(rawLine[timeRange])|\(rawLine[dateRange])"
-				guard let date = formatter.date(from: dateString) else {
-					return nil
-				}
-				let coordinate = Coordinate(latitude: latitude, longitude: longitude)
-				let location = Bus.Location(id: UUID(), date: date, coordinate: coordinate, type: .system)
-				return Bus(id: id, locations: [location])
+				selectedRoute = route
 			}
-		return Set(buses)
+		}
+		self.routeID = selectedRoute?.id
 	}
-	
 }
 
 extension Collection where Element == Bus.Location {
@@ -224,3 +202,4 @@ extension Array: Mergeable where Element == Bus.Location {
 	}
 	
 }
+

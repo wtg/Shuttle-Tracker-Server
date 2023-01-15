@@ -1,33 +1,142 @@
-{
-  "schedules" :
-  [
-    {
-      "name": "Spring 2022", 
-      "start": "2022-01-23T07:00:00.000Z",
-      "end": "2022-05-6T23:45:00.000Z",
-      "content": {
-        "Monday": {"start": "7:00", "end": "23:45"},
-        "Tuesday": {"start": "07:00", "end": "23:45"},
-        "Wednesday": {"start": "07:00", "end": "23:45"},
-        "Thursday": {"start": "07:00", "end": "23:45"},
-        "Friday": {"start": "07:00", "end": "23:45"},
-        "Saturday": {"start": "09:00", "end": "23:45"},
-        "Sunday": {"start": "09:00", "end": "8:00"}
-      }
-    },
-    {
-      "name": "Term Year", 
-      "start": "2069-04-20T07:00:00.000Z",
-      "end": "2069-04-20T23:45:00.000Z",
-      "content": {
-        "Monday": {"start": "01:00", "end": "23:00"},
-        "Tuesday": {"start": "01:00", "end": "23:00"},
-        "Wednesday": {"start": "01:00", "end": "23:00"},
-        "Thursday": {"start": "01:00", "end": "23:00"},
-        "Friday": {"start": "01:00", "end": "23:00"},
-        "Saturday": {"start": "01:00", "end": "23:00"},
-        "Sunday": {"start": "01:00", "end": "23:00"}
-      }
-    }
-  ]
-}
+[
+	{
+		"name": "Spring ’22",
+		"start": "2022-01-23T11:00:00Z",
+		"end": "2022-05-07T03:45:00Z",
+		"content": {
+			"monday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"tuesday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"wednesday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"thursday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"friday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"saturday": {
+				"start": "9:00 AM",
+				"end": "11:45 PM"
+			},
+			"sunday": {
+				"start": "9:00 AM",
+				"end": "8:00 PM"
+			}
+		}
+	},
+	{
+		"name": "Summer ’22",
+		"start": "2022-05-23T11:00:00Z",
+		"end": "2022-08-20T03:45:00Z",
+		"content": {
+			"monday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"tuesday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"wednesday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"thursday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"friday": {
+				"start": "7:00 AM",
+				"end": "11:45 PM"
+			},
+			"saturday": {
+				"start": "9:00 AM",
+				"end": "11:45 PM"
+			},
+			"sunday": {
+				"start": "9:00 AM",
+				"end": "5:30 PM"
+			}
+		}
+	},
+	{
+		"name": "Fall ’22",
+		"start": "2022-08-29T11:00:00Z",
+		"end": "2022-12-10T06:30:00Z",
+		"content": {
+			"monday": {
+				"start": "7:00 AM",
+				"end": "12:00 AM"
+			},
+			"tuesday": {
+				"start": "7:00 AM",
+				"end": "12:00 AM"
+			},
+			"wednesday": {
+				"start": "7:00 AM",
+				"end": "12:00 AM"
+			},
+			"thursday": {
+				"start": "7:00 AM",
+				"end": "12:00 AM"
+			},
+			"friday": {
+				"start": "7:00 AM",
+				"end": "2:30 AM"
+			},
+			"saturday": {
+				"start": "9:00 AM",
+				"end": "2:30 AM"
+			},
+			"sunday": {
+				"start": "9:00 AM",
+				"end": "8:00 PM"
+			}
+		}
+	},
+	{
+		"name": "Spring ’23",
+		"start": "2023-01-09T11:00:00Z",
+		"end": "2023-05-05T04:30:00Z",
+		"content": {
+			"monday": {
+				"start": "7:00 AM",
+				"end": "12:30 AM"
+			},
+			"tuesday": {
+				"start": "7:00 AM",
+				"end": "12:30 AM"
+			},
+			"wednesday": {
+				"start": "7:00 AM",
+				"end": "12:30 AM"
+			},
+			"thursday": {
+				"start": "7:00 AM",
+				"end": "12:30 AM"
+			},
+			"friday": {
+				"start": "7:00 AM",
+				"end": "12:30 AM"
+			},
+			"saturday": {
+				"start": "9:00 AM",
+				"end": "12:30 AM"
+			},
+			"sunday": {
+				"start": "9:00 AM",
+				"end": "8:30 PM"
+			}
+		}
+	}
+]

@@ -12,7 +12,7 @@ import FluentPostgresDriver
 import Queues
 import QueuesFluentDriver
 
-public func configure(_ application: Application) throws {
+public func configure(_ application: Application) async throws {
 	application.middleware.use(
 		CORSMiddleware(
 			configuration: .default()
@@ -30,9 +30,7 @@ public func configure(_ application: Application) throws {
 	)
 	if let postgresURLString = ProcessInfo.processInfo.environment["DATABASE_URL"], let postgresURL = URL(string: postgresURLString) {
 		application.databases.use(
-			try .postgres(
-				url: postgresURL
-			),
+			try .postgres(url: postgresURL),
 			as: .psql,
 			isDefault: false
 		)
@@ -40,6 +38,9 @@ public func configure(_ application: Application) throws {
 		let postgresHostname = ProcessInfo.processInfo.environment["POSTGRES_HOSTNAME"]!
 		let postgresUsername = ProcessInfo.processInfo.environment["POSTGRES_USERNAME"]!
 		let postgresPassword = ProcessInfo.processInfo.environment["POSTGRES_PASSWORD"] ?? ""
+		
+		// TODO: Make a new database during the setup process
+		// For now, we’re using the default PostgreSQL database for deployment compatibility reasons, but we should in the future switch to a non-default, unprotected database.
 		application.databases.use(
 			.postgres(
 				hostname: postgresHostname,
@@ -50,8 +51,19 @@ public func configure(_ application: Application) throws {
 			isDefault: false
 		)
 	}
-	application.migrations.add(CreateBuses(), CreateRoutes(), CreateStops(), JobModelMigrate())
-	application.migrations.add(CreateAnnouncements(), CreateAnalyticsEntries(), to: .psql)
+	application.migrations.add(
+		CreateBuses(),
+		CreateRoutes(),
+		CreateStops(),
+		JobModelMigrate()
+	) // Add to the default database
+	application.migrations.add(
+		CreateAnnouncements(),
+		CreateAnalyticsEntries(),
+		CreateLogs(),
+		CreateMilestones(),
+		to: .psql
+	) // Add to the persistent database
 	application.queues.use(
 		.fluent(useSoftDeletes: false)
 	)
@@ -69,9 +81,7 @@ public func configure(_ application: Application) throws {
 	application.queues
 		.schedule(RestartJob())
 		.at(Date() + 21600)
-	try application
-		.autoMigrate()
-		.wait()
+	try await application.autoMigrate()
 	try application.queues.startInProcessJobs()
 	try application.queues.startScheduledJobs()
 	if FileManager.default.fileExists(atPath: "tls") {
@@ -108,18 +118,12 @@ public func configure(_ application: Application) throws {
 		)
 	}
 	for busID in Buses.shared.allBusIDs {
-		Task {
-			try await Bus(id: busID)
-				.save(on: application.db)
-		}
+		try await Bus(id: busID)
+			.save(on: application.db)
 	}
-	Task {
-		try await BusDownloadingJob()
-			.run(context: application.queues.queue.context)
-	}
-	Task {
-		try await GPXImportingJob()
-			.run(context: application.queues.queue.context)
-	}
+	try? await BusDownloadingJob()
+		.run(context: application.queues.queue.context)
+	try await GPXImportingJob()
+		.run(context: application.queues.queue.context)
 	try routes(application)
 	}

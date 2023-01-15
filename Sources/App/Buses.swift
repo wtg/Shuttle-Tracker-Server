@@ -9,8 +9,7 @@ import Foundation
 import JSONParser
 
 /// A representation of all of the known buses.
-/// - Warning: Don’t create instances this class yourself; instead use the shared instance.
-class Buses: JSONProvider {
+final class Buses: JSONProvider {
 	
 	/// A mapping of backend bus IDs to frontend bus IDs.
 	class BusIDMap: JSONProvider {
@@ -20,7 +19,6 @@ class Buses: JSONProvider {
 		let parser: DictionaryJSONParser?
 		
 		/// Creates a mapping of backend bus IDs to frontend bus IDs.
-		/// - Warning: Don’t call this initializer yourself; instead use the `busIDMap` property on the shared `Buses` instance.
 		/// - Parameter parser: A JSON parser that contains the mapping data.
 		fileprivate init(parser: DictionaryJSONParser) {
 			self.parser = parser
@@ -47,7 +45,6 @@ class Buses: JSONProvider {
 	let parser: DictionaryJSONParser?
 	
 	/// Creates a representation of all of the known buses.
-	/// - Warning: Don’t call this initializer yourself; instead use the shared instance.
 	private init() {
 		let busesFileURL = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
 			.appendingPathComponent("Public", isDirectory: true)

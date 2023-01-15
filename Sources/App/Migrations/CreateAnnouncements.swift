@@ -10,7 +10,7 @@ import Fluent
 /// A migration to create `Announcement` records.
 struct CreateAnnouncements: AsyncMigration {
 	
-	func prepare(on database: Database) async throws {
+	func prepare(on database: any Database) async throws {
 		try await database
 			.schema(Announcement.schema)
 			.id()
@@ -18,16 +18,15 @@ struct CreateAnnouncements: AsyncMigration {
 			.field("body", .string, .required)
 			.field("start", .datetime, .required)
 			.field("end", .datetime, .required)
-			.field("signature", .data, .required)
 			.field("schedule_type", .string, .required)
+			.field("signature", .data, .required)
 			.create()
 	}
 	
-	func revert(on database: Database) async throws {
+	func revert(on database: any Database) async throws {
 		try await database
 			.schema(Announcement.schema)
 			.delete()
 	}
 	
 }
-

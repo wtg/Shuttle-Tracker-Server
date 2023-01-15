@@ -31,7 +31,7 @@ final class Announcement: Model, Content {
 	/// A representation of a signed request to delete a particular announcement from the server.
 	struct DeletionRequest: Decodable {
 		
-		/// A cryptographic signature of the unique identifier of the announcement to be deleted.
+		/// A cryptographic signature of the unique identifier of the announcement to delete.
 		let signature: Data
 		
 	}
@@ -52,11 +52,11 @@ final class Announcement: Model, Content {
 	/// The date/time at which this announcement should finish being shown to users.
 	@Field(key: "end") var end: Date
 	
-	/// A cryptographic signature of the concatenation of the ``subject`` and ``body`` properties.
-	@Field(key: "signature") var signature: Data
-	
 	/// The type of schedule that should be used by clients to display this announcement to users.
 	@Enum(key: "schedule_type") var scheduleType: ScheduleType
+	
+	/// A cryptographic signature of the concatenation of the `subject` and `body` properties.
+	@Field(key: "signature") var signature: Data
 	
 	init() { }
 	
