@@ -10,7 +10,7 @@ import Fluent
 /// A migration to create `AnalyticsEntry` records.
 struct CreateAnalyticsEntries: AsyncMigration {
 	
-	func prepare(on database: Database) async throws {
+	func prepare(on database: any Database) async throws {
 		try await database
 			.schema(AnalyticsEntry.schema)
 			.id()
@@ -24,7 +24,7 @@ struct CreateAnalyticsEntries: AsyncMigration {
 			.create()
 	}
 	
-	func revert(on database: Database) async throws {
+	func revert(on database: any Database) async throws {
 		try await database
 			.schema(AnalyticsEntry.schema)
 			.delete()
