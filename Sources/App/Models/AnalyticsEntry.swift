@@ -41,7 +41,7 @@ final class AnalyticsEntry: Model, Content {
 	@Field(key: "date") private(set) var date: Date
 	
 	/// The client platform that submitted this analytics entry.
-	@Field(key: "client_platform") private(set) var clientPlatform: String
+	@Field(key: "client_platform") private(set) var clientPlatform: ClientPlatform
 	
 	/// The client platform version string.
 	///

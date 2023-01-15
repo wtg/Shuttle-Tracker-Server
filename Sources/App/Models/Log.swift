@@ -25,14 +25,6 @@ final class Log: Model, Content {
 		
 	}
 	
-	enum ClientPlatform: String, Codable, DatabaseEnum {
-		
-		case ios, macos, android, web
-		
-		static let name = "ClientPlatform"
-		
-	}
-	
 	static let schema = "logs"
 	
 	@ID var id: UUID?

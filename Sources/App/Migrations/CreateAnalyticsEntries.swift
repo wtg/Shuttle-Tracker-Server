@@ -16,7 +16,7 @@ struct CreateAnalyticsEntries: AsyncMigration {
 			.id()
 			.field("user_id", .uuid)
 			.field("date", .datetime, .required)
-			.field("client_platform", .string, .required)
+			.field("client_platform", ClientPlatform.representation(for: database), .required)
 			.field("client_platform_version", .string)
 			.field("app_version", .string)
 			.field("board_bus_count", .int)
