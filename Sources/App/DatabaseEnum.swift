@@ -24,10 +24,33 @@ extension DatabaseEnum where Self: RawRepresentable, RawValue == String {
 	
 	static func representation(for database: some Database) async throws -> DatabaseSchema.DataType {
 		var builder = database.enum(self.name)
-		for enumCase in self.allCases {
+		guard case .enum(let `enum`) = try await builder.read() else {
+			throw DatabaseEnumError.notAnEnum
+		}
+		for enumCase in self.allCases where !`enum`.cases.contains(enumCase.rawValue) {
 			builder = builder.case(enumCase.rawValue)
 		}
-		return try await builder.create()
+		if `enum`.cases.isEmpty {
+			return try await builder.create()
+		} else {
+			
+			return try await builder.update()
+		}
+	}
+	
+}
+
+enum DatabaseEnumError: Error {
+	
+	case notAnEnum
+	
+	var localizedDescription: String {
+		get {
+			switch self {
+			case .notAnEnum:
+				return "The representation is not an enumeration."
+			}
+		}
 	}
 	
 }
