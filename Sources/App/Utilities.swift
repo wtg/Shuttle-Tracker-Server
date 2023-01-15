@@ -105,7 +105,7 @@ enum CryptographyUtilities {
 	
 	/// Verifies the ECDSA signature of the given data.
 	///
-	/// This method checks the given signature against each of the public-key files with the `.pem` extension in the top level of the directory path that's specified in the `KEYS_DIRECTORY` process environment variable. Verification succeeds if the signature is valid for at least one of the public keys.
+	/// This method checks the given signature against each of the public-key files with the `.pem` extension in the top level of the directory path that’s specified in the `KEYS_DIRECTORY` process environment variable. Verification succeeds if the signature is valid for at least one of the public keys.
 	/// - Throws: If the `KEYS_DIRECTORY` environment variable is undefined or if it doesn’t contain the path to a valid directory.
 	/// - Parameters:
 	///   - signatureData: The ECDSA signature.
