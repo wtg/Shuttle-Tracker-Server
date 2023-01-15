@@ -1,10 +1,9 @@
 .DS_Store
-/.swiftpm/xcode/package.xcworkspace/
-/.swiftpm/xcode/xcuserdata/
-*.paw
+Package.resolved
 *.xcscheme
-/.build/
+*.paw
+.swiftpm/xcode/package.xcworkspace/
+.swiftpm/xcode/xcuserdata/
+.build/
 .vs/
 .vscode/
-Package.resolved
-.vscode/launch.json
