@@ -59,6 +59,7 @@ public func configure(_ application: Application) async throws {
 	) // Add to the default database
 	application.migrations.add(
 		CreateAnnouncements(),
+		CreateAnalyticsEntries(),
 		CreateLogs(),
 		CreateMilestones(),
 		to: .psql
@@ -125,4 +126,4 @@ public func configure(_ application: Application) async throws {
 	try await GPXImportingJob()
 		.run(context: application.queues.queue.context)
 	try routes(application)
-}
+	}

@@ -374,4 +374,64 @@ func routes(_ application: Application) throws {
 		try await bus.update(on: request.db)
 		return bus.congestion
 	}
+	
+	// MARK: - Analytics
+	
+	application.get("analytics", "entries") { (request) in
+		var query = AnalyticsEntry
+			.query(on: request.db(.psql))
+		if let userID: UUID = request.query["userid"] {
+			query = query.filter(\.$userID == userID)
+		} else if request.query[String.self, at: "userid"] != nil {
+			throw Abort(.badRequest)
+		}
+		return try await query.all()
+	}
+	
+	application.post("analytics", "entries") { (request) in
+		let decoder = JSONDecoder()
+		decoder.dateDecodingStrategy = .iso8601
+		let analyticsEntry = try request.content.decode(AnalyticsEntry.self, using: decoder)
+		try await analyticsEntry.save(on: request.db(.psql))
+		return analyticsEntry
+	}
+	
+	application.get("analytics", "entries", ":id") { (request) -> AnalyticsEntry in
+		let entry = try await AnalyticsEntry.find(
+			request.parameters.get("id"),
+			on: request.db(.psql)
+		)
+		guard let entry else {
+			throw Abort(.notFound)
+		}
+		return entry
+	}
+	
+	application.get("analytics", "entries", "count") { (request) in
+		return try await AnalyticsEntry
+			.query(on: request.db(.psql))
+			.count()
+	}
+	
+	application.get("analytics", "userids") { (request) in
+		return try await AnalyticsEntry
+			.query(on: request.db(.psql))
+			.unique()
+			.all(\.$userID)
+			.compactMap { return $0 } // Remove nil elements
+	}
+	
+	application.get("analytics", "boardbus", "average") { (request) in
+		let entries = try await AnalyticsEntry
+			.query(on: request.db(.psql))
+			.filter(\.$userID != nil)
+			.sort(\.$date, .descending)
+			.all()
+			.uniqued { return $0.userID }
+		let sum = entries.reduce(into: 0) { (partialResult, entry) in
+			partialResult += entry.boardBusCount ?? 0
+		}
+		return Double(sum) / Double(entries.count)
+	}
+	
 }
