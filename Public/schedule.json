@@ -111,31 +111,31 @@
 		"content": {
 			"monday": {
 				"start": "7:00 AM",
-				"end": "12:30 AM"
+				"end": "12:00 AM"
 			},
 			"tuesday": {
 				"start": "7:00 AM",
-				"end": "12:30 AM"
+				"end": "12:00 AM"
 			},
 			"wednesday": {
 				"start": "7:00 AM",
-				"end": "12:30 AM"
+				"end": "12:00 AM"
 			},
 			"thursday": {
 				"start": "7:00 AM",
-				"end": "12:30 AM"
+				"end": "12:00 AM"
 			},
 			"friday": {
 				"start": "7:00 AM",
-				"end": "12:30 AM"
+				"end": "12:00 AM"
 			},
 			"saturday": {
 				"start": "9:00 AM",
-				"end": "12:30 AM"
+				"end": "12:00 AM"
 			},
 			"sunday": {
 				"start": "9:00 AM",
-				"end": "8:30 PM"
+				"end": "8:00 PM"
 			}
 		}
 	}
