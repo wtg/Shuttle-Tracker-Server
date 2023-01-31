@@ -5,25 +5,29 @@
 //  Created by Gabriel Jacoby-Cooper on 10/20/20.
 //
 
-import Vapor
-import Fluent
 import CoreGPX
+import FluentKit
 import JSONParser
+import Vapor
 
 /// A representation of a shuttle stop.
 final class Stop: Equatable, Hashable, Model, Content {
 	
 	static let schema = "stops"
 	
-	@ID(custom: "id") var id: UUID?
+	@ID
+	var id: UUID?
 	
 	/// The human-readable name of this stop.
-	@Field(key: "name") var name: String
+	@Field(key: "name")
+	var name: String
 	
 	/// The geospatial coordinate that indicates the physical location of this stop.
-	@Field(key: "coordinate") var coordinate: Coordinate
+	@Field(key: "coordinate")
+	var coordinate: Coordinate
 	
-	@Field(key: "schedule") var schedule: MapSchedule
+	@Field(key: "schedule")
+	var schedule: MapSchedule
 	
 	init() { }
 	
@@ -45,7 +49,7 @@ final class Stop: Equatable, Hashable, Model, Content {
 		hasher.combine(self.name) // Hashing the ID could potentially violate Hashable’s invariants when the ID is determined by the database, so we hash the name instead. This means that stop names must be globally unique, which doesn’t seem to be too far-fetched as an assumption/requirement.
 	}
 	
-	static func == (_ lhs: Stop, _ rhs: Stop) -> Bool {
+	static func == (lhs: Stop, rhs: Stop) -> Bool {
 		return lhs.name == rhs.name && lhs.coordinate == rhs.coordinate
 	}
 	

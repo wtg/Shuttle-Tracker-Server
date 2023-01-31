@@ -5,25 +5,40 @@
 //  Created by Gabriel Jacoby-Cooper on 10/30/22.
 //
 
-import Fluent
+import FluentKit
 
 /// A migration to create `Log` records.
-struct CreateLogs: AsyncMigration {
+struct CreateLogs: VersionedAsyncMigration {
 	
-	func prepare(on database: any Database) async throws {
-		try await database
-			.schema(Log.schema)
-			.id()
-			.field("content", .string, .required)
-			.field("client_platform", ClientPlatform.representation(for: database), .required)
-			.field("date", .datetime, .required)
-			.create()
+	typealias ModelType = Log
+	
+	func prepare(
+		using schemaBuilder: SchemaBuilder,
+		to version: UInt,
+		enumFactory: (any DatabaseEnum.Type) async throws -> DatabaseSchema.DataType
+	) async throws {
+		switch version {
+		case 0:
+			fatalError("Can’t prepare migration to version 0!")
+		case 1:
+			try await schemaBuilder
+				.id()
+				.field("content", .string, .required)
+				.field("client_platform", enumFactory(ClientPlatform.self), .required)
+				.field("date", .datetime, .required)
+				.create()
+		default:
+			fatalError("Unknown migration version number!")
+		}
 	}
 	
-	func revert(on database: any Database) async throws {
-		try await database
-			.schema(Log.schema)
-			.delete()
+	func revert(using schemaBuilder: SchemaBuilder, to version: UInt) async throws {
+		switch version {
+		case 0:
+			try await schemaBuilder.delete()
+		default:
+			fatalError("Unknown migration version number!")
+		}
 	}
 	
 }

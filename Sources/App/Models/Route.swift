@@ -5,12 +5,11 @@
 //  Created by Gabriel Jacoby-Cooper on 10/9/20.
 //
 
-import Foundation
-import Vapor
-import Fluent
 import CoreGPX
+import FluentKit
 import JSONParser
 import Turf
+import Vapor
 
 /// A representation of a shuttle route.
 ///
@@ -21,21 +20,30 @@ final class Route: Model, Content, Collection {
 	
 	let startIndex = 0
 	
-	lazy var endIndex = self.coordinates.count - 1
+	var endIndex: Int {
+		get {
+			return self.coordinates.count
+		}
+	}
 	
-	@ID var id: UUID?
+	@ID
+	var id: UUID?
 	
 	/// The user-facing display name of this route.
-	@Field(key: "name") var name: String
+	@Field(key: "name")
+	var name: String
 	
 	/// The waypoint coordinates that define this route.
-	@Field(key: "coordinates") var coordinates: [Coordinate]
+	@Field(key: "coordinates")
+	var coordinates: [Coordinate]
 	
 	/// A schedule that determines when this route is active.
-	@Field(key: "schedule") var schedule: MapSchedule
+	@Field(key: "schedule")
+	var schedule: MapSchedule
 	
 	/// The name of the color that clients should use to draw the route.
-	@Field(key: "color_name") var colorName: ColorName
+	@Field(key: "color_name")
+	var colorName: ColorName
 	
 	init() { }
 	

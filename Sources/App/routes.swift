@@ -242,7 +242,7 @@ func routes(_ application: Application) throws {
 	// Attempt to fetch and to return the shuttle routes
 	application.get("routes") { (request) in
 		return try await Route
-			.query(on: request.db)
+			.query(on: request.db(.sqlite))
 			.all()
 			.filter { (route) in
 				return route.schedule.isActive
@@ -252,7 +252,7 @@ func routes(_ application: Application) throws {
 	// Attempt to fetch and to return the shuttle stops
 	application.get("stops") { (request) in
 		let stops = try await Stop
-			.query(on: request.db)
+			.query(on: request.db(.sqlite))
 			.all()
 			.filter { (stop) in
 				return stop.schedule.isActive
@@ -269,13 +269,13 @@ func routes(_ application: Application) throws {
 	// Attempt to fetch and to return the shuttle buses
 	application.get("buses") { (request) -> [Bus.Resolved] in
 		let routes = try await Route
-			.query(on: request.db)
+			.query(on: request.db(.sqlite))
 			.all()
 			.filter { (route) in
 				return route.schedule.isActive
 			}
 		return try await Bus
-			.query(on: request.db)
+			.query(on: request.db(.sqlite))
 			.all()
 			.compactMap { (bus) in
 				return bus.resolved
@@ -298,7 +298,7 @@ func routes(_ application: Application) throws {
 			throw Abort(.badRequest)
 		}
 		let buses = try await Bus
-			.query(on: request.db)
+			.query(on: request.db(.sqlite))
 			.filter(\.$id == id)
 			.all()
 		let locations = buses.flatMap { (bus) -> [Bus.Location] in
@@ -317,7 +317,7 @@ func routes(_ application: Application) throws {
 		}
 		let location = try request.content.decode(Bus.Location.self, using: decoder)
 		let routes = try await Route
-			.query(on: request.db)
+			.query(on: request.db(.sqlite))
 			.all()
 			.filter { (route) in
 				return route.schedule.isActive
@@ -329,7 +329,7 @@ func routes(_ application: Application) throws {
 			throw Abort(.conflict)
 		}
 		let bus = try await Bus
-			.query(on: request.db)
+			.query(on: request.db(.sqlite))
 			.filter(\.$id == id)
 			.first()
 		guard let bus = bus else {
@@ -337,7 +337,7 @@ func routes(_ application: Application) throws {
 		}
 		bus.locations.merge(with: [location])
 		bus.detectRoute(selectingFrom: routes)
-		try await bus.update(on: request.db)
+		try await bus.update(on: request.db(.sqlite))
 		return bus.locations.resolved
 	}
 	
@@ -347,14 +347,14 @@ func routes(_ application: Application) throws {
 			throw Abort(.badRequest)
 		}
 		let bus = try await Bus
-			.query(on: request.db)
+			.query(on: request.db(.sqlite))
 			.filter(\.$id == id)
 			.first()
 		guard let bus = bus else {
 			throw Abort(.notFound)
 		}
 		bus.congestion = (bus.congestion ?? 0) + 1
-		try await bus.update(on: request.db)
+		try await bus.update(on: request.db(.sqlite))
 		return bus.congestion
 	}
 	
@@ -364,14 +364,14 @@ func routes(_ application: Application) throws {
 			throw Abort(.badRequest)
 		}
 		let bus = try await Bus
-			.query(on: request.db)
+			.query(on: request.db(.sqlite))
 			.filter(\.$id == id)
 			.first()
 		guard let bus = bus else {
 			throw Abort(.notFound)
 		}
 		bus.congestion = (bus.congestion ?? 1) - 1
-		try await bus.update(on: request.db)
+		try await bus.update(on: request.db(.sqlite))
 		return bus.congestion
 	}
 	

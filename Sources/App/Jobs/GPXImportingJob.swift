@@ -28,16 +28,16 @@ struct GPXImportingJob: AsyncScheduledJob {
 				return url.pathExtension == "gpx"
 			}
 		let routes = try await Route
-			.query(on: context.application.db)
+			.query(on: context.application.db(.sqlite))
 			.all()
 		for route in routes {
-			try await route.delete(on: context.application.db)
+			try await route.delete(on: context.application.db(.sqlite))
 		}
 		let stops = try await Stop
-			.query(on: context.application.db)
+			.query(on: context.application.db(.sqlite))
 			.all()
 		for stop in stops {
-			try await stop.delete(on: context.application.db)
+			try await stop.delete(on: context.application.db(.sqlite))
 		}
 		for routesFileURL in routesFileURLs {
 			let decoder = JSONDecoder()
@@ -58,10 +58,10 @@ struct GPXImportingJob: AsyncScheduledJob {
 			for gpxRoute in gpx.routes {
 				do {
 					try await Route(from: gpxRoute, schedule: schedule)
-						.save(on: context.application.db)
+						.save(on: context.application.db(.sqlite))
 					for gpxWaypoint in gpx.waypoints {
 						try await Stop(from: gpxWaypoint, withSchedule: schedule)!
-							.save(on: context.application.db)
+							.save(on: context.application.db(.sqlite))
 					}
 				} catch let error {
 					errorPrint("Couldn’t import GPX route from file “\(routesFileURL.lastPathComponent)”: \(error)")
