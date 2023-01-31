@@ -5,28 +5,43 @@
 //  Created by Jose Luchsinger on 2/11/22.
 //
 
-import Fluent
+import FluentKit
 
 /// A migration to create `Milestone` records.
-struct CreateMilestones: AsyncMigration {
+struct CreateMilestones: VersionedAsyncMigration {
 	
-	func prepare(on database: any Database) async throws {
-		try await database
-			.schema(Milestone.schema)
-			.id()
-			.field("name", .string, .required)
-			.field("extended_description", .string, .required)
-			.field("progress", .int, .required)
-			.field("progress_type", .string, .required)
-			.field("goals", .array(of: .int), .required)
-			.field("signature", .data, .required)
-			.create()
+	typealias ModelType = Milestone
+	
+	func prepare(
+		using schemaBuilder: SchemaBuilder,
+		to version: UInt,
+		enumFactory: (any DatabaseEnum.Type) async throws -> DatabaseSchema.DataType
+	) async throws {
+		switch version {
+		case 0:
+			fatalError("Can’t prepare migration to version 0!")
+		case 1:
+			try await schemaBuilder
+				.id()
+				.field("name", .string, .required)
+				.field("extended_description", .string, .required)
+				.field("progress", .int, .required)
+				.field("progress_type", .string, .required)
+				.field("goals", .array(of: .int), .required)
+				.field("signature", .data, .required)
+				.create()
+		default:
+			fatalError("Unknown migration version number!")
+		}
 	}
 	
-	func revert(on database: any Database) async throws {
-		try await database
-			.schema(Milestone.schema)
-			.delete()
+	func revert(using schemaBuilder: SchemaBuilder, to version: UInt) async throws {
+		switch version {
+		case 0:
+			try await schemaBuilder.delete()
+		default:
+			fatalError("Unknown migration version number!")
+		}
 	}
 	
 }

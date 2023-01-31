@@ -5,14 +5,15 @@
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //
 
-import NIOSSL
-import Vapor
-import FluentSQLiteDriver
 import FluentPostgresDriver
+import FluentSQLiteDriver
+import NIOSSL
 import Queues
 import QueuesFluentDriver
+import Vapor
 
 public func configure(_ application: Application) async throws {
+	// MARK: - Middleware
 	application.middleware.use(
 		CORSMiddleware(
 			configuration: .default()
@@ -23,10 +24,12 @@ public func configure(_ application: Application) async throws {
 			publicDirectory: application.directory.publicDirectory
 		)
 	)
+	
+	// MARK: - Databases
 	application.databases.use(
 		.sqlite(),
 		as: .sqlite,
-		isDefault: true
+		isDefault: false
 	)
 	if let postgresURLString = ProcessInfo.processInfo.environment["DATABASE_URL"], let postgresURL = URL(string: postgresURLString) {
 		application.databases.use(
@@ -51,22 +54,26 @@ public func configure(_ application: Application) async throws {
 			isDefault: false
 		)
 	}
+	
+	// MARK: - Migrations
 	application.migrations.add(
 		CreateBuses(),
 		CreateRoutes(),
 		CreateStops(),
-		JobModelMigrate()
-	) // Add to the default database
-	application.migrations.add(
-		CreateAnnouncements(),
-		CreateAnalyticsEntries(),
-		CreateLogs(),
-		CreateMilestones(),
-		to: .psql
-	) // Add to the persistent database
-	application.queues.use(
-		.fluent(useSoftDeletes: false)
-	)
+		JobModelMigrate(),
+		to: .sqlite
+	) // Add to the SQLite database
+	try await application.autoMigrate()
+	
+	let migrator = try await VersionedMigrator(database: application.db(.psql))
+	try await migrator.migrate(CreateAnalyticsEntries())
+	try await migrator.migrate(CreateAnnouncements())
+	try await migrator.migrate(CreateAPNSDevices())
+	try await migrator.migrate(CreateLogs())
+	try await migrator.migrate(CreateMilestones())
+	
+	// MARK: - Jobs
+	application.queues.use(.fluent(.sqlite, useSoftDeletes: false))
 	application.queues
 		.schedule(BusDownloadingJob())
 		.minutely()
@@ -81,9 +88,10 @@ public func configure(_ application: Application) async throws {
 	application.queues
 		.schedule(RestartJob())
 		.at(Date() + 21600)
-	try await application.autoMigrate()
 	try application.queues.startInProcessJobs()
 	try application.queues.startScheduledJobs()
+	
+	// MARK: - TLS
 	if FileManager.default.fileExists(atPath: "tls") {
 		print("TLS directory detected!")
 		try application.http.server.configuration.tlsConfiguration = .makeServerConfiguration(
@@ -117,13 +125,15 @@ public func configure(_ application: Application) async throws {
 			)
 		)
 	}
+	
+	// MARK: - Startup
 	for busID in Buses.shared.allBusIDs {
 		try await Bus(id: busID)
-			.save(on: application.db)
+			.save(on: application.db(.sqlite))
 	}
 	try? await BusDownloadingJob()
 		.run(context: application.queues.queue.context)
 	try await GPXImportingJob()
 		.run(context: application.queues.queue.context)
 	try routes(application)
-	}
+}

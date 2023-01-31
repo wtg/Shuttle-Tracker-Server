@@ -5,11 +5,11 @@
 //  Created by Gabriel Jacoby-Cooper on 10/27/22.
 //
 
-import Fluent
+import FluentKit
 import Vapor
 
 /// A representation of a debug log that’s uploaded by a client.
-final class Log: Model, Content {
+final class Log: VersionedModel, Content {
 	
 	/// A representation of a signed request to retrieve a particular log from the server.
 	typealias RetrievalRequest = OperationRequest
@@ -27,15 +27,21 @@ final class Log: Model, Content {
 	
 	static let schema = "logs"
 	
-	@ID var id: UUID?
+	static var version: UInt = 1
+	
+	@ID
+	var id: UUID?
 	
 	/// The content of this log.
-	@Field(key: "content") private(set) var content: String
+	@Field(key: "content")
+	private(set) var content: String
 	
 	/// The client platform that submitted this log.
-	@Enum(key: "client_platform") private(set) var clientPlatform: ClientPlatform
+	@Enum(key: "client_platform")
+	private(set) var clientPlatform: ClientPlatform
 	
 	/// The timestamp of this log.
-	@Field(key: "date") var date: Date
+	@Field(key: "date")
+	var date: Date
 	
 }

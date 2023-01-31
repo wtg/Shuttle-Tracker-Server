@@ -5,8 +5,8 @@
 //  Created by Gabriel Jacoby-Cooper on 11/1/21.
 //
 
+import FluentKit
 import Vapor
-import Fluent
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
@@ -59,7 +59,8 @@ enum Downloaders {
 							}
 							let coordinate = Coordinate(latitude: latitude, longitude: longitude)
 							if date > Date.now {
-								let oldBusFuture = Bus.query(on: application.db)
+								let oldBusFuture = Bus
+									.query(on: application.db(.sqlite))
 									.filter(\.$id == id)
 									.first()
 								let oldBus = try oldBusFuture.wait()

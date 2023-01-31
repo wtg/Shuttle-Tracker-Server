@@ -12,10 +12,10 @@ struct LocationRemovalJob: AsyncScheduledJob {
 	
 	func run(context: QueueContext) async throws {
 		let buses = try await Bus
-			.query(on: context.application.db)
+			.query(on: context.application.db(.sqlite))
 			.all()
 		let routes = try? await Route // Failing to query route objects shouldn’t cause this method to fail entirely
-			.query(on: context.application.db)
+			.query(on: context.application.db(.sqlite))
 			.all()
 			.filter { (route) in
 				return route.schedule.isActive
@@ -34,7 +34,7 @@ struct LocationRemovalJob: AsyncScheduledJob {
 			if let routes {
 				bus.detectRoute(selectingFrom: routes) // Detect the most recent route association, resetting it to nil if there’s no sufficiently recent location data
 			}
-			try await bus.update(on: context.application.db)
+			try await bus.update(on: context.application.db(.sqlite))
 		}
 	}
 	

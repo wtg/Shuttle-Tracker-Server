@@ -21,15 +21,15 @@ struct BusDownloadingJob: AsyncScheduledJob {
 			allNewBuses.insert(newBus)
 		}
 		let buses = try await Bus
-			.query(on: context.application.db)
+			.query(on: context.application.db(.sqlite))
 			.all()
 		for bus in buses {
 			if let newBus = allNewBuses.remove(bus) {
 				bus.locations.merge(with: newBus.locations)
-				try await bus.update(on: context.application.db)
+				try await bus.update(on: context.application.db(.sqlite))
 			}
 		}
-		try await allNewBuses.save(on: context.application.db)
+		try await allNewBuses.save(on: context.application.db(.sqlite))
 	}
 	
 }

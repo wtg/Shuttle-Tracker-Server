@@ -5,7 +5,7 @@
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //
 
-import Fluent
+import FluentKit
 import JSONParser
 import Turf
 import Vapor
@@ -26,16 +26,20 @@ final class Bus: Hashable, Model {
 		
 		/// An identifier that’s used to update location data dynamically.
 		/// - Important: Location reports from the same user during the same trip should all have the same ID value.
-		@ID(custom: "id", generatedBy: .user) var id: UUID?
+		@ID(custom: "id", generatedBy: .user)
+		var id: UUID?
 		
 		/// A timestamp that indicates when this location datum was originally collected.
-		@Field(key: "date") var date: Date
+		@Field(key: "date")
+		var date: Date
 		
 		/// The geospatial coordinate that’s associated with this location datum.
-		@Field(key: "coordinate") var coordinate: Coordinate
+		@Field(key: "coordinate")
+		var coordinate: Coordinate
 
 		/// The type of location datum, which indicates how it was originally collected.
-		@Enum(key: "type") var type: LocationType
+		@Enum(key: "type")
+		var type: LocationType
 		
 		init() { }
 		
@@ -53,8 +57,8 @@ final class Bus: Hashable, Model {
 			self.type = type
 		}
 		
-		static func == (_ leftLocation: Bus.Location, _ rightLocation: Bus.Location) -> Bool {
-			return leftLocation.id == rightLocation.id
+		static func == (lhs: Bus.Location, rhs: Bus.Location) -> Bool {
+			return lhs.id == rhs.id
 		}
 		
 	}
@@ -89,16 +93,20 @@ final class Bus: Hashable, Model {
 	}
 	
 	/// The physical bus’s unique identifier.
-	@ID(custom: "id", generatedBy: .user) var id: Int?
+	@ID(custom: "id", generatedBy: .user)
+	var id: Int?
 	
 	/// The location data for this bus.
-	@Field(key: "locations") var locations: [Location]
+	@Field(key: "locations")
+	var locations: [Location]
 	
 	/// The congestion data for this bus.
-	@OptionalField(key: "congestion") var congestion: Int?
+	@OptionalField(key: "congestion")
+	var congestion: Int?
 	
 	/// The ID of route along which this bus is currently traveling.
-	@OptionalField(key: "route_id") var routeID: UUID?
+	@OptionalField(key: "route_id")
+	var routeID: UUID?
 	
 	init() { }
 	
@@ -109,10 +117,6 @@ final class Bus: Hashable, Model {
 	init(id: Int, locations: [Location] = []) {
 		self.id = id
 		self.locations = locations
-	}
-	
-	static func == (_ leftBus: Bus, _ rightBus: Bus) -> Bool {
-		return leftBus.id == rightBus.id
 	}
 	
 	func hash(into hasher: inout Hasher) {
@@ -135,6 +139,10 @@ final class Bus: Hashable, Model {
 			}
 		}
 		self.routeID = selectedRoute?.id
+	}
+	
+	static func == (lhs: Bus, rhs: Bus) -> Bool {
+		return lhs.id == rhs.id
 	}
 }
 
@@ -202,4 +210,3 @@ extension Array: Mergeable where Element == Bus.Location {
 	}
 	
 }
-
