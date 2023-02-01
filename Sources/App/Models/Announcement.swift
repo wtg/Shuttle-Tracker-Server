@@ -36,9 +36,17 @@ final class Announcement: VersionedModel, Content {
 		
 	}
 	
+	enum InterruptionLevel: String, Codable, DatabaseEnum {
+		
+		case passive, active, timeSensitive, critical
+		
+		static var name = "InterruptionLevel"
+		
+	}
+	
 	static let schema = "announcements"
 	
-	static var version: UInt = 1
+	static var version: UInt = 2
 	
 	@ID
 	var id: UUID?
@@ -66,6 +74,9 @@ final class Announcement: VersionedModel, Content {
 	/// A cryptographic signature of the concatenation of the `subject` and `body` properties.
 	@Field(key: "signature")
 	var signature: Data
+	
+	@Enum(key: "interruption_level")
+	var interruptionLevel: InterruptionLevel
 	
 	init() { }
 	

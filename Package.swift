@@ -33,6 +33,10 @@ let package = Package(
 			from: "2.2.0"
 		),
 		.package(
+			url: "https://github.com/vapor/apns.git",
+			from: "4.0.0-beta.2"
+		),
+		.package(
 			url: "https://github.com/m-barthelemy/vapor-queues-fluent-driver.git",
 			from: "1.0.0"
 		),
@@ -84,6 +88,10 @@ let package = Package(
 				.product(
 					name: "QueuesFluentDriver",
 					package: "vapor-queues-fluent-driver"
+				),
+				.product(
+					name: "APNS",
+					package: "apns"
 				),
 				.product(
 					name: "CoreGPX",

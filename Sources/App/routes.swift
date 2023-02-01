@@ -6,6 +6,7 @@
 //
 
 import Algorithms
+import APNS
 import Fluent
 import UAParserSwift
 import Vapor
@@ -153,6 +154,54 @@ func routes(_ application: Application) throws {
 		}
 		if try CryptographyUtilities.verify(signature: announcement.signature, of: data) {
 			try await announcement.save(on: request.db(.psql))
+			
+			// Send a push notification to all users
+			let devices = try await APNSDevice
+				.query(on: request.db(.psql))
+				.all()
+			print("Sending a push notification to \(devices.count) devices…")
+			await withTaskGroup(of: Void.self) { (taskGroup) in
+				let interruptionLevel: APNSAlertNotificationInterruptionLevel
+				switch announcement.interruptionLevel {
+				case .passive:
+					interruptionLevel = .passive
+				case .active:
+					interruptionLevel = .active
+				case .timeSensitive:
+					interruptionLevel = .timeSensitive
+				case .critical:
+					interruptionLevel = .critical
+				}
+				for device in devices {
+					taskGroup.addTask {
+						do {
+							try await request.apns.client.sendAlertNotification(
+								APNSAlertNotification(
+									alert: APNSAlertNotificationContent(
+										title: .raw("Announcement"),
+										subtitle: .raw(announcement.subject),
+										body: .raw(announcement.body),
+										launchImage: nil
+									),
+									expiration: .none,
+									priority: .immediately,
+									topic: Constants.apnsTopic,
+									payload: announcement,
+									badge: 1,
+									sound: .default,
+									mutableContent: 1,
+									interruptionLevel: interruptionLevel
+								),
+								deviceToken: device.token,
+								deadline: .distantFuture
+							)
+						} catch let error {
+							errorPrint("[\(#fileID):\(#line) \(#function)] \(error)")
+						}
+					}
+				}
+			}
+			
 			return announcement
 		} else {
 			throw Abort(.forbidden)
@@ -432,6 +481,17 @@ func routes(_ application: Application) throws {
 			partialResult += entry.boardBusCount ?? 0
 		}
 		return Double(sum) / Double(entries.count)
+	}
+	
+	// MARK: - Notifications
+	
+	application.post("notifications", "devices", ":token") { (request) in
+		guard let token = request.parameters.get("token") else {
+			throw Abort(.badRequest)
+		}
+		let device = APNSDevice(token: token)
+		try await device.create(on: request.db(.psql))
+		return device
 	}
 	
 }

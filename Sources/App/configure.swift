@@ -5,6 +5,7 @@
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //
 
+import APNS
 import FluentPostgresDriver
 import FluentSQLiteDriver
 import NIOSSL
@@ -89,6 +90,25 @@ public func configure(_ application: Application) async throws {
 		.at(Date() + 21600)
 	try application.queues.startInProcessJobs()
 	try application.queues.startScheduledJobs()
+	
+	// MARK: - APNS
+	if let apnsKeyPath = ProcessInfo.processInfo.environment["APNS_KEY"] {
+		application.apns.containers.use(
+			APNSClientConfiguration(
+				authenticationMethod: .jwt(
+					privateKey: try .loadFrom(filePath: apnsKeyPath)!,
+					keyIdentifier: "X43K3R94T2",
+					teamIdentifier: "SYBLH277NF"
+				),
+				environment: .production // FIXME: Detect staging environment and set to .sandbox
+			),
+			eventLoopGroupProvider: .shared(application.eventLoopGroup),
+			responseDecoder: JSONDecoder(),
+			requestEncoder: JSONEncoder(),
+			backgroundActivityLogger: Logger(label: "APNS"),
+			as: .default
+		)
+	}
 	
 	// MARK: - TLS
 	if FileManager.default.fileExists(atPath: "tls") {
