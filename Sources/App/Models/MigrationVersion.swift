@@ -7,6 +7,10 @@
 
 import FluentKit
 
+#if os(Linux)
+import Foundation
+#endif // os(Linux)
+
 final class MigrationVersion: Model {
 	
 	static let schema = "migrationversions"
