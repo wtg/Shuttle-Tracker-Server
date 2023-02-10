@@ -16,11 +16,11 @@ final class Bus: Hashable, Model {
 	/// A representation of a single location datum.
 	final class Location: Equatable, Content, Fields {
 		
-		enum LocationType: String, Codable {
+		enum LocationType: String, Codable, DatabaseEnum {
 			
-			case system = "system"
+			case system, user, network
 			
-			case user = "user"
+			static let name = "Bus.Location.LocationType"
 			
 		}
 		
@@ -82,10 +82,7 @@ final class Bus: Hashable, Model {
 	/// A simplified representation of this bus that’s suitable to return as a response to incoming requests.
 	var resolved: Resolved? {
 		get {
-			guard let id = self.id else {
-				return nil
-			}
-			guard let location = self.locations.resolved else {
+			guard let id = self.id, let location = self.locations.resolved else {
 				return nil
 			}
 			return Resolved(id: id, location: location, routeID: self.routeID)
@@ -157,23 +154,27 @@ extension Collection where Element == Bus.Location {
 		}
 	}
 	
-	/// The resolved location datum from user reports.
-	var userLocation: Bus.Location? {
+	/// The resolved location datum from Board Bus reports.
+	var boardBusLocation: Bus.Location? {
 		get {
 			let userLocations = self.filter { (location) -> Bool in
-				return location.type == .user
+				return .user ~= location.type
 			}
-			guard userLocations.count > 0 else {
+			let networkLocations = self.filter { (location) in
+				return .network ~= location.type
+			}
+			let locations = userLocations + networkLocations
+			guard !locations.isEmpty else {
 				return nil
 			}
-			let newestLocation = userLocations.max { (firstLocation, secondLocation) -> Bool in
-				return firstLocation.date.compare(secondLocation.date) == .orderedAscending
+			let newestLocation = locations.max { (first, second) -> Bool in
+				return first.date.compare(second.date) == .orderedAscending
 			}
 			let zeroCoordinate = Coordinate(latitude: 0, longitude: 0)
-			var coordinate = userLocations.reduce(into: zeroCoordinate) { (coordinate, location) in
+			var coordinate = locations.reduce(into: zeroCoordinate) { (coordinate, location) in
 				coordinate += location.coordinate
 			}
-			coordinate /= Double(userLocations.count)
+			coordinate /= Double(locations.count)
 			guard let userCoordinate = coordinate == zeroCoordinate ? nil : coordinate else {
 				return nil
 			}
@@ -181,15 +182,15 @@ extension Collection where Element == Bus.Location {
 				id: UUID(),
 				date: newestLocation?.date ?? Date(),
 				coordinate: userCoordinate,
-				type: .user
+				type: networkLocations.isEmpty ? .user : .network
 			)
 		}
 	}
 	
-	/// The final resolved location datum, which may or may not incorporate user-reported data.
+	/// The final resolved location datum, which may or may not incorporate Board Bus data.
 	var resolved: Bus.Location? {
 		get {
-			return self.userLocation ?? self.systemLocation
+			return self.boardBusLocation ?? self.systemLocation
 		}
 	}
 	
