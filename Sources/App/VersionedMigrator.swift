@@ -15,6 +15,7 @@ struct VersionedMigrator {
 	/// Creates a versioned migrator.
 	/// - Parameter database: The database on which to perform migrations.
 	init(database: any Database) async throws {
+		try await MigrationLog.migration.prepare(on: database).get() // Unlike most migrations, this one won’t fail if it’s executed multiple times
 		let migration = CreateMigrationVersions()
 		let migrationLogs = try await MigrationLog
 			.query(on: database)
