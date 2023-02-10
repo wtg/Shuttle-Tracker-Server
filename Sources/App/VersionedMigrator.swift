@@ -40,7 +40,7 @@ struct VersionedMigrator {
 	/// - Parameter migration: The migration to perform.
 	func migrate<MigrationType>(_ migration: MigrationType) async throws where MigrationType: VersionedAsyncMigration {
 		self.database.logger.log(level: .info, "Migrating schema “\(MigrationType.ModelType.schema)”…")
-		let version = try await migration.migrationVersion(on: self.database)?.version ?? 0
+		let version = try await migration.version(on: self.database)?.version ?? 0
 		if version < MigrationType.ModelType.version {
 			try await migration.prepare(on: database)
 		} else if version > MigrationType.ModelType.version {
