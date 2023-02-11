@@ -13,7 +13,9 @@ final class AnalyticsEntry: VersionedModel, Content {
 	struct UserSettings: Codable {
 		
 		enum ColorTheme: String, Codable {
+			
 			case light, dark
+			
 		}
 		
 		let colorBlindMode: Bool?

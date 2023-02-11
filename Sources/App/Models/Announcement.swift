@@ -12,19 +12,21 @@ import Vapor
 final class Announcement: VersionedModel, Content {
 	
 	/// The various available schedule types.
-	enum ScheduleType: String, Codable {
+	enum ScheduleType: String, Codable, DatabaseEnum {
 		
 		/// A schedule type that has neither a start date/time nor an end date/time.
-		case none = "none"
+		case none
 		
 		/// A schedule type that has a start date/time but not an end date/time.
-		case startOnly = "startOnly"
+		case startOnly
 		
 		/// A schedule type that has an end date/time but not a start date/time.
-		case endOnly = "endOnly"
+		case endOnly
 		
 		/// A schedule type that has both a start date/time and an end date/time.
-		case startAndEnd = "startAndEnd"
+		case startAndEnd
+		
+		static let name = #function
 		
 	}
 	
