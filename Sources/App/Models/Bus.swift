@@ -20,7 +20,7 @@ final class Bus: Hashable, Model {
 			
 			case system, user, network
 			
-			static let name = "Bus.Location.LocationType"
+			static let name = #function
 			
 		}
 		
