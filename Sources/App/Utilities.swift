@@ -92,8 +92,6 @@ enum LocationAuthorizationStatus: Int, Codable {
 	
 	case authorizedWhenInUse
 	
-	case authorized
-	
 }
 
 enum LocationAccuracyAuthorization: Int, Codable {
