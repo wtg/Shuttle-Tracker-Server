@@ -22,11 +22,49 @@ final class AnalyticsEntry: VersionedModel, Content {
 		
 		let colorTheme: ColorTheme?
 		
+		let debugMode: Bool?
+		
+		let logging: Bool?
+		
+		let maximumStopDistance: Int?
+		
+		let serverBaseURL: URL?
+		
+	}
+		
+	enum EventType: Codable {
+		
+		case coldLaunch
+		
+		case boardBusTapped
+		
+		case leaveBusTapped
+		
+		case boardBusActivated(manual: Bool)
+		
+		case boardBusDeactivated(manual: Bool)
+		
+		case busSelectionCanceled
+		
+		case announcementsListOpened
+		
+		case announcementViewed(id: UUID)
+		
+		case permissionsSheetOpened
+		
+		case networkToastPermissionsTapped
+		
+		case colorBlindModeToggled(enabled: Bool)
+		
+		case locationAuthorizationStatusDidChange(authorizationStatus: LocationAuthorizationStatus)
+		
+		case locationAccuracyAuthorizationDidChange(accuracyAuthorization: LocationAccuracyAuthorization)
+		
 	}
 	
 	static let schema = "analyticsentries"
 	
-	static var version: UInt = 1
+	static var version: UInt = 2
 	
 	/// The unique identifier of this analytics entry.
 	///
@@ -67,5 +105,9 @@ final class AnalyticsEntry: VersionedModel, Content {
 	/// A record of the user’s current app settings as of the submission of this analytics entry.
 	@Field(key: "user_settings")
 	private(set) var userSettings: UserSettings
+	
+	/// The type of event that triggered the submission of this analytics entry.
+	@Field(key: "event_type")
+	private(set) var eventType: EventType?
 	
 }
