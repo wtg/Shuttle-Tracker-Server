@@ -18,9 +18,9 @@ final class AnalyticsEntry: VersionedModel, Content {
 			
 		}
 		
-		let colorBlindMode: Bool?
-		
 		let colorTheme: ColorTheme?
+		
+		let colorBlindMode: Bool?
 		
 		let debugMode: Bool?
 		
@@ -55,6 +55,10 @@ final class AnalyticsEntry: VersionedModel, Content {
 		case networkToastPermissionsTapped
 		
 		case colorBlindModeToggled(enabled: Bool)
+		
+		case debugModeToggled(enabled: Bool)
+		
+		case serverBaseURLChanged(url: URL)
 		
 		case locationAuthorizationStatusDidChange(authorizationStatus: LocationAuthorizationStatus)
 		
