@@ -94,7 +94,7 @@ final class AnalyticsEntry: VersionedModel, Content {
 	
 	/// The app version string.
 	///
-	/// All app version strings should be consistently formatter per platform across different alaytics submissions.
+	/// All app version strings should be consistently formatter per platform across different analytics submissions.
 	@OptionalField(key: "app_version")
 	private(set) var appVersion: String?
 	
