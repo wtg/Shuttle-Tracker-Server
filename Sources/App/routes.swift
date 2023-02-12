@@ -422,16 +422,17 @@ func routes(_ application: Application) throws {
 	}
 	
 	application.get("analytics", "boardbus", "average") { (request) in
-		let entries = try await AnalyticsEntry
+		let chunks = try await AnalyticsEntry
 			.query(on: request.db(.psql))
 			.filter(\.$userID != nil)
-			.sort(\.$date, .descending)
 			.all()
-			.uniqued { return $0.userID }
-		let sum = entries.reduce(into: 0) { (partialResult, entry) in
-			partialResult += entry.boardBusCount ?? 0
+			.chunked { return $0.userID == $1.userID }
+		let sum = chunks.reduce(into: 0) { (partialResult, chunk) in
+			partialResult += chunk
+				.map { return $0.boardBusCount ?? 0 }
+				.reduce(0, +)
 		}
-		return Double(sum) / Double(entries.count)
+		return Double(sum) / Double(chunks.count)
 	}
 	
 }
