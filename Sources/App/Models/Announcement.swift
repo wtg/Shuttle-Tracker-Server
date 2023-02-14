@@ -40,7 +40,7 @@ final class Announcement: VersionedModel, Content {
 		
 		case passive, active, timeSensitive, critical
 		
-		static var name = "InterruptionLevel"
+		static var name = #function
 		
 	}
 	
@@ -75,6 +75,7 @@ final class Announcement: VersionedModel, Content {
 	@Field(key: "signature")
 	var signature: Data
 	
+	/// The degree to which notifications for this announcement interrupt users on client devices.
 	@Enum(key: "interruption_level")
 	var interruptionLevel: InterruptionLevel
 	
