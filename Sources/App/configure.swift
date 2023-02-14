@@ -97,15 +97,15 @@ public func configure(_ application: Application) async throws {
 			APNSClientConfiguration(
 				authenticationMethod: .jwt(
 					privateKey: try .loadFrom(filePath: apnsKeyPath)!,
-					keyIdentifier: "X43K3R94T2",
-					teamIdentifier: "SYBLH277NF"
+					keyIdentifier: "X43K3R94T2", // FIXME: Read from environment variable
+					teamIdentifier: "SYBLH277NF" // FIXME: Read from environment variable
 				),
 				environment: .production // FIXME: Detect staging environment and set to .sandbox
 			),
 			eventLoopGroupProvider: .shared(application.eventLoopGroup),
 			responseDecoder: JSONDecoder(),
 			requestEncoder: JSONEncoder(),
-			backgroundActivityLogger: Logger(label: "APNS"),
+			backgroundActivityLogger: application.logger,
 			as: .default
 		)
 	}

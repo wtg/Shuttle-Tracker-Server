@@ -193,7 +193,8 @@ func routes(_ application: Application) throws {
 									interruptionLevel: interruptionLevel
 								),
 								deviceToken: device.token,
-								deadline: .distantFuture
+								deadline: .distantFuture,
+								logger: request.logger
 							)
 						} catch let error {
 							request.logger.log(level: .error, "[\(#fileID):\(#line) \(#function)] Failed to send APNS notification: \(error)")
