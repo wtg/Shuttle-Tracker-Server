@@ -196,7 +196,7 @@ func routes(_ application: Application) throws {
 								deadline: .distantFuture
 							)
 						} catch let error {
-							errorPrint("[\(#fileID):\(#line) \(#function)] \(error)")
+							request.logger.log(level: .error, "[\(#fileID):\(#line) \(#function)] Failed to send APNS notification: \(error)")
 						}
 					}
 				}
