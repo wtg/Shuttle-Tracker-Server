@@ -80,6 +80,28 @@ extension Coordinate: Codable, AdditiveArithmetic {
 	
 }
 
+enum LocationAuthorizationStatus: Int, Codable {
+	
+	case notDetermined
+	
+	case restricted
+	
+	case denied
+	
+	case authorizedAlways
+	
+	case authorizedWhenInUse
+	
+}
+
+enum LocationAccuracyAuthorization: Int, Codable {
+	
+	case fullAccuracy
+	
+	case reducedAccuracy
+	
+}
+
 enum Constants {
 	
 	/// The current version number for the API.

@@ -13,18 +13,62 @@ final class AnalyticsEntry: VersionedModel, Content {
 	struct UserSettings: Codable {
 		
 		enum ColorTheme: String, Codable {
+			
 			case light, dark
+			
 		}
+		
+		let colorTheme: ColorTheme?
 		
 		let colorBlindMode: Bool?
 		
-		let colorTheme: ColorTheme?
+		let debugMode: Bool?
+		
+		let logging: Bool?
+		
+		let maximumStopDistance: Int?
+		
+		let serverBaseURL: URL?
+		
+	}
+		
+	enum EventType: Codable {
+		
+		case coldLaunch
+		
+		case boardBusTapped
+		
+		case leaveBusTapped
+		
+		case boardBusActivated(manual: Bool)
+		
+		case boardBusDeactivated(manual: Bool)
+		
+		case busSelectionCanceled
+		
+		case announcementsListOpened
+		
+		case announcementViewed(id: UUID)
+		
+		case permissionsSheetOpened
+		
+		case networkToastPermissionsTapped
+		
+		case colorBlindModeToggled(enabled: Bool)
+		
+		case debugModeToggled(enabled: Bool)
+		
+		case serverBaseURLChanged(url: URL)
+		
+		case locationAuthorizationStatusDidChange(authorizationStatus: LocationAuthorizationStatus)
+		
+		case locationAccuracyAuthorizationDidChange(accuracyAuthorization: LocationAccuracyAuthorization)
 		
 	}
 	
 	static let schema = "analyticsentries"
 	
-	static var version: UInt = 1
+	static var version: UInt = 2
 	
 	/// The unique identifier of this analytics entry.
 	///
@@ -54,7 +98,7 @@ final class AnalyticsEntry: VersionedModel, Content {
 	
 	/// The app version string.
 	///
-	/// All app version strings should be consistently formatter per platform across different alaytics submissions.
+	/// All app version strings should be consistently formatter per platform across different analytics submissions.
 	@OptionalField(key: "app_version")
 	private(set) var appVersion: String?
 	
@@ -65,5 +109,9 @@ final class AnalyticsEntry: VersionedModel, Content {
 	/// A record of the user’s current app settings as of the submission of this analytics entry.
 	@Field(key: "user_settings")
 	private(set) var userSettings: UserSettings
+	
+	/// The type of event that triggered the submission of this analytics entry.
+	@Field(key: "event_type")
+	private(set) var eventType: EventType?
 	
 }

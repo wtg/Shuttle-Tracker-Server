@@ -14,33 +14,10 @@ struct CreateRoutes: AsyncMigration {
 		try await database
 			.schema(Route.schema)
 			.id()
-			.field(
-				"name",
-				.string,
-				.required
-			)
-			.field(
-				"coordinates",
-				.array(
-					of: .custom(Coordinate.self)
-				),
-				.required
-			)
-			.field(
-				"schedule",
-				.dictionary,
-				.required
-			)
-			.field(
-				"color_name",
-				.enum(
-					DatabaseSchema.DataType.Enum(
-						name: ColorName.sqlName,
-						cases: ColorName.allCases.map(\.rawValue)
-					)
-				),
-				.required
-			)
+			.field("name", .string, .required)
+			.field("coordinates", .array(of: .custom(Coordinate.self)), .required)
+			.field("schedule", .dictionary, .required)
+			.field("color_name", ColorName.representation(for: database), .required)
 			.create()
 	}
 	

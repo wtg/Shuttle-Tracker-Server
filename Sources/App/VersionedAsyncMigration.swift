@@ -40,7 +40,7 @@ protocol VersionedAsyncMigration {
 extension VersionedAsyncMigration {
 	
 	func prepare(on database: some Database) async throws {
-		let migrationVersion = try await self.migrationVersion(on: database) ?? MigrationVersion(schemaName: ModelType.schema, version: 0)
+		let migrationVersion = try await self.version(on: database) ?? MigrationVersion(schemaName: ModelType.schema, version: 0)
 		while migrationVersion.version < ModelType.version {
 			database.logger.log(level: .info, "\tMigrating schema “\(ModelType.schema)” from version \(migrationVersion.version) to \(migrationVersion.version + 1)…")
 			migrationVersion.version += 1
@@ -52,7 +52,7 @@ extension VersionedAsyncMigration {
 	}
 	
 	func revert(on database: some Database) async throws {
-		let migrationVersion = try await self.migrationVersion(on: database) ?? MigrationVersion(schemaName: ModelType.schema, version: 0)
+		let migrationVersion = try await self.version(on: database) ?? MigrationVersion(schemaName: ModelType.schema, version: 0)
 		while migrationVersion.version > ModelType.version {
 			database.logger.log(level: .info, "\tMigrating schema “\(ModelType.schema)” from version \(migrationVersion.version) to \(migrationVersion.version - 1)…")
 			migrationVersion.version -= 1
@@ -61,13 +61,16 @@ extension VersionedAsyncMigration {
 		}
 	}
 	
-	/// The current migration version for the database table that’s associated with the schema on which this migration operates.
-	/// - Parameter database: The database on which to look up the current migration version.
-	/// - Returns: The current migration version.
-	func migrationVersion(on database: some Database) async throws -> MigrationVersion? {
+	/// The latest migration version for the database table that’s associated with the schema on which this migration operates.
+	///
+	/// This method returns the latest migration version _of which the database is aware_, not the latest migration version as defined in the source code. Therefore, it’s useful for figuring out how to migrate the current database schemata to match the latest migration version in the source code.
+	/// - Parameter database: The database on which to look up the latest migration version.
+	/// - Returns: The latest migration version.
+	func version(on database: some Database) async throws -> MigrationVersion? {
 		return try await MigrationVersion
 			.query(on: database)
 			.filter(\.$schemaName == ModelType.schema)
+			.sort(\.$version, .descending)
 			.first()
 	}
 	

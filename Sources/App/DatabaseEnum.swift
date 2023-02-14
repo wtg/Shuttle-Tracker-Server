@@ -27,13 +27,25 @@ extension DatabaseEnum where Self: RawRepresentable, RawValue == String {
 		guard case .enum(let `enum`) = try await builder.read() else {
 			throw DatabaseEnumError.notAnEnum
 		}
+		
+		// Add new cases that appear in the source code but not in the database
 		for enumCase in self.allCases where !`enum`.cases.contains(enumCase.rawValue) {
 			builder = builder.case(enumCase.rawValue)
 		}
-		if `enum`.cases.isEmpty {
+		
+		// Delete old cases that appear in the database but not in the source code
+		for rawValue in `enum`.cases {
+			let doDelete = !self.allCases.contains { (enumCase) in
+				return enumCase.rawValue == rawValue
+			}
+			if doDelete {
+				builder = builder.deleteCase(rawValue)
+			}
+		}
+		
+		if `enum`.cases.isEmpty { // The enumerated type probably doesn’t exist yet in the database
 			return try await builder.create()
-		} else {
-			
+		} else { // The enumerated type probably already exists in the database
 			return try await builder.update()
 		}
 	}

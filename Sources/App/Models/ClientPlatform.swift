@@ -9,6 +9,6 @@ enum ClientPlatform: String, Codable, DatabaseEnum {
 	
 	case ios, macos, android, web
 	
-	static let name = "ClientPlatform"
+	static let name = #function
 	
 }

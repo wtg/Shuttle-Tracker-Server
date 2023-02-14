@@ -31,6 +31,10 @@ struct CreateAnalyticsEntries: VersionedAsyncMigration {
 				.field("board_bus_count", .int)
 				.field("user_settings", .dictionary, .required)
 				.create()
+		case 2:
+			try await schemaBuilder
+				.field("event_type", .dictionary)
+				.update()
 		default:
 			fatalError("Unknown migration version number!")
 		}
@@ -40,6 +44,10 @@ struct CreateAnalyticsEntries: VersionedAsyncMigration {
 		switch version {
 		case 0:
 			try await schemaBuilder.delete()
+		case 1:
+			try await schemaBuilder
+				.deleteField("event_type")
+				.update()
 		default:
 			fatalError("Unknown migration version number!")
 		}
