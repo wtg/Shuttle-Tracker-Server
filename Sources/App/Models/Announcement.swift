@@ -73,13 +73,13 @@ final class Announcement: VersionedModel, Content {
 	@Enum(key: "schedule_type")
 	var scheduleType: ScheduleType
 	
-	/// A cryptographic signature of the concatenation of the `subject` and `body` properties.
-	@Field(key: "signature")
-	var signature: Data
-	
 	/// The degree to which notifications for this announcement interrupt users on client devices.
 	@Enum(key: "interruption_level")
 	var interruptionLevel: InterruptionLevel
+	
+	/// A cryptographic signature of the concatenation of the `subject` and `body` properties.
+	@Field(key: "signature")
+	var signature: Data
 	
 	init() { }
 	
