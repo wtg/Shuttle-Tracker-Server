@@ -155,12 +155,15 @@ func routes(_ application: Application) throws {
 		if try CryptographyUtilities.verify(signature: announcement.signature, of: data) {
 			try await announcement.save(on: request.db(.psql))
 			
-			// Send a push notification to all users
+			// Send a push notification to all devices
 			let devices = try await APNSDevice
 				.query(on: request.db(.psql))
 				.all()
-			print("Sending a push notification to \(devices.count) devices…")
-			await withTaskGroup(of: Void.self) { (taskGroup) in
+			request.logger.log(level: .info, "[\(#fileID):\(#line) \(#function)] Sending a push notification to \(devices.count) devices…")
+			try await withThrowingTaskGroup(of: Void.self) { (taskGroup) in
+				// Separate out these instance properties since Announcement isn’t sendable
+				let subtitle = announcement.subject
+				let body = announcement.body
 				let interruptionLevel: APNSAlertNotificationInterruptionLevel
 				switch announcement.interruptionLevel {
 				case .passive:
@@ -172,27 +175,31 @@ func routes(_ application: Application) throws {
 				case .critical:
 					interruptionLevel = .critical
 				}
+				let payload: Announcement.APNSPayload
+				payload = try announcement.apnsPayload
+				
 				for device in devices {
+					let deviceToken = device.token
 					taskGroup.addTask {
 						do {
 							try await request.apns.client.sendAlertNotification(
 								APNSAlertNotification(
 									alert: APNSAlertNotificationContent(
 										title: .raw("Announcement"),
-										subtitle: .raw(announcement.subject),
-										body: .raw(announcement.body),
+										subtitle: .raw(subtitle),
+										body: .raw(body),
 										launchImage: nil
 									),
 									expiration: .none,
 									priority: .immediately,
 									topic: Constants.apnsTopic,
-									payload: announcement,
+									payload: payload,
 									badge: 1,
 									sound: .default,
 									mutableContent: 1,
 									interruptionLevel: interruptionLevel
 								),
-								deviceToken: device.token,
+								deviceToken: deviceToken,
 								deadline: .distantFuture,
 								logger: request.logger
 							)
@@ -491,9 +498,17 @@ func routes(_ application: Application) throws {
 		guard let token = request.parameters.get("token") else {
 			throw Abort(.badRequest)
 		}
-		let device = APNSDevice(token: token)
-		try await device.create(on: request.db(.psql))
-		return device
+		let existingDevice = try await APNSDevice
+			.query(on: request.db(.psql))
+			.filter(\.$token == token)
+			.first()
+		if let existingDevice {
+			return existingDevice
+		} else {
+			let device = APNSDevice(token: token)
+			try await device.create(on: request.db(.psql))
+			return device
+		}
 	}
 	
 }

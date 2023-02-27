@@ -46,6 +46,22 @@ final class Announcement: VersionedModel, Content {
 		
 	}
 	
+	struct APNSPayload: Encodable {
+		
+		let id: UUID
+		
+		let subject: String
+		
+		let body: String
+		
+		let start: Date
+		
+		let end: Date
+		
+		let scheduleType: ScheduleType
+		
+	}
+	
 	static let schema = "announcements"
 	
 	static var version: UInt = 2
@@ -81,6 +97,37 @@ final class Announcement: VersionedModel, Content {
 	@Field(key: "signature")
 	var signature: Data
 	
+	var apnsPayload: APNSPayload {
+		get throws {
+			guard let id = self.id else {
+				throw APNSPayloadError.noID
+			}
+			return APNSPayload(
+				id: id,
+				subject: self.subject,
+				body: self.body,
+				start: self.start,
+				end: self.end,
+				scheduleType: self.scheduleType
+			)
+		}
+	}
+	
 	init() { }
+	
+}
+
+fileprivate enum APNSPayloadError: Error {
+	
+	case noID
+	
+	var localizedDescription: String {
+		get {
+			switch self {
+			case .noID:
+				return "The announcement doesn’t have an ID."
+			}
+		}
+	}
 	
 }
