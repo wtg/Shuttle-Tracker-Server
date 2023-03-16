@@ -69,6 +69,7 @@ public func configure(_ application: Application) async throws {
 	let migrator = try await VersionedMigrator(database: application.db(.psql))
 	try await migrator.migrate(CreateAnalyticsEntries())
 	try await migrator.migrate(CreateAnnouncements())
+	try await migrator.migrate(CreateAPNSDevices())
 	try await migrator.migrate(CreateLogs())
 	try await migrator.migrate(CreateMilestones())
 	
