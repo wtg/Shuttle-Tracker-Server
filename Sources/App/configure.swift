@@ -101,7 +101,7 @@ public func configure(_ application: Application) async throws {
 					keyIdentifier: "X43K3R94T2", // FIXME: Read from environment variable
 					teamIdentifier: "SYBLH277NF" // FIXME: Read from environment variable
 				),
-				environment: .production // FIXME: Detect staging environment and set to .sandbox
+				environment: .sandbox
 			),
 			eventLoopGroupProvider: .shared(application.eventLoopGroup),
 			responseDecoder: JSONDecoder(),
