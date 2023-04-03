@@ -5,13 +5,13 @@
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //
 
-import APNS
 import FluentPostgresDriver
 import FluentSQLiteDriver
 import NIOSSL
 import Queues
 import QueuesFluentDriver
 import Vapor
+import VaporAPNS
 
 public func configure(_ application: Application) async throws {
 	// MARK: - Middleware
@@ -97,7 +97,7 @@ public func configure(_ application: Application) async throws {
 		application.apns.containers.use(
 			APNSClientConfiguration(
 				authenticationMethod: .jwt(
-					privateKey: try .loadFrom(filePath: apnsKeyPath)!,
+					privateKey: try .loadFrom(string: String(contentsOfFile: apnsKeyPath)),
 					keyIdentifier: "X43K3R94T2", // FIXME: Read from environment variable
 					teamIdentifier: "SYBLH277NF" // FIXME: Read from environment variable
 				),
@@ -106,7 +106,6 @@ public func configure(_ application: Application) async throws {
 			eventLoopGroupProvider: .shared(application.eventLoopGroup),
 			responseDecoder: JSONDecoder(),
 			requestEncoder: JSONEncoder(),
-			backgroundActivityLogger: application.logger,
 			as: .default
 		)
 	}

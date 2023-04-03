@@ -6,10 +6,10 @@
 //
 
 import Algorithms
-import APNS
 import Fluent
 import UAParserSwift
 import Vapor
+import VaporAPNS
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
@@ -161,9 +161,6 @@ func routes(_ application: Application) throws {
 				.all()
 			request.logger.log(level: .info, "[\(#fileID):\(#line) \(#function)] Sending a push notification to \(devices.count) devices…")
 			try await withThrowingTaskGroup(of: Void.self) { (taskGroup) in
-				// Separate out these instance properties since Announcement isn’t sendable
-				let subtitle = announcement.subject
-				let body = announcement.body
 				let interruptionLevel: APNSAlertNotificationInterruptionLevel
 				switch announcement.interruptionLevel {
 				case .passive:
@@ -177,7 +174,6 @@ func routes(_ application: Application) throws {
 				}
 				let payload: Announcement.APNSPayload
 				payload = try announcement.apnsPayload
-				
 				for device in devices {
 					let deviceToken = device.token
 					taskGroup.addTask {
@@ -186,22 +182,20 @@ func routes(_ application: Application) throws {
 								APNSAlertNotification(
 									alert: APNSAlertNotificationContent(
 										title: .raw("Announcement"),
-										subtitle: .raw(subtitle),
-										body: .raw(body),
+										subtitle: .raw(announcement.subject),
+										body: .raw(announcement.body),
 										launchImage: nil
 									),
 									expiration: .none,
 									priority: .immediately,
 									topic: Constants.apnsTopic,
 									payload: payload,
-									badge: 1,
 									sound: .default,
 									mutableContent: 1,
-									interruptionLevel: interruptionLevel
+									interruptionLevel: interruptionLevel,
+									apnsID: announcement.id
 								),
-								deviceToken: deviceToken,
-								deadline: .distantFuture,
-								logger: request.logger
+								deviceToken: deviceToken
 							)
 						} catch let error {
 							request.logger.log(level: .error, "[\(#fileID):\(#line) \(#function)] Failed to send APNS notification: \(error)")
