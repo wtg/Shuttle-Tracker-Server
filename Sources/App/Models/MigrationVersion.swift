@@ -6,10 +6,7 @@
 //
 
 import FluentKit
-
-#if os(Linux)
 import Foundation
-#endif // os(Linux)
 
 final class MigrationVersion: Model {
 	

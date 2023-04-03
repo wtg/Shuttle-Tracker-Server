@@ -12,13 +12,13 @@ final class AnalyticsEntry: VersionedModel, Content {
 	
 	struct UserSettings: Codable {
 		
-		enum ColorTheme: String, Codable {
+		enum ColorScheme: String, Codable {
 			
 			case light, dark
 			
 		}
 		
-		let colorTheme: ColorTheme?
+		let colorScheme: ColorScheme?
 		
 		let colorBlindMode: Bool?
 		
