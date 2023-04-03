@@ -263,7 +263,7 @@ func routes(_ application: Application) throws {
 	
 	// TODO: Return something that’s actually useful
 	application.get("stops", ":shortname") { (request) in
-		return request.redirect(to: "/", type: .temporary)
+		return request.redirect(to: "/", redirectType: .temporary)
 	}
 	
 	// Attempt to fetch and to return the shuttle buses
