@@ -46,7 +46,7 @@ struct GPXImportingJob: AsyncScheduledJob {
 			do {
 				let routesInfoData = try routesInfoParser.get(dataAt: routesFileURL.lastPathComponent, asCollection: [String: Any].self)
 				schedule = try decoder.decode(MapSchedule.self, from: routesInfoData)
-			} catch let error {
+			} catch {
 				errorPrint("Couldn’t decode map schedule for GPX file “\(routesFileURL.lastPathComponent)”: \(error)")
 				schedule = .always
 			}
@@ -63,7 +63,7 @@ struct GPXImportingJob: AsyncScheduledJob {
 						try await Stop(from: gpxWaypoint, withSchedule: schedule)!
 							.save(on: context.application.db(.sqlite))
 					}
-				} catch let error {
+				} catch {
 					errorPrint("Couldn’t import GPX route from file “\(routesFileURL.lastPathComponent)”: \(error)")
 				}
 			}

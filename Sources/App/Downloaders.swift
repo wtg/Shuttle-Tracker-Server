@@ -74,8 +74,8 @@ enum Downloaders {
 							return Bus(id: id, locations: [location])
 						}
 					continuation.resume(returning: buses)
-				} catch let parseError {
-					continuation.resume(throwing: parseError)
+				} catch {
+					continuation.resume(throwing: error)
 				}
 			}
 			dataTask.resume()
