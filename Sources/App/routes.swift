@@ -173,8 +173,7 @@ func routes(_ application: Application) throws {
 				case .critical:
 					interruptionLevel = .critical
 				}
-				let payload: Announcement.APNSPayload
-				payload = try announcement.apnsPayload
+				let payload = try announcement.apnsPayload
 				for device in devices {
 					let deviceToken = device.token
 					taskGroup.addTask {
