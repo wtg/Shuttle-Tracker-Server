@@ -6,6 +6,7 @@
 //
 
 import Algorithms
+import APNSCore
 import Fluent
 import UAParserSwift
 import Vapor
