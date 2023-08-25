@@ -43,9 +43,9 @@ extension DatabaseEnum where Self: RawRepresentable, RawValue == String {
 			}
 		}
 		
-		if `enum`.cases.isEmpty { // The enumerated type probably doesn’t exist yet in the database
+		if `enum`.cases.isEmpty { // The enumerated type probably doesn’t exist yet in the database.
 			return try await builder.create()
-		} else { // The enumerated type probably already exists in the database
+		} else { // The enumerated type probably already exists in the database.
 			return try await builder.update()
 		}
 	}
