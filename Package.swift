@@ -33,8 +33,8 @@ let package = Package(
 			from: "2.2.0"
 		),
 		.package(
-			url: "https://github.com/Gerzer/apns.git",
-			branch: "main"
+			url: "https://github.com/vapor/apns.git",
+			from: "4.0.0"
 		),
 		.package(
 			url: "https://github.com/m-barthelemy/vapor-queues-fluent-driver.git",
