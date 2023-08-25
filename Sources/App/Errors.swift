@@ -7,8 +7,21 @@
 
 import Foundation
 
-enum NetworkError: Error {
+enum NetworkError: LocalizedError {
 	
-	case invalidResponseEncoding, unknown
+	case invalidResponseEncoding
+	
+	case unknown
+	
+	var errorDescription: String? {
+		get {
+			switch self {
+			case .invalidResponseEncoding:
+				return "The encoding of the response is invalid."
+			case .unknown:
+				return "An unknown network error occurred."
+			}
+		}
+	}
 	
 }

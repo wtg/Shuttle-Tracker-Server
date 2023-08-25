@@ -6,6 +6,7 @@
 //
 
 import Fluent
+import Foundation
 
 /// An enumeration that can be represented in a SQL database via Fluent.
 protocol DatabaseEnum: CaseIterable {
@@ -52,11 +53,11 @@ extension DatabaseEnum where Self: RawRepresentable, RawValue == String {
 	
 }
 
-enum DatabaseEnumError: Error {
+enum DatabaseEnumError: LocalizedError {
 	
 	case notAnEnum
 	
-	var localizedDescription: String {
+	var errorDescription: String? {
 		get {
 			switch self {
 			case .notAnEnum:
