@@ -117,11 +117,11 @@ final class Announcement: VersionedModel, Content {
 	
 }
 
-fileprivate enum APNSPayloadError: Error {
+fileprivate enum APNSPayloadError: LocalizedError {
 	
 	case noID
 	
-	var localizedDescription: String {
+	var errorDescription: String? {
 		get {
 			switch self {
 			case .noID:
