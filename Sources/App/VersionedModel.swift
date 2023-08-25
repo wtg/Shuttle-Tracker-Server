@@ -14,7 +14,7 @@ protocol VersionedModel: Model {
 	///
 	/// This value should be incremented whenever the schema is changed. Set it to a lower value to revert the relevant database table or to `0` to delete the table entirely.
 	/// - Important: Always implement appropriate preparation and reversion logic in the relevant migration when changing the schema and the version number.
-	/// - Important: The initial version number should be `1`, not `0`. Setting it to `0` will either prevent the relevant database table from being created or cause it to be deleted.
+	/// - Important: The initial version number should be `1`, not `0`. Setting it to `0` will either prevent the creation of the relevant database table or cause its deletion.
 	static var version: UInt { get }
 	
 }

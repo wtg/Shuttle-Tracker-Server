@@ -87,7 +87,7 @@ func routes(_ application: Application) throws {
 		return try await Milestone
 			.query(on: request.db(.psql))
 			.all()
-	} 
+	}
 	
 	// Post a new milestone after verifying the request
 	application.post("milestones") { (request) -> Milestone in

@@ -9,26 +9,26 @@ import FluentKit
 
 /// An asynchronous migration that automatically migrates across multiple schema versions.
 ///
-/// The migrator incrementally invokes `prepare(using:to:)` or `revert(using:to:)` to migrate the schema for the associated model type to the version number that’s one greater or one less, respectively, than the current version number until the target version number is reached. Therefore, the implementations of `prepare(using:to:)` and `revert(using:to:)` should perform just a single version migration per invocation. A good way to implement these methods is to use a `switch` statement to switch on the given version number. It’s acceptable to throw an error or to invoke `fatalError(_:file:line:)` if the given version number is unrecognized.
+/// The migrator incrementally invokes `prepare(using:to:enumFactory:)` or `revert(using:to:)` to migrate the schema for the associated model type to the version number that’s one greater or one less, respectively, than the current version number until the target version number is reached. Therefore, the implementations of `prepare(using:to:enumFactory:)` and `revert(using:to:)` should perform just a single version migration per invocation. A good way to implement these methods is to use a `switch` statement to switch on the specified version number. It’s acceptable to throw an error or to invoke `fatalError(_:file:line:)` if the specified version number is unrecognized.
 /// - Remark: This protocol doesn’t inherit from Fluent’s own `AsyncMigration` protocol because it’s incompatible with Fluent’s native migrator. Use `VersionedMigrator` instead.
 protocol VersionedAsyncMigration {
 	
 	/// The versioned model type that’s represented in the database table on which this migration operates.
 	associatedtype ModelType: VersionedModel
 	
-	/// Migrates forward the database table that’s associated with the given schema.
+	/// Migrates forward the database table that’s associated with the specified schema.
 	/// - Precondition: The current migration version number equals`version - 1`.
 	/// - Parameters:
 	///   - schemaBuilder: The schema builder to use to declare and to perform the forward migration.
 	///   - version: The schema version number to which to migrate the associated database table.
-	///   - enumFactory: A function that generates a database representation of an enumeration type.
+	///   - enumFactory: A closure that generates a database representation of an enumeration type.
 	func prepare(
 		using schemaBuilder: SchemaBuilder,
 		to version: UInt,
 		enumFactory: (any DatabaseEnum.Type) async throws -> DatabaseSchema.DataType
 	) async throws
 	
-	/// Migrates backward the database table that’s associated with the given schema.
+	/// Migrates backward the database table that’s associated with the specified schema.
 	/// - Precondition: The current migration version number equals `version + 1`.
 	/// - Parameters:
 	///   - schemaBuilder: The schema builder to use to declare and to perform the backward migration.
