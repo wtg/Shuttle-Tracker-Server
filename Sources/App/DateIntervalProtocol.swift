@@ -39,16 +39,6 @@ extension DateUtilities {
 }
 
 #if os(Linux) || os(Windows)
-extension Date {
-	
-	static var now: Date {
-		get {
-			return Date()
-		}
-	}
-	
-}
-
 fileprivate struct CompatibilityDateInterval: DateIntervalProtocol {
 	
 	let start: Date
