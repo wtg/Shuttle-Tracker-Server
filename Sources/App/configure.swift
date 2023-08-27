@@ -60,7 +60,7 @@ public func configure(_ application: Application) async throws {
 		CreateBuses(),
 		CreateRoutes(),
 		CreateStops(),
-		JobModelMigrate(),
+		JobMetadataMigrate(),
 		to: .sqlite
 	) // Add to the SQLite database
 	try await application.autoMigrate()
@@ -72,7 +72,7 @@ public func configure(_ application: Application) async throws {
 	try await migrator.migrate(CreateMilestones())
 	
 	// MARK: - Jobs
-	application.queues.use(.fluent(.sqlite, useSoftDeletes: false))
+	application.queues.use(.fluent(.sqlite))
 	application.queues
 		.schedule(BusDownloadingJob())
 		.minutely()

@@ -18,23 +18,23 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/vapor/queues.git",
-			from: "1.8.0"
+			from: "1.13.0"
 		),
 		.package(
 			url: "https://github.com/vapor/fluent.git",
-			from: "4.4.0"
+			from: "4.8.0"
 		),
 		.package(
 			url:"https://github.com/vapor/fluent-sqlite-driver.git",
-			from: "4.0.0"
+			from: "4.5.0"
 		),
 		.package(
 			url: "https://github.com/vapor/fluent-postgres-driver.git",
-			from: "2.2.0"
+			from: "2.8.0"
 		),
 		.package(
 			url: "https://github.com/m-barthelemy/vapor-queues-fluent-driver.git",
-			from: "1.0.0"
+			from: "3.0.0-beta.1"
 		),
 		.package(
 			url: "https://github.com/malcommac/UAParserSwift.git",
