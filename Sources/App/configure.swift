@@ -31,29 +31,29 @@ public func configure(_ application: Application) async throws {
 		as: .sqlite,
 		isDefault: false
 	)
+	var postgresConfiguration: SQLPostgresConfiguration
 	if let postgresURLString = ProcessInfo.processInfo.environment["DATABASE_URL"], let postgresURL = URL(string: postgresURLString) {
-		application.databases.use(
-			try .postgres(url: postgresURL),
-			as: .psql,
-			isDefault: false
-		)
+		postgresConfiguration = try SQLPostgresConfiguration(url: postgresURL)
+		postgresConfiguration.coreConfiguration.tls = .disable // TLS is unnecessary because the database is hosted on the same machine as this server.
 	} else {
-		let postgresHostname = ProcessInfo.processInfo.environment["POSTGRES_HOSTNAME"]!
-		let postgresUsername = ProcessInfo.processInfo.environment["POSTGRES_USERNAME"]!
-		let postgresPassword = ProcessInfo.processInfo.environment["POSTGRES_PASSWORD"] ?? ""
+		let hostname = ProcessInfo.processInfo.environment["POSTGRES_HOSTNAME"]!
+		let username = ProcessInfo.processInfo.environment["POSTGRES_USERNAME"]!
+		let password = ProcessInfo.processInfo.environment["POSTGRES_PASSWORD"] ?? ""
 		
 		// TODO: Make a new database during the setup process
-		// For now, we’re using the default PostgreSQL database for deployment compatibility reasons, but we should in the future switch to a non-default, unprotected database.
-		application.databases.use(
-			.postgres(
-				hostname: postgresHostname,
-				username: postgresUsername,
-				password: postgresPassword
-			),
-			as: .psql,
-			isDefault: false
+		// For now, we’re using the default PostgreSQL database for deployment-compatibility reasons, but we should in the future switch to a non-default, unprotected database.
+		postgresConfiguration = SQLPostgresConfiguration(
+			hostname: hostname,
+			username: username,
+			password: password,
+			tls: .disable
 		)
 	}
+	application.databases.use(
+		.postgres(configuration: postgresConfiguration),
+		as: .psql,
+		isDefault: false
+	)
 	
 	// MARK: - Migrations
 	application.migrations.add(
