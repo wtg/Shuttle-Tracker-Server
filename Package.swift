@@ -14,7 +14,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/vapor/vapor.git",
-			from: "4.65.0"
+			from: "4.79.0"
 		),
 		.package(
 			url: "https://github.com/vapor/queues.git",
