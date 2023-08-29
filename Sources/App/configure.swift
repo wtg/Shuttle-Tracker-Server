@@ -95,14 +95,20 @@ public func configure(_ application: Application) async throws {
 	
 	// MARK: - APNS
 	if let apnsKeyPath = ProcessInfo.processInfo.environment["APNS_KEY"] {
+		guard let keyIdentifier = ProcessInfo.processInfo.environment["APNS_KEY_IDENTIFIER"] else {
+			fatalError("An APNS key was specified, but no key identifier is set. Remember to set the APNS_KEY_IDENTIFIER environment variable!")
+		}
+		guard let teamIdentifier = ProcessInfo.processInfo.environment["APNS_TEAM_IDENTIFIER"] else {
+			fatalError("An APNS key was specified, but no team identifier is set. Remember to set the APNS_TEAM_IDENTIFIER environment variable!")
+		}
 		application.apns.containers.use(
 			APNSClientConfiguration(
 				authenticationMethod: .jwt(
 					privateKey: try .loadFrom(string: String(contentsOfFile: apnsKeyPath)),
-					keyIdentifier: "X43K3R94T2", // FIXME: Read from environment variable
-					teamIdentifier: "SYBLH277NF" // FIXME: Read from environment variable
+					keyIdentifier: keyIdentifier,
+					teamIdentifier: teamIdentifier
 				),
-				environment: .sandbox
+				environment: .sandbox // FIXME: Switch to production environment
 			),
 			eventLoopGroupProvider: .shared(application.eventLoopGroup),
 			responseDecoder: JSONDecoder(),
