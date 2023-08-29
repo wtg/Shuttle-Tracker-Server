@@ -31,14 +31,22 @@ public func configure(_ application: Application) async throws {
 		as: .sqlite,
 		isDefault: false
 	)
+	
 	var postgresConfiguration: SQLPostgresConfiguration
 	if let postgresURLString = ProcessInfo.processInfo.environment["DATABASE_URL"], let postgresURL = URL(string: postgresURLString) {
 		postgresConfiguration = try SQLPostgresConfiguration(url: postgresURL)
 		postgresConfiguration.coreConfiguration.tls = .disable // TLS is unnecessary because the database is hosted on the same machine as this server.
 	} else {
-		let hostname = ProcessInfo.processInfo.environment["POSTGRES_HOSTNAME"]!
-		let username = ProcessInfo.processInfo.environment["POSTGRES_USERNAME"]!
-		let password = ProcessInfo.processInfo.environment["POSTGRES_PASSWORD"] ?? ""
+		guard let hostname = ProcessInfo.processInfo.environment["POSTGRES_HOSTNAME"] else {
+			fatalError("No database URL was specified, but the Postgres hostname is undefined. Remember to set the POSTGRES_HOSTNAME environment variable!")
+		}
+		guard let username = ProcessInfo.processInfo.environment["POSTGRES_USERNAME"] else {
+			fatalError("No database URL was specified, but the Postgres username is undefined. Remember to set the POSTGRES_USERNAME environment variable!")
+		}
+		let password = ProcessInfo.processInfo.environment["POSTGRES_PASSWORD"]
+		if password == nil {
+			print("No database URL was specified, but the Postgres password is undefined. If this is unexpected, then remember to set the POSTGRES_PASSWORD environment variable.")
+		}
 		
 		// TODO: Make a new database during the setup process
 		// For now, we’re using the default PostgreSQL database for deployment-compatibility reasons, but we should in the future switch to a non-default, unprotected database.
