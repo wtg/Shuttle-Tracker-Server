@@ -108,7 +108,7 @@ public func configure(_ application: Application) async throws {
 					keyIdentifier: keyIdentifier,
 					teamIdentifier: teamIdentifier
 				),
-				environment: .sandbox // FIXME: Switch to production environment
+				environment: .production
 			),
 			eventLoopGroupProvider: .shared(application.eventLoopGroup),
 			responseDecoder: JSONDecoder(),
