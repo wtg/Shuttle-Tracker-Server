@@ -38,9 +38,33 @@ final class Announcement: VersionedModel, Content {
 		
 	}
 	
+	enum InterruptionLevel: String, Codable, DatabaseEnum {
+		
+		case passive, active, timeSensitive, critical
+		
+		static var name = #function
+		
+	}
+	
+	struct APNSPayload: Encodable {
+		
+		let id: UUID
+		
+		let subject: String
+		
+		let body: String
+		
+		let start: Date
+		
+		let end: Date
+		
+		let scheduleType: ScheduleType
+		
+	}
+	
 	static let schema = "announcements"
 	
-	static var version: UInt = 1
+	static var version: UInt = 2
 	
 	@ID
 	var id: UUID?
@@ -65,10 +89,45 @@ final class Announcement: VersionedModel, Content {
 	@Enum(key: "schedule_type")
 	var scheduleType: ScheduleType
 	
+	/// The degree to which notifications for this announcement interrupt users on client devices.
+	@Enum(key: "interruption_level")
+	var interruptionLevel: InterruptionLevel
+	
 	/// A cryptographic signature of the concatenation of the `subject` and `body` properties.
 	@Field(key: "signature")
 	var signature: Data
 	
+	var apnsPayload: APNSPayload {
+		get throws {
+			guard let id = self.id else {
+				throw APNSPayloadError.noID
+			}
+			return APNSPayload(
+				id: id,
+				subject: self.subject,
+				body: self.body,
+				start: self.start,
+				end: self.end,
+				scheduleType: self.scheduleType
+			)
+		}
+	}
+	
 	init() { }
+	
+}
+
+fileprivate enum APNSPayloadError: LocalizedError {
+	
+	case noID
+	
+	var errorDescription: String? {
+		get {
+			switch self {
+			case .noID:
+				return "The announcement doesn’t have an ID."
+			}
+		}
+	}
 	
 }

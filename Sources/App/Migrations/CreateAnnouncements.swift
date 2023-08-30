@@ -30,6 +30,15 @@ struct CreateAnnouncements: VersionedAsyncMigration {
 				.field("schedule_type", .string, .required)
 				.field("signature", .data, .required)
 				.create()
+		case 2:
+			try await schemaBuilder
+				.field(
+					"interruption_level",
+					enumFactory(Announcement.InterruptionLevel.self),
+					.required,
+					.sql(.default(Announcement.InterruptionLevel.passive.rawValue))
+				)
+				.update()
 		default:
 			fatalError("Unknown migration version number!")
 		}
@@ -39,6 +48,10 @@ struct CreateAnnouncements: VersionedAsyncMigration {
 		switch version {
 		case 0:
 			try await schemaBuilder.delete()
+		case 1:
+			try await schemaBuilder
+				.deleteField("interruption_level")
+				.update()
 		default:
 			fatalError("Unknown migration version number!")
 		}

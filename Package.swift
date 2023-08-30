@@ -5,7 +5,7 @@ import PackageDescription
 let package = Package(
 	name: "Shuttle Tracker Server",
 	platforms: [
-		.macOS(.v12)
+		.macOS(.v13)
 	],
 	dependencies: [
 		.package(
@@ -31,6 +31,10 @@ let package = Package(
 		.package(
 			url: "https://github.com/vapor/fluent-postgres-driver.git",
 			from: "2.8.0"
+		),
+		.package(
+			url: "https://github.com/vapor/apns.git",
+			from: "4.0.0"
 		),
 		.package(
 			url: "https://github.com/m-barthelemy/vapor-queues-fluent-driver.git",
@@ -84,6 +88,10 @@ let package = Package(
 				.product(
 					name: "QueuesFluentDriver",
 					package: "vapor-queues-fluent-driver"
+				),
+				.product(
+					name: "VaporAPNS",
+					package: "apns"
 				),
 				.product(
 					name: "CoreGPX",

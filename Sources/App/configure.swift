@@ -5,12 +5,14 @@
 //  Created by Gabriel Jacoby-Cooper on 9/21/20.
 //
 
+import APNS
 import FluentPostgresDriver
 import FluentSQLiteDriver
 import NIOSSL
 import Queues
 import QueuesFluentDriver
 import Vapor
+import VaporAPNS
 
 public func configure(_ application: Application) async throws {
 	// MARK: - Middleware
@@ -76,6 +78,7 @@ public func configure(_ application: Application) async throws {
 	let migrator = try await VersionedMigrator(database: application.db(.psql))
 	try await migrator.migrate(CreateAnalyticsEntries())
 	try await migrator.migrate(CreateAnnouncements())
+	try await migrator.migrate(CreateAPNSDevices())
 	try await migrator.migrate(CreateLogs())
 	try await migrator.migrate(CreateMilestones())
 	
@@ -97,6 +100,30 @@ public func configure(_ application: Application) async throws {
 		.at(Date() + 21600)
 	try application.queues.startInProcessJobs()
 	try application.queues.startScheduledJobs()
+	
+	// MARK: - APNS
+	if let apnsKeyPath = ProcessInfo.processInfo.environment["APNS_KEY"] {
+		guard let keyIdentifier = ProcessInfo.processInfo.environment["APNS_KEY_IDENTIFIER"] else {
+			fatalError("An APNS key was specified, but no key identifier is set. Remember to set the APNS_KEY_IDENTIFIER environment variable!")
+		}
+		guard let teamIdentifier = ProcessInfo.processInfo.environment["APNS_TEAM_IDENTIFIER"] else {
+			fatalError("An APNS key was specified, but no team identifier is set. Remember to set the APNS_TEAM_IDENTIFIER environment variable!")
+		}
+		application.apns.containers.use(
+			APNSClientConfiguration(
+				authenticationMethod: .jwt(
+					privateKey: try .loadFrom(string: String(contentsOfFile: apnsKeyPath)),
+					keyIdentifier: keyIdentifier,
+					teamIdentifier: teamIdentifier
+				),
+				environment: .production
+			),
+			eventLoopGroupProvider: .shared(application.eventLoopGroup),
+			responseDecoder: JSONDecoder(),
+			requestEncoder: JSONEncoder(),
+			as: .default
+		)
+	}
 	
 	// MARK: - TLS
 	if FileManager.default.fileExists(atPath: "tls") {

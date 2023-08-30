@@ -6,9 +6,11 @@
 //
 
 import Algorithms
+import APNSCore
 import Fluent
 import UAParserSwift
 import Vapor
+import VaporAPNS
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
@@ -153,6 +155,55 @@ func routes(_ application: Application) throws {
 		}
 		if try CryptographyUtilities.verify(signature: announcement.signature, of: data) {
 			try await announcement.save(on: request.db(.psql))
+			
+			// Send a push notification to all devices
+			let devices = try await APNSDevice
+				.query(on: request.db(.psql))
+				.all()
+			request.logger.log(level: .info, "[\(#fileID):\(#line) \(#function)] Sending a push notification to \(devices.count) devices…")
+			try await withThrowingTaskGroup(of: Void.self) { (taskGroup) in
+				let interruptionLevel: APNSAlertNotificationInterruptionLevel
+				switch announcement.interruptionLevel {
+				case .passive:
+					interruptionLevel = .passive
+				case .active:
+					interruptionLevel = .active
+				case .timeSensitive:
+					interruptionLevel = .timeSensitive
+				case .critical:
+					interruptionLevel = .critical
+				}
+				let payload = try announcement.apnsPayload
+				for device in devices {
+					let deviceToken = device.token
+					taskGroup.addTask {
+						do {
+							try await request.apns.client.sendAlertNotification(
+								APNSAlertNotification(
+									alert: APNSAlertNotificationContent(
+										title: .raw("Announcement"),
+										subtitle: .raw(announcement.subject),
+										body: .raw(announcement.body),
+										launchImage: nil
+									),
+									expiration: .none,
+									priority: .immediately,
+									topic: Constants.apnsTopic,
+									payload: payload,
+									sound: .default,
+									mutableContent: 1,
+									interruptionLevel: interruptionLevel,
+									apnsID: announcement.id
+								),
+								deviceToken: deviceToken
+							)
+						} catch let error {
+							request.logger.log(level: .error, "[\(#fileID):\(#line) \(#function)] Failed to send APNS notification: \(error)")
+						}
+					}
+				}
+			}
+			
 			return announcement
 		} else {
 			throw Abort(.forbidden)
@@ -433,6 +484,25 @@ func routes(_ application: Application) throws {
 				.reduce(0, +)
 		}
 		return Double(sum) / Double(chunks.count)
+	}
+	
+	// MARK: - Notifications
+	
+	application.post("notifications", "devices", ":token") { (request) in
+		guard let token = request.parameters.get("token") else {
+			throw Abort(.badRequest)
+		}
+		let existingDevice = try await APNSDevice
+			.query(on: request.db(.psql))
+			.filter(\.$token == token)
+			.first()
+		if let existingDevice {
+			return existingDevice
+		} else {
+			let device = APNSDevice(token: token)
+			try await device.create(on: request.db(.psql))
+			return device
+		}
 	}
 	
 }
