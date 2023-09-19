@@ -127,13 +127,11 @@ final class Bus: Hashable, Model {
 			return
 		}
 		var selectedRoute: Route?
-		for route in routes {
-			if route.checkIsOnRoute(location: location) {
-				guard selectedRoute == nil else {
-					return // Since the bus is currently in an overlapping portion of multiple routes, leave the existing route association as-is
-				}
-				selectedRoute = route
+		for route in routes where route.checkIsOnRoute(location: location) {
+			guard selectedRoute == nil else {
+				return // Since the bus is currently in an overlapping portion of multiple routes, we leave the existing route association as-is.
 			}
+			selectedRoute = route
 		}
 		self.routeID = selectedRoute?.id
 	}

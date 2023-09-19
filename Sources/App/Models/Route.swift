@@ -130,7 +130,7 @@ final class Route: Model, Content, Collection {
 			.closestCoordinate(to: location.coordinate)?
 			.coordinate
 			.distance(to: location.coordinate)
-		guard let distance = distance else {
+		guard let distance else {
 			return false
 		}
 		return distance < Constants.isOnRouteThreshold
