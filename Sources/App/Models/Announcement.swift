@@ -11,7 +11,6 @@ import Vapor
 /// A representation of a time-limited announcement to display to users of the various clients.
 final class Announcement: VersionedModel, Content {
 	
-	/// The various available schedule types.
 	enum ScheduleType: String, Codable, DatabaseEnum {
 		
 		/// A schedule type that has neither a start date/time nor an end date/time.
