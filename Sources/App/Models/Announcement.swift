@@ -42,7 +42,7 @@ final class Announcement: VersionedModel, Content {
 		
 		case passive, active, timeSensitive, critical
 		
-		static var name = #function
+		static let name = #function
 		
 	}
 	
