@@ -68,7 +68,7 @@ final class AnalyticsEntry: VersionedModel, Content {
 	
 	static let schema = "analyticsentries"
 	
-	static var version: UInt = 2
+	static let version: UInt = 2
 	
 	/// The unique identifier of this analytics entry.
 	///

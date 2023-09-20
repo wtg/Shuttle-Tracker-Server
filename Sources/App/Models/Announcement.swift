@@ -63,7 +63,7 @@ final class Announcement: VersionedModel, Content {
 	
 	static let schema = "announcements"
 	
-	static var version: UInt = 2
+	static let version: UInt = 2
 	
 	@ID
 	var id: UUID?

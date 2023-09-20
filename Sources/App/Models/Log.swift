@@ -27,7 +27,7 @@ final class Log: VersionedModel, Content {
 	
 	static let schema = "logs"
 	
-	static var version: UInt = 1
+	static let version: UInt = 1
 	
 	@ID
 	var id: UUID?

@@ -23,7 +23,7 @@ final class Milestone: VersionedModel, Content {
 	
 	static let schema = "milestones"
 	
-	static var version: UInt = 1
+	static let version: UInt = 1
 	
 	/// A unique identifier that’s used by the database.
 	@ID
