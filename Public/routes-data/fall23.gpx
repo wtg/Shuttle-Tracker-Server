@@ -33,16 +33,13 @@
 		<name>West Hall</name>
 	</wpt>
 	<wpt lat="42.730952" lon="-73.678995">
-		<name>’87 Gymnasium></name>
+		<name>’87 Gymnasium</name>
 	</wpt>
 	<wpt lat="42.729276" lon="-73.673374">
 		<name>Barton Hall</name>
 	</wpt>
 	<wpt lat="42.731638" lon="-73.669710">
 		<name>B-Lot</name>
-	</wpt>
-	<wpt lat="42.731362" lon="-73.666572">
-		<name>E-Lot</name>
 	</wpt>
 	<wpt lat="42.732719" lon="-73.665201">
 		<name>Stacwyck</name>
@@ -52,9 +49,6 @@
 	</wpt>
 	<wpt lat="42.735535" lon="-73.664404">
 		<name>RAHP-B</name>
-	</wpt>
-	<wpt lat="42.737002" lon="-73.666682">
-		<name>Georgian Court</name>
 	</wpt>
 	<wpt lat="42.737000" lon="-73.670300">
 		<name>Colonie</name>
