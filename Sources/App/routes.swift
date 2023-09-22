@@ -383,6 +383,9 @@ func routes(_ application: Application) throws {
 			.query(on: request.db(.sqlite))
 			.filter(\.$id == id)
 			.first()
+		if bus==nil && location.type=={
+
+		}
 		guard let bus = bus else {
 			throw Abort(.notFound)
 		}
