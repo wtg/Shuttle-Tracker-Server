@@ -28,6 +28,9 @@ final class Stop: Equatable, Hashable, Model, Content {
 	
 	@Field(key: "schedule")
 	var schedule: MapSchedule
+
+	@Field(key: "isByRequest") 
+	var isByRequest: Bool
 	
 	init() { }
 	
@@ -37,12 +40,13 @@ final class Stop: Equatable, Hashable, Model, Content {
 	///   - schedule: The schedule for when the stop will be active.
 	/// - Note: This initializer fails and returns `nil` if the provided GPX waypoint doesn’t contain sufficient information to create a stop object.
 	init?(from gpxWaypoint: any GPXWaypointProtocol, withSchedule schedule: MapSchedule) {
-		guard let name = gpxWaypoint.name, let coordinate = Coordinate(from: gpxWaypoint) else {
+		guard let name = gpxWaypoint.name, let coordinate = Coordinate(from: gpxWaypoint), let isByRequest: String? = gpxWaypoint.desc else {
 			return nil
 		}
 		self.name = name
 		self.coordinate = coordinate
 		self.schedule = schedule
+		self.isByRequest = (isByRequest == "Request Only")
 	}
 	
 	func hash(into hasher: inout Hasher) {
