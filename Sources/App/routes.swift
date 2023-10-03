@@ -379,12 +379,12 @@ func routes(_ application: Application) throws {
 		guard isOnRoute else {
 			throw Abort(.conflict)
 		}
-		let bus = try await Bus
+		var bus = try await Bus
 			.query(on: request.db(.sqlite))
 			.filter(\.$id == id)
 			.first()
-		if bus==nil && location.type=={
-
+		if bus == nil && location.type == .network {
+			bus = Bus(id: id)
 		}
 		guard let bus = bus else {
 			throw Abort(.notFound)
