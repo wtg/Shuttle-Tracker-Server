@@ -13,48 +13,63 @@
 	</metadata>
 	<wpt lat="42.730246" lon="-73.676573">
 		<name>Student Union</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.727888" lon="-73.678127">
 		<name>Academy Hall</name>
+		<desc>Request Only</desc>
 	</wpt>
 	<wpt lat="42.725828" lon="-73.678490">
 		<name>Tibbits Avenue</name>
+		<desc>Request Only</desc>
 	</wpt>
 	<wpt lat="42.722881" lon="-73.679696">
 		<name>Polytechnic Residence Commons</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.727761" lon="-73.687119">
 		<name>City Station</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.731384" lon="-73.686298">
 		<name>Blitman Residence Commons</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.731427" lon="-73.681251">
 		<name>West Hall</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.730952" lon="-73.678995">
 		<name>’87 Gymnasium</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.729276" lon="-73.673374">
 		<name>Barton Hall</name>
+		<desc>Request Only</desc>
 	</wpt>
 	<wpt lat="42.731638" lon="-73.669710">
 		<name>B-Lot</name>
+		<desc>Request Only</desc>
 	</wpt>
 	<wpt lat="42.731947" lon="-73.668020">
 		<name>ECAV Arena</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.732719" lon="-73.665201">
 		<name>Stacwyck</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.734554" lon="-73.663474">
 		<name>Bryckwyck</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.735450" lon="-73.663959">
 		<name>Beman Lane</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.728698" lon="-73.675927">
 		<name>The Armory</name>
+		<desc>No Request</desc>
 	</wpt>
 	<rte>
 		<name>Route</name>

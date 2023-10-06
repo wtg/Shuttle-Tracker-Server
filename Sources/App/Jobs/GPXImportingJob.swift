@@ -55,17 +55,20 @@ struct GPXImportingJob: AsyncScheduledJob {
 				errorPrint("Couldn’t parse GPX file “\(routesFileURL.lastPathComponent)”")
 				continue
 			}
+			var allRoutes: Set<Route> = []
 			for gpxRoute in gpx.routes {
 				do {
-					try await Route(from: gpxRoute, schedule: schedule)
+					let route = Route(from: gpxRoute, schedule: schedule)
+					allRoutes.insert(route)
+					try await route
 						.save(on: context.application.db(.sqlite))
-					for gpxWaypoint in gpx.waypoints {
-						try await Stop(from: gpxWaypoint, withSchedule: schedule)!
-							.save(on: context.application.db(.sqlite))
-					}
 				} catch {
 					errorPrint("Couldn’t import GPX route from file “\(routesFileURL.lastPathComponent)”: \(error)")
 				}
+			}
+			for gpxWaypoint in gpx.waypoints { 
+				try await Stop(from: gpxWaypoint, withSchedule: schedule, selectingRoutesFrom: allRoutes)!
+					.save(on: context.application.db(.sqlite))
 			}
 		}
 	}

@@ -13,24 +13,31 @@
 	</metadata>
 	<wpt lat="42.730246" lon="-73.676573">
 		<name>Student Union</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.727888" lon="-73.678127">
 		<name>Academy Hall</name>
+		<desc>Request Only</desc>
 	</wpt>
 	<wpt lat="42.731427" lon="-73.681251">
 		<name>West Hall</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.730952" lon="-73.678995">
 		<name>’87 Gymnasium</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.729276" lon="-73.673374">
 		<name>Barton Hall</name>
+		<desc>Request Only</desc>
 	</wpt>
 	<wpt lat="42.731947" lon="-73.668020">
 		<name>East Campus Athletic Village</name>
+		<desc>No Request</desc>
 	</wpt>
 	<wpt lat="42.728083" lon="-73.673030">
 		<name>Burdett Avenue</name>
+		<desc>No Request</desc>
 	</wpt>
 	<rte>
 		<name>Weekday Testing Route</name>

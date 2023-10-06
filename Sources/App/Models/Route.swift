@@ -14,7 +14,7 @@ import Vapor
 /// A representation of a shuttle route.
 ///
 /// A route is represented as a sequence of geospatial coordinates.
-final class Route: Model, Content, Collection {
+final class Route: Equatable, Hashable, Model, Content, Collection {
 	
 	static let schema = "routes"
 	
@@ -118,6 +118,14 @@ final class Route: Model, Content, Collection {
 		return self.coordinates[index]
 	}
 	
+	func hash(into hasher: inout Hasher) {
+		hasher.combine(self.id)
+	}
+
+	static func == (lhs: Route, rhs: Route) -> Bool {
+		return lhs.id == rhs.id && lhs.name == rhs.name
+	}
+
 	func index(after oldIndex: Int) -> Int {
 		return oldIndex + 1
 	}
@@ -134,6 +142,17 @@ final class Route: Model, Content, Collection {
 			return false
 		}
 		return distance < Constants.isOnRouteThreshold
+	}
+
+	func checkStopIsOnRoute(Coordinate: Coordinate) -> Bool {
+		let distance = LineString(self.coordinates)
+			.closestCoordinate(to: Coordinate)?
+			.coordinate
+			.distance(to: Coordinate)
+		guard let distance else {
+			return false
+		}
+		return distance < Constants.isStopOnRouteThreshold
 	}
 	
 }

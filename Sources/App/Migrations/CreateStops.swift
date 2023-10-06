@@ -17,7 +17,8 @@ struct CreateStops: AsyncMigration {
 			.field("name", .string, .required)
 			.field("coordinate", .dictionary, .required)
 			.field("schedule", .dictionary, .required)
-			.field("isByRequest", .string, .required)
+			.field("is_by_request", .string, .required)
+			.field("route_id", .array(of: .uuid), .required)
 			.create()
 	}
 	
