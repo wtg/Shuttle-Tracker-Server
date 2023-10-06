@@ -385,6 +385,7 @@ func routes(_ application: Application) throws {
 			.first()
 		if bus == nil && location.type == .network {
 			bus = Bus(id: id)
+			try await bus?.save(on: request.db(.sqlite))
 		}
 		guard let bus = bus else {
 			throw Abort(.notFound)
