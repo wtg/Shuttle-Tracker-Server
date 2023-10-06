@@ -55,6 +55,10 @@ let package = Package(
 		.package(
 			url: "https://github.com/vincentneo/CoreGPX.git",
 			from: "0.9.2"
+		),
+		.package(
+			url: "https://github.com/apple/swift-markdown.git", 
+			branch: "main"
 		)
 	],
 	targets: [
@@ -108,6 +112,10 @@ let package = Package(
 				.product(
 					name: "Turf",
 					package: "turf-swift"
+				),
+				.product(
+					name: "Markdown",
+					package: "swift-markdown"
 				)
 			]
 		),

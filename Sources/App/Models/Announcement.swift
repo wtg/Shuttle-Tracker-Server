@@ -113,7 +113,27 @@ final class Announcement: VersionedModel, Content {
 		}
 	}
 	
-	init() { }
+	// Announcement object initializer
+    init{} (
+        id: UUID?,
+        subject: String,
+        body: String,
+        start: String,
+        end: String,
+        scheduleType: ScheduleType,
+        interruptionLevel: InterruptionLevel,
+        signature: Data 
+    ) {
+        self.id = id
+        self.subject = subject
+        self.body = body
+        self.start = start
+        self.end = end
+        self.scheduleType = scheduleType
+        self.interruptionLevel = interruptionLevel
+        self.signature = signature
+    }
+
 	
 }
 

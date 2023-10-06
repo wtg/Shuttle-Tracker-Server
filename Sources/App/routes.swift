@@ -8,6 +8,7 @@
 import Algorithms
 import APNSCore
 import Fluent
+import Markdown
 import UAParserSwift
 import Vapor
 import VaporAPNS
@@ -140,13 +141,38 @@ func routes(_ application: Application) throws {
 		}
 	}
 	
-	// Get the current announcements
-	application.get("announcements") { (request) in
-		return try await Announcement
-			.query(on: request.db(.psql))
-			.all()
-	}
-	
+	// Get the current announcements with formatting
+    application.get("announcements", "formatted") { (request) in
+        return try await Announcement
+            .query(on: request.db(.psql))
+            .all()
+    }
+    
+    //Get the current announcements in raw text format
+    application.get("announcements") { (request) in 
+        let announcementList = try await Announcement
+            .query(on: request db(.psql))
+            .all()
+		//strips markdown formatting from each announcement
+		for oldAnnouncement in announcementList {
+			let document = Document(parsing: oldAnnouncement.body)
+			//print(document.debugDescription())
+			var extractor = MarkdownTextExtractor()
+			extractor.visit(document)
+			//print(extractor.rawText)
+			var newAnnouncement = Announcement(
+				oldAnnouncement.id, 
+				oldAnnouncement.subject, 
+				extractor.rawText, 
+				oldAnnouncement.start
+				oldAnnouncement.end,
+				oldAnnouncement.scheduleType,
+				oldAnnouncement.interruptionLevel,
+				oldAnnouncement.signature
+			)	
+		}
+    }
+
 	// Post a new announcement after verifying the request
 	application.post("announcements") { (request) -> Announcement in
 		let announcement = try request.content.decode(Announcement.self, using: decoder)
