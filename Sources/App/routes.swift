@@ -78,8 +78,21 @@ func routes(_ application: Application) throws {
 		return Constants.apiVersion
 	}
 	
+	// Return all known schedules
 	application.get("schedule") { (request) in
-		return request.redirect(to: "/schedule.json")
+		let schedules = try await Schedule
+			.query(on: request.db(.sqlite))
+			.all()
+		return Array(schedules)
+	}
+	
+	// Return only currently active schedule
+	application.get("schedule","active") { (request) in
+		let schedules = try await Schedule
+			.query(on: request.db(.sqlite))
+			.all()
+			.filter { $0.isActive == true}
+		return Array(schedules)
 	}
 	
 	// Get the current milestones
@@ -115,6 +128,7 @@ func routes(_ application: Application) throws {
 		guard let milestone = milestone else {
 			throw Abort(.notFound)
 		}
+	
 		milestone.progress += 1 // Increment the milestone’s counter
 		try await milestone.update(on: request.db(.psql)) // Update the milestone on the database
 		return milestone

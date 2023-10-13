@@ -70,6 +70,7 @@ public func configure(_ application: Application) async throws {
 		CreateBuses(),
 		CreateRoutes(),
 		CreateStops(),
+		CreateSchedules(),
 		JobMetadataMigrate(),
 		to: .sqlite
 	) // Add to the SQLite database

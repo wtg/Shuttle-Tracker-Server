@@ -3,6 +3,7 @@
 //  Shuttle Tracker Server
 //
 //  Created by Gabriel Jacoby-Cooper on 10/20/20.
+//  Modified by Dylan Zhou on 10/10/23.
 //
 
 import Foundation
@@ -27,6 +28,7 @@ struct GPXImportingJob: AsyncScheduledJob {
 			.filter { (url) in
 				return url.pathExtension == "gpx"
 			}
+
 		let routes = try await Route
 			.query(on: context.application.db(.sqlite))
 			.all()
@@ -39,9 +41,27 @@ struct GPXImportingJob: AsyncScheduledJob {
 		for stop in stops {
 			try await stop.delete(on: context.application.db(.sqlite))
 		}
+
+		let scheduleInfoData = try Data(
+			contentsOf: URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
+				.appendingPathComponent("Public", isDirectory: true)
+				.appendingPathComponent("schedule.json", isDirectory: false)
+		)
+        let schedules = try await Schedule
+            .query(on: context.application.db(.sqlite))
+            .all()
+        for schedule in schedules {
+            try await schedule.delete(on: context.application.db(.sqlite))
+        }
+		let decoder = JSONDecoder()
+		decoder.dateDecodingStrategy = .iso8601
+		let infoSchedules = try decoder.decode([ScheduleInfo].self, from: scheduleInfoData) /// decodes data into array of individual schedules
+		for infoSchedule in infoSchedules {
+			try await Schedule(from: infoSchedule)!
+				.save(on: context.application.db(.sqlite))
+		}
+		
 		for routesFileURL in routesFileURLs {
-			let decoder = JSONDecoder()
-			decoder.dateDecodingStrategy = .iso8601
 			let schedule: MapSchedule
 			do {
 				let routesInfoData = try routesInfoParser.get(dataAt: routesFileURL.lastPathComponent, asCollection: [String: Any].self)
