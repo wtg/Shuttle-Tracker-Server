@@ -9,6 +9,8 @@ import FluentKit
 import JSONParser
 import Turf
 import Vapor
+import SwiftPriorityQueue
+
 
 /// A representation of a shuttle bus.
 final class Bus: Hashable, Model {
@@ -64,7 +66,7 @@ final class Bus: Hashable, Model {
 	}
 	
 	/// A simplified representation of a `Bus` instance that’s suitable to return as a response to incoming requests.
-	struct Resolved: Content {
+	struct Resolved: Comparable, Content, Codable {
 		
 		/// The physical bus’s unique identifier.
 		var id: Int
@@ -74,7 +76,15 @@ final class Bus: Hashable, Model {
 		
 		/// The route along which the bus is currently traveling.
 		var routeID: UUID?
-		
+
+		static func < (lhs: Bus.Resolved, rhs: Bus.Resolved) -> Bool {
+			return lhs.location.date < rhs.location.date
+		}
+	}
+
+	struct Progress: Content {		
+		/// Distance traveled along route
+		var metersTraveledAlongRoute: Double
 	}
 	
 	static let schema = "buses"
@@ -105,6 +115,10 @@ final class Bus: Hashable, Model {
 	@OptionalField(key: "route_id")
 	var routeID: UUID?
 	
+	/// The visited locations/coordinates 
+	@Field(key: "previous_locations")
+	var previousLocations: PriorityQueue<Bus.Resolved>
+
 	init() { }
 	
 	/// Creates a bus object.
@@ -114,6 +128,7 @@ final class Bus: Hashable, Model {
 	init(id: Int, locations: [Location] = []) {
 		self.id = id
 		self.locations = locations
+		self.previousLocations = PriorityQueue<Bus.Resolved>(ascending:true)
 	}
 	
 	func hash(into hasher: inout Hasher) {

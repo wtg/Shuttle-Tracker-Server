@@ -9,6 +9,8 @@ import CoreGPX
 import Fluent
 import Turf
 import Vapor
+import SwiftPriorityQueue
+
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
@@ -205,6 +207,33 @@ func errorPrint(_ items: Any..., separator: String = " ", terminator: String = "
 		print(item, terminator: separator, to: &stderr)
 	}
 	print(terminator, terminator: "", to: &stderr)
+}
+
+extension PriorityQueue: Codable where T: Codable {
+
+	public init(from decoder: any Decoder) throws {
+		let container = try decoder.singleValueContainer()
+		let array = try container.decode([T].self)
+
+		var ascending: Bool = false
+		/// loop through array and see if ascending/descending
+		for index in array.startIndex ..< array.endIndex {
+			if array[index] < array[index+1] {
+				ascending = true
+			}
+			else {
+				ascending = false
+				break
+			}
+		}
+		self.init(ascending: ascending, startingValues: array)
+	}
+
+	public func encode(to encoder: any Encoder) throws {
+		var container = encoder.singleValueContainer()
+		let array = Array(self)
+		try container.encode(array)
+	}
 }
 
 // MARK: - Compatibility shims for Linux and Windows

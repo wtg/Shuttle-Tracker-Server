@@ -21,6 +21,14 @@ struct LocationRemovalJob: AsyncScheduledJob {
 				return route.schedule.isActive
 			}
 		for bus in buses {
+			if let busData = bus.resolved {
+				if (busData.location.type == .network) {
+					bus.previousLocations.push(busData) /// Adds visted location to bus priority queue
+					if (bus.previousLocations.peek()!.location.date.timeIntervalSinceNow < -240) { /// Removes the oldest location in the priority queue
+						bus.previousLocations.pop()
+					}
+				}
+			}
 			bus.locations
 				.filter { (location) in
 					return location.type == .user && location.date.timeIntervalSinceNow < -30 // The time interval since now will be negative since the location’s timestamp will be in the past.
