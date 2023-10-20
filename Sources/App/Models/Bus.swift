@@ -9,7 +9,6 @@ import FluentKit
 import JSONParser
 import Turf
 import Vapor
-import SwiftPriorityQueue
 
 /// A representation of a shuttle bus.
 final class Bus: Hashable, Model {
@@ -65,7 +64,7 @@ final class Bus: Hashable, Model {
 	}
 	
 	/// A simplified representation of a `Bus` instance that’s suitable to return as a response to incoming requests.
-	struct Resolved: Comparable, Content, Codable {
+	struct Resolved: Content {
 		
 		/// The physical bus’s unique identifier.
 		var id: Int
@@ -75,12 +74,9 @@ final class Bus: Hashable, Model {
 		
 		/// The route along which the bus is currently traveling.
 		var routeID: UUID?
-
-		static func < (lhs: Bus.Resolved, rhs: Bus.Resolved) -> Bool {
-			return lhs.location.date < rhs.location.date
-		}
+		
 	}
-
+	
 	static let schema = "buses"
 	
 	/// A simplified representation of this bus that’s suitable to return as a response to incoming requests.
@@ -91,11 +87,6 @@ final class Bus: Hashable, Model {
 			}
 			return Resolved(id: id, location: location, routeID: self.routeID)
 		}
-	}
-
-	struct Progress: Content {		
-		/// Distance traveled along route
-		var metersTraveledAlongRoute: Double
 	}
 	
 	/// The physical bus’s unique identifier.
@@ -113,10 +104,6 @@ final class Bus: Hashable, Model {
 	/// The ID of route along which this bus is currently traveling.
 	@OptionalField(key: "route_id")
 	var routeID: UUID?
-
-	/// The visited locations/coordinates 
-	@Field(key: "previous_locations")
-	var previousLocations: PriorityQueue<Bus.Resolved>
 	
 	init() { }
 	
@@ -127,7 +114,6 @@ final class Bus: Hashable, Model {
 	init(id: Int, locations: [Location] = []) {
 		self.id = id
 		self.locations = locations
-		self.previousLocations = PriorityQueue<Bus.Resolved>(ascending:true)
 	}
 	
 	func hash(into hasher: inout Hasher) {
