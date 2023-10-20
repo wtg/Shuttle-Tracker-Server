@@ -14,7 +14,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/vapor/vapor.git",
-			from: "4.79.0"
+			from: "4.84.0"
 		),
 		.package(
 			url: "https://github.com/vapor/queues.git",
@@ -26,7 +26,7 @@ let package = Package(
 		),
 		.package(
 			url:"https://github.com/vapor/fluent-sqlite-driver.git",
-			from: "4.5.0"
+			from: "4.6.0"
 		),
 		.package(
 			url: "https://github.com/vapor/fluent-postgres-driver.git",
@@ -46,7 +46,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/mapbox/turf-swift.git",
-			from: "2.2.0"
+			from: "2.7.0"
 		),
 		.package(
 			url: "https://github.com/Gerzer/JSONParser.git",
