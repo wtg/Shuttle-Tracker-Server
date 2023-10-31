@@ -68,6 +68,8 @@ final class Bus: Hashable, Model {
 		
 		/// The physical bus’s unique identifier.
 		var id: Int
+
+		var isPlaceholderid : Bool
 		
 		/// The current resolved location of the physical bus.
 		var location: Bus.Location
@@ -96,6 +98,9 @@ final class Bus: Hashable, Model {
 	/// The location data for this bus.
 	@Field(key: "locations")
 	var locations: [Location]
+
+	@Field(key: "isPlaceholderid")
+	var isPlaceholderid : Bool
 	
 	/// The congestion data for this bus.
 	@OptionalField(key: "congestion")
@@ -114,6 +119,12 @@ final class Bus: Hashable, Model {
 	init(id: Int, locations: [Location] = []) {
 		self.id = id
 		self.locations = locations
+		if(id<0){
+			self.isPlaceholderid = true
+		}
+		else{
+			self.isPlaceholderid = false
+		}
 	}
 	
 	func hash(into hasher: inout Hasher) {
