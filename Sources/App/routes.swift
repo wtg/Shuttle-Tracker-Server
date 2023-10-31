@@ -375,7 +375,7 @@ func routes(_ application: Application) throws {
 			}
 		let isOnRoute = !routes.allSatisfy { (route) in
 			return !route.checkIsOnRoute(location: location)
-		}
+		} || location.type == .network
 		guard isOnRoute else {
 			throw Abort(.conflict)
 		}
