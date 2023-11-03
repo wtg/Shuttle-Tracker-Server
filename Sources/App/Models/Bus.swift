@@ -87,7 +87,7 @@ final class Bus: Hashable, Model {
 			guard let id = self.id, let location = self.locations.resolved else {
 				return nil
 			}
-			return Resolved(id: id, location: location, routeID: self.routeID)
+			return Resolved(id: id, isPlaceholderid: isPlaceholderid, location: location, routeID: self.routeID)
 		}
 	}
 	
