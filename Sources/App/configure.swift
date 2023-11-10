@@ -124,6 +124,9 @@ public func configure(_ application: Application) async throws {
 			as: .default
 		)
 	}
+
+	//MARK: - FCM
+	
 	
 	// MARK: - TLS
 	if FileManager.default.fileExists(atPath: "tls") {

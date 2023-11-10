@@ -203,6 +203,11 @@ func routes(_ application: Application) throws {
 					}
 				}
 			}
+			let fcmdevices = try await FCMDevice
+				.query(on: request.db(.psql))
+				.all()
+			request.logger.log(level: .info, "[\(#fileID):\(#line) \(#function)] Sending a push notification to \(fcmdevices.count) FCM devices…")
+
 			
 			return announcement
 		} else {
@@ -500,6 +505,25 @@ func routes(_ application: Application) throws {
 			return existingDevice
 		} else {
 			let device = APNSDevice(token: token)
+			try await device.create(on: request.db(.psql))
+			return device
+		}
+	}
+
+	//For android(fcm) devices
+
+	application.post("notifications", "fcmdevices", ":token") { (request) in
+		guard let token = request.parameters.get("token") else {
+			throw Abort(.badRequest)
+		}
+		let existingDevice = try await FCMDevice
+			.query(on: request.db(.psql))
+			.filter(\.$token == token)
+			.first()
+		if let existingDevice {
+			return existingDevice
+		} else {
+			let device = FCMDevice(token: token)
 			try await device.create(on: request.db(.psql))
 			return device
 		}
