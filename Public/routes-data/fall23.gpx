@@ -50,6 +50,9 @@
 	<wpt lat="42.737000" lon="-73.670300">
 		<name>Colonie</name>
 	</wpt>
+	<wpt lat="42.731374" lon="-73.666578">
+		<name>E-Lot</name>
+	</wpt>
 	<rte>
 		<name>West Route</name>
 		<cmt>Blue</cmt>
