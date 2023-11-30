@@ -79,6 +79,7 @@ public func configure(_ application: Application) async throws {
 	try await migrator.migrate(CreateAnalyticsEntries())
 	try await migrator.migrate(CreateAnnouncements())
 	try await migrator.migrate(CreateAPNSDevices())
+	try await migrator.migrate(CreateFCMDevices())
 	try await migrator.migrate(CreateLogs())
 	try await migrator.migrate(CreateMilestones())
 	
@@ -126,7 +127,9 @@ public func configure(_ application: Application) async throws {
 	}
 
 	//MARK: - FCM
-	
+	if let fcmKeyPath = ProcessInfo.processInfo.environment["GOOGLE_APPLICATION_CREDENTIALS"] {
+		
+	}
 	
 	// MARK: - TLS
 	if FileManager.default.fileExists(atPath: "tls") {

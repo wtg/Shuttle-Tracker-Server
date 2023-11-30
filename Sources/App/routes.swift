@@ -207,7 +207,29 @@ func routes(_ application: Application) throws {
 				.query(on: request.db(.psql))
 				.all()
 			request.logger.log(level: .info, "[\(#fileID):\(#line) \(#function)] Sending a push notification to \(fcmdevices.count) FCM devices…")
-
+			try await withThrowingTaskGroup(of: Void.self) { (taskGroup) in
+				for device in fcmdevices {
+					let deviceToken = device.token
+					taskGroup.addTask {
+						do {
+							let jsonString: [String:Any] = [
+								"message":[
+      								"token":"\(deviceToken)",
+      								"notification":[
+       						 			"body":"\(announcement.body)",
+        								"title":"\(announcement.title)"
+									]
+								]
+							]
+							let key = FCMInfo.authorizationToken
+							var request = URLRequest(url: "https://fcm.googleapis.com/v1/projects/shuttle-tracker-fcm/messages:send")
+							request.method = "POST"
+							request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+							let (data, response) = try await URLSession.shared.upload(for: request, from: jsonString.data(encoding: .utf8))
+						}
+					}
+				}
+			}
 			
 			return announcement
 		} else {

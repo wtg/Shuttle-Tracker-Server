@@ -16,6 +16,12 @@ import FoundationNetworking
 
 public typealias Coordinate = LocationCoordinate2D
 
+enum FCMInfo {
+
+	static var authorizationToken: String?
+
+}
+
 extension Coordinate: Codable, AdditiveArithmetic {
 	
 	enum CodingKeys: CodingKey {
