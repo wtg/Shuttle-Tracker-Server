@@ -57,8 +57,8 @@ let package = Package(
 			from: "0.9.2"
 		),
 		.package(
-			url: "https://github.com/vapor/jwt-provider.git",
-			from: "1.3.0"
+			url: "https://github.com/vapor/jwt.git",
+			from: "4.2.0"
 		)
 	],
 	targets: [
@@ -114,8 +114,8 @@ let package = Package(
 					package: "turf-swift"
 				),
 				.product(
-					name: "JWTProvider",
-					package: "JWTProvider"
+					name: "JWT",
+					package: "JWT"
 				)
 			]
 		),

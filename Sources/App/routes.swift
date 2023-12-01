@@ -11,6 +11,7 @@ import Fluent
 import UAParserSwift
 import Vapor
 import VaporAPNS
+import JWT
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
@@ -222,10 +223,13 @@ func routes(_ application: Application) throws {
 								]
 							]
 							let key = FCMInfo.authorizationToken
-							var request = URLRequest(url: "https://fcm.googleapis.com/v1/projects/shuttle-tracker-fcm/messages:send")
+							let url = URL(string: "https://fcm.googleapis.com/v1/projects/shuttle-tracker-fcm/messages:send")
+							var request = URLRequest(url: url)
 							request.method = "POST"
-							request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+							request.addValue("Bearer \(key)", forHTTPHeaderField: "Authorization")
 							let (data, response) = try await URLSession.shared.upload(for: request, from: jsonString.data(encoding: .utf8))
+						} catch let error {
+							request.logger.log(level: .error, "[\(#fileID):\(#line) \(#function)] Failed to send FCM notification: \(error)")
 						}
 					}
 				}
