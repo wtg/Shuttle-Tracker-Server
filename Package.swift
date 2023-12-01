@@ -55,6 +55,10 @@ let package = Package(
 		.package(
 			url: "https://github.com/vincentneo/CoreGPX.git",
 			from: "0.9.2"
+		),
+		.package(
+			url: "https://github.com/vapor/jwt-provider.git",
+			from: "1.3.0"
 		)
 	],
 	targets: [
@@ -108,6 +112,10 @@ let package = Package(
 				.product(
 					name: "Turf",
 					package: "turf-swift"
+				),
+				.product(
+					name: "JWTProvider",
+					package: "JWTProvider"
 				)
 			]
 		),
