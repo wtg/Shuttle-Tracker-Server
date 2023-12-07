@@ -375,14 +375,18 @@ func routes(_ application: Application) throws {
 			}
 		let isOnRoute = !routes.allSatisfy { (route) in
 			return !route.checkIsOnRoute(location: location)
-		}
+		} || location.type == .network
 		guard isOnRoute else {
 			throw Abort(.conflict)
 		}
-		let bus = try await Bus
+		var bus = try await Bus
 			.query(on: request.db(.sqlite))
 			.filter(\.$id == id)
 			.first()
+		if bus == nil && location.type == .network {
+			bus = Bus(id: id)
+			try await bus?.save(on: request.db(.sqlite))
+		}
 		guard let bus = bus else {
 			throw Abort(.notFound)
 		}
