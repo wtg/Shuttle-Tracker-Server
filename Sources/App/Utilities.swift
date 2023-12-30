@@ -107,7 +107,7 @@ enum Constants {
 	/// The current version number for the API.
 	///
 	/// - Remark: Increment this value every time a breaking change is made to the public-facing API.
-	static let apiVersion: UInt = 3
+	static let apiVersion: UInt = 4
 	
 	/// The URL of the GPS data-feed.
 	static let datafeedURL: URL = {
