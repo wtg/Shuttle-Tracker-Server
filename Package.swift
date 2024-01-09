@@ -10,11 +10,11 @@ let package = Package(
 	dependencies: [
 		.package(
 			url: "https://github.com/apple/swift-algorithms.git",
-			from: "1.0.0"
+			from: "1.2.0"
 		),
 		.package(
 			url: "https://github.com/vapor/vapor.git",
-			from: "4.84.0"
+			from: "4.91.0"
 		),
 		.package(
 			url: "https://github.com/vapor/queues.git",
