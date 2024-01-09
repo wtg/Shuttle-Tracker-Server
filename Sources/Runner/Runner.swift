@@ -8,7 +8,8 @@
 import Vapor
 import App
 
-@main struct Runner {
+@main
+struct Runner {
 	
 	static func main() async throws {
 		var environment = try Environment.detect()
