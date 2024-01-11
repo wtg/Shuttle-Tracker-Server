@@ -1,6 +1,6 @@
 //
-//  File.swift
-//  
+//  Server.swift
+//  Shuttle Tracker Server
 //
 //  Created by Gabriel Jacoby-Cooper on 1/9/24.
 //
