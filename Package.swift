@@ -58,8 +58,8 @@ let package = Package(
 		)
 	],
 	targets: [
-		.target(
-			name: "App",
+		.executableTarget(
+			name: "Server",
 			dependencies: [
 				.product(
 					name: "Algorithms",
@@ -109,12 +109,6 @@ let package = Package(
 					name: "Turf",
 					package: "turf-swift"
 				)
-			]
-		),
-		.executableTarget(
-			name: "Runner",
-			dependencies: [
-				.target(name: "App")
 			]
 		)
 	]
