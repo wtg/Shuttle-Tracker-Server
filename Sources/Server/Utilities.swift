@@ -110,7 +110,7 @@ enum Constants {
 	static let apiVersion: UInt = 3
 	
 	/// The URL of the GPS data-feed.
-	static let datafeedURL: URL = {
+	static let dataFeedURL: URL = {
 		if let itrakString = ProcessInfo.processInfo.environment["ITRAK"] {
 			return URL(string: itrakString)!
 		} else {
@@ -196,6 +196,16 @@ extension UnsafeMutablePointer: TextOutputStream where Pointee: TextOutputStream
 	
 	public func write(_ string: String) {
 		self.pointee.write(string)
+	}
+	
+}
+
+extension RoutesBuilder {
+	
+	func register(collection: some RouteCollection, on path: PathComponent...) throws {
+		try self.group(path) { (routes) in
+			try routes.register(collection: collection)
+		}
 	}
 	
 }

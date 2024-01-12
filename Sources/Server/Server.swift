@@ -171,6 +171,22 @@ struct Server {
 			)
 		}
 		
+		// MARK: - HTTP Routes
+		let decoder = JSONDecoder()
+		decoder.dateDecodingStrategy = .iso8601
+		try application.register(collection: RedirectsController())
+		try application.register(collection: VersionController(), on: "version")
+		try application.register(collection: DataFeedController(), on: "datafeed")
+		try application.register(collection: ScheduleController(), on: "schedule")
+		try application.register(collection: BusesController(decoder: decoder), on: "buses")
+		try application.register(collection: StopsController(), on: "stops")
+		try application.register(collection: RoutesController(), on: "routes")
+		try application.register(collection: AnnouncementsController(decoder: decoder), on: "announcements")
+		try application.register(collection: MilestonesController(decoder: decoder), on: "milestones")
+		try application.register(collection: LogsController(decoder: decoder), on: "logs")
+		try application.register(collection: AnalyticsController(decoder: decoder), on: "analytics")
+		try application.register(collection: NotificationsController(), on: "notifications")
+		
 		// MARK: - Startup
 		for busID in Buses.shared.allBusIDs {
 			try await Bus(id: busID)
@@ -180,7 +196,6 @@ struct Server {
 			.run(context: application.queues.queue.context)
 		try await GPXImportingJob()
 			.run(context: application.queues.queue.context)
-		try routes(application)
 		try await application.execute()
 	}
 	
