@@ -20,7 +20,7 @@ enum Downloaders {
 	/// - Important: The returned bus objects will **not** contain any user-reported location or congestion data and therefore must be separately merged with any existing bus data.
 	static func getBuses(on application: Application) async throws -> [Bus] {
 		return try await withCheckedThrowingContinuation { (continuation) in
-			let dataTask = URLSession.shared.dataTask(with: Constants.datafeedURL) { (data, _, error) in
+			let dataTask = URLSession.shared.dataTask(with: Constants.dataFeedURL) { (data, _, error) in
 				guard let data = data else {
 					continuation.resume(throwing: error ?? NetworkError.unknown)
 					return
