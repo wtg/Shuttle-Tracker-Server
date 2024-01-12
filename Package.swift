@@ -22,7 +22,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/vapor/fluent.git",
-			from: "4.8.0"
+			from: "4.9.0"
 		),
 		.package(
 			url:"https://github.com/vapor/fluent-sqlite-driver.git",
