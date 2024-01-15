@@ -30,7 +30,7 @@ RUN swift build -c release
 WORKDIR /staging
 
 # Copy main executable to staging area
-RUN cp "$(swift build --package-path /build -c release --show-bin-path -Xswiftc -Onone)/Runner" ./
+RUN cp "$(swift build --package-path /build -c release --show-bin-path -Xswiftc -Onone)/Server" ./
 
 # Uncomment the next line if you need to load resources from the `Public` directory.
 # Ensure that by default, neither the directory nor any of its contents are writable.
