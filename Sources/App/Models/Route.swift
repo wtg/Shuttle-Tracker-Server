@@ -135,5 +135,42 @@ final class Route: Model, Content, Collection {
 		}
 		return distance < Constants.isOnRouteThreshold
 	}
-	
+
+	// Find closest vertex 
+	// Parameter: The bus location
+	func findClosestVertex(location: Bus.Location) -> LocationCoordinate2D? {
+		var maxDistance: Double = Double.infinity
+		var closestVertex: LocationCoordinate2D?
+		var indexs = 0
+
+		// loop through all of this route's coordinates and finds the nearest vertex
+		for index in self.coordinates.startIndex ..< (self.coordinates.endIndex - 1) {
+			let distance = self.coordinates[index].distance(to: location.coordinate)
+			if distance < maxDistance {
+					closestVertex = self.coordinates[index]
+					maxDistance = distance
+					indexs = index;
+			}
+		}
+		return closestVertex
+	}
+
+
+	/// Get the total distance traveled along route
+	/// - Parameter location: The location to check
+	/// - Returns: The total distance between the bus location
+	func getTotalDistanceTraveled(location: Bus.Location) -> Double {
+		var totalDistance: Double = 0;
+		let closestVertex: LocationCoordinate2D = findClosestVertex(location: location)!
+
+		// loop through all the route's coordinate until 
+		for index in self.coordinates.startIndex ..< (self.coordinates.endIndex-1) {
+			totalDistance += self.coordinates[index].distance(to: self.coordinates[index+1])
+			if(self.coordinates[index] == closestVertex) {
+				break;
+			}
+			
+		}
+		return totalDistance
+	}
 }

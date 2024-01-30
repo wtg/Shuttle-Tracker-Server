@@ -11,7 +11,6 @@ import Turf
 import Vapor
 import SwiftPriorityQueue
 
-
 #if canImport(FoundationNetworking)
 import FoundationNetworking
 #endif // canImport(FoundationNetworking)
@@ -123,6 +122,9 @@ enum Constants {
 	/// The maximum perpendicular distance, in meters, away from a route at which a coordinate is considered to be “on” that route.
 	static let isOnRouteThreshold: Double = 5
 	
+	/// The maximum distance a bus location can be away from a certain route location to find the closest route coordinate
+	static let isNearRouteCoordinateThreshold: Double = 20
+
 	static let apnsTopic = "com.gerzer.shuttletracker"
 	
 }
@@ -215,17 +217,20 @@ extension PriorityQueue: Codable where T: Codable {
 		let container = try decoder.singleValueContainer()
 		let array = try container.decode([T].self)
 
-		var ascending: Bool = false
-		/// loop through array and see if ascending/descending
-		for index in array.startIndex ..< array.endIndex {
-			if array[index] < array[index+1] {
-				ascending = true
-			}
-			else {
-				ascending = false
-				break
+		var ascending: Bool = true
+		if (array.count >= 1) {
+			/// loop through array and see if ascending/descending
+			for index in array.startIndex ..< (array.endIndex-1) {
+				if array[index] < array[index+1] {
+					ascending = true
+				}
+				else {
+					ascending = false
+					break
+				}
 			}
 		}
+
 		self.init(ascending: ascending, startingValues: array)
 	}
 

@@ -14,7 +14,7 @@ struct LocationRemovalJob: AsyncScheduledJob {
 		let buses = try await Bus
 			.query(on: context.application.db(.sqlite))
 			.all()
-		let routes = try? await Route // Failing to query route objects shouldn’t cause this method to fail entirely.
+		let routes = try await Route // Failing to query route objects shouldn’t cause this method to fail entirely.
 			.query(on: context.application.db(.sqlite))
 			.all()
 			.filter { (route) in
@@ -22,11 +22,19 @@ struct LocationRemovalJob: AsyncScheduledJob {
 			}
 		for bus in buses {
 			if let busData = bus.resolved {
-				if (busData.location.type == .network) {
-					bus.previousLocations.push(busData) /// Adds visted location to bus priority queue
-					if (bus.previousLocations.peek()!.location.date.timeIntervalSinceNow < -240) { /// Removes the oldest location in the priority queue
-						bus.previousLocations.pop()
-					}
+				bus.previousLocations.push(busData)
+			    /// Adds visted location to bus priority queue
+				// if (!(bus.previousLocations.isEmpty)) {
+				// 	if (bus.previousLocations.peek()!.location.date.timeIntervalSinceNow < -240) { /// Removes the oldest location in the priority queue
+				// 		bus.previousLocations.pop()
+				// 	}
+				// }
+				print(bus.previousLocations.count)
+				
+				for route in routes {
+					if (route.schedule.isActive && route.id == bus.routeID) {
+						bus.metersAlongRoute = route.getTotalDistanceTraveled(location: bus.previousLocations.peek()!.location) /// Updates the meters traveled along the route
+					} 
 				}
 			}
 			bus.locations
@@ -39,10 +47,9 @@ struct LocationRemovalJob: AsyncScheduledJob {
 				.forEach { (index) in
 					bus.locations.remove(at: index) // It’s safe to remove locations here because we’re iterating over a filtered, mapped copy of the original array, not the original array itself.
 				}
-			if let routes {
-				// Detect the most recent route association, resetting it to nil if there’s no sufficiently recent location data
-				bus.detectRoute(selectingFrom: routes)
-			}
+			// Detect the most recent route association, resetting it to nil if there’s no sufficiently recent location data
+			bus.detectRoute(selectingFrom: routes)
+			
 			try await bus.update(on: context.application.db(.sqlite))
 		}
 	}

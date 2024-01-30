@@ -114,6 +114,9 @@ final class Bus: Hashable, Model {
 	/// The ID of route along which this bus is currently traveling.
 	@OptionalField(key: "route_id")
 	var routeID: UUID?
+
+	@OptionalField(key: "meters_along_route") 
+	var metersAlongRoute: Double?
 	
 	/// The visited locations/coordinates 
 	@Field(key: "previous_locations")
@@ -128,8 +131,9 @@ final class Bus: Hashable, Model {
 	init(id: Int, locations: [Location] = []) {
 		self.id = id
 		self.locations = locations
-		self.previousLocations = PriorityQueue<Bus.Resolved>(ascending:true)
-	}
+		self.previousLocations = PriorityQueue<Bus.Resolved>(ascending: true)
+
+	} 
 	
 	func hash(into hasher: inout Hasher) {
 		hasher.combine(self.id)
