@@ -53,6 +53,9 @@ struct Server {
 			guard let hostname = ProcessInfo.processInfo.environment["POSTGRES_HOSTNAME"] else {
 				fatalError("No database URL was specified, but the Postgres hostname is undefined. Remember to set the POSTGRES_HOSTNAME environment variable!")
 			}
+			let port = ProcessInfo.processInfo.environment["POSTGRES_PORT"].flatMap { (rawPort) in
+				return Int(rawPort)
+			}
 			guard let username = ProcessInfo.processInfo.environment["POSTGRES_USERNAME"] else {
 				fatalError("No database URL was specified, but the Postgres username is undefined. Remember to set the POSTGRES_USERNAME environment variable!")
 			}
@@ -65,6 +68,7 @@ struct Server {
 			// For now, we’re using the default PostgreSQL database for deployment-compatibility reasons, but we should in the future switch to a non-default, unprotected database.
 			postgresConfiguration = SQLPostgresConfiguration(
 				hostname: hostname,
+				port: port ?? SQLPostgresConfiguration.ianaPortNumber,
 				username: username,
 				password: password,
 				tls: .disable
@@ -86,7 +90,16 @@ struct Server {
 		) // Add to the SQLite database
 		try await application.autoMigrate()
 		
-		let migrator = try await VersionedMigrator(database: application.db(.psql))
+		let migrator: VersionedMigrator
+		do {
+			migrator = try await VersionedMigrator(database: application.db(.psql))
+		} catch let error as PSQLError {
+			if case .connectionError = error.code {
+				fatalError("The server failed to connect to the PostgreSQL database. Ensure that the database service is active. If you’re not using port \(SQLPostgresConfiguration.ianaPortNumber), then remember to set the POSTGRES_PORT environment variable!")
+			} else {
+				throw error
+			}
+		}
 		try await migrator.migrate(CreateAnalyticsEntries())
 		try await migrator.migrate(CreateAnnouncements())
 		try await migrator.migrate(CreateAPNSDevices())
