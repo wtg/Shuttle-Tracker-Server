@@ -223,7 +223,6 @@ extension PriorityQueue: Codable where T: Codable {
 			for index in array.startIndex ..< (array.endIndex-1) {
 				if array[index] < array[index+1] {
 					ascending = true
-					break
 				}
 				else {
 					ascending = false
