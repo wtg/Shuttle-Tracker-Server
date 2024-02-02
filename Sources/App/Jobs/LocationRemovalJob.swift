@@ -23,13 +23,13 @@ struct LocationRemovalJob: AsyncScheduledJob {
 		for bus in buses {
 			if let busData = bus.resolved {
 				bus.previousLocations.push(busData)
-			    /// Adds visted location to bus priority queue
+				
+				// remove the top of the queue after a certain time
 				// if (!(bus.previousLocations.isEmpty)) {
 				// 	if (bus.previousLocations.peek()!.location.date.timeIntervalSinceNow < -240) { /// Removes the oldest location in the priority queue
 				// 		bus.previousLocations.pop()
 				// 	}
 				// }
-				print(bus.previousLocations.count)
 				
 				for route in routes {
 					if (route.schedule.isActive && route.id == bus.routeID) {
