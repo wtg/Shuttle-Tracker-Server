@@ -141,15 +141,13 @@ final class Route: Model, Content, Collection {
 	func findClosestVertex(location: Bus.Location) -> LocationCoordinate2D? {
 		var maxDistance: Double = Double.infinity
 		var closestVertex: LocationCoordinate2D?
-		var indexs = 0
 
-		// loop through all of this route's coordinates and finds the nearest vertex
+		// find vertex with smallest distance to the current bus location
 		for index in self.coordinates.startIndex ..< (self.coordinates.endIndex - 1) {
 			let distance = self.coordinates[index].distance(to: location.coordinate)
 			if distance < maxDistance {
 					closestVertex = self.coordinates[index]
 					maxDistance = distance
-					indexs = index;
 			}
 		}
 		return closestVertex
@@ -162,15 +160,78 @@ final class Route: Model, Content, Collection {
 	func getTotalDistanceTraveled(location: Bus.Location) -> Double {
 		var totalDistance: Double = 0;
 		let closestVertex: LocationCoordinate2D = findClosestVertex(location: location)!
-
-		// loop through all the route's coordinate until 
-		for index in self.coordinates.startIndex ..< (self.coordinates.endIndex-1) {
-			totalDistance += self.coordinates[index].distance(to: self.coordinates[index+1])
-			if(self.coordinates[index] == closestVertex) {
-				break;
+		// get the total distance that have been traveled
+		for index in 0 ..< (self.coordinates.endIndex-1) {
+			// find the closest vertex in the array of coordinates
+			if(self.coordinates[index].longitude != closestVertex.longitude &&
+				self.coordinates[index].latitude != closestVertex.latitude) {
+				totalDistance += self.coordinates[index].distance(to: self.coordinates[index+1])
+				continue;
 			}
 			
+			// ** may go out of bounds -> change later on ** 
+			/*
+				3 edge Cases:
+				1) 
+					|--x1--|--x2--| 
+					a      b      c
+
+				2) 
+					|--x1--|--x2-------| 
+					a      b           c
+
+				3) 
+					|-------x1--|--x2--| 
+					a           b      c
+			*	VertexA = vertex behind the closest vertex
+			*	VertexB = the closest vertex
+			* 	vertexC = vertex in front of the closest vertex
+			* 	Determine the edge cases based off the distance of the current
+			* 	location to the surrounding vertex
+			*/
+
+				// behind/front/on closest vertex
+				let vertexA: Coordinate = self.coordinates[index]
+				let vertexB: Coordinate = self.coordinates[index+1]
+				let vertexC: Coordinate = self.coordinates[index+2]
+				let vertexX: Coordinate = location.coordinate
+
+				// distances between the vertices
+				let distanceAB: Double = vertexA.distance(to: vertexB)
+				let distanceBC: Double = vertexB.distance(to: vertexC)
+				let distanceAX: Double = vertexA.distance(to: vertexX)
+				let distanceBX: Double = vertexB.distance(to:vertexX)
+				let distanceXC: Double = vertexX.distance(to: vertexC)
+				let distanceCX: Double = vertexC.distance(to: vertexX)
+
+				
+				// first  test case
+				if (distanceAX < distanceXC) {
+					totalDistance += distanceAX
+					break
+				}
+				
+				// distance difference depending on location of bus
+				var delta1: Double = distanceBC - distanceAX
+				var delta2: Double = distanceBC - distanceAB
+				
+				// second test case
+			    if (delta1 < delta2) {
+					totalDistance += distanceAB + distanceBX
+					break
+				}
+				
+				delta1 = distanceAB - distanceCX
+				delta2 = distanceAB - distanceBC
+
+				// third test case
+				if (delta1 < delta2) {
+					totalDistance += distanceAX
+					break
+				}
+			
 		}
+		print(totalDistance)
 		return totalDistance
 	}
 }
