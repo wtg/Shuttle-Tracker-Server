@@ -7,7 +7,7 @@
 
 import FluentKit
 
-/// A migration to create `Milestone` records.
+/// A migration to create ``Milestone`` records.
 struct CreateMilestones: VersionedAsyncMigration {
 	
 	typealias ModelType = Milestone

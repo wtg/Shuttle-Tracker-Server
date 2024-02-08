@@ -63,7 +63,7 @@ final class Bus: Hashable, Model {
 		
 	}
 	
-	/// A simplified representation of a `Bus` instance that’s suitable to return as a response to incoming requests.
+	/// A simplified representation of a ``Bus`` instance that’s suitable to return as a response to incoming requests.
 	struct Resolved: Content {
 		
 		/// The physical bus’s unique identifier.
@@ -198,7 +198,7 @@ extension Array: Mergeable where Element == Bus.Location {
 	
 	/// Merge other location data into this array.
 	/// - Parameter otherLocations: The other location data to merge into this array.
-	/// - Remark: This method implements a requirement in the `Mergeable` protocol.
+	/// - Remark: This method implements a requirement in the ``Mergeable`` protocol.
 	mutating func merge(with otherLocations: [Bus.Location]) {
 		for otherLocation in otherLocations {
 			self.removeAll { (location) in

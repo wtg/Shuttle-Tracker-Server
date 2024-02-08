@@ -7,7 +7,7 @@
 
 import Queues
 
-/// A job that restarts (*i.e.*, shuts down in preparation for automatic restoration) the server.
+/// A job that restarts (_i.e._, shuts down in preparation for automatic restoration) the server.
 struct RestartJob: AsyncScheduledJob {
 	
 	func run(context: QueueContext) {

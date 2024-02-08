@@ -92,7 +92,7 @@ final class Announcement: VersionedModel, Content {
 	@Enum(key: "interruption_level")
 	var interruptionLevel: InterruptionLevel
 	
-	/// A cryptographic signature of the concatenation of the `subject` and `body` properties.
+	/// A cryptographic signature of the concatenation of the ``Announcement/subject`` and ``Announcement/body`` properties.
 	@Field(key: "signature")
 	var signature: Data
 	

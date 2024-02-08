@@ -7,7 +7,7 @@
 
 import Fluent
 
-/// A migration to create `Bus` records.
+/// A migration to create ``Bus`` records.
 struct CreateBuses: AsyncMigration {
 	
 	func prepare(on database: any Database) async throws {

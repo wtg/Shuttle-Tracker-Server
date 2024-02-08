@@ -7,7 +7,7 @@
 
 import FluentKit
 
-/// A migration to create `AnalyticsEntry` records.
+/// A migration to create ``AnalyticsEntry`` records.
 struct CreateAnalyticsEntries: VersionedAsyncMigration {
 	
 	typealias ModelType = AnalyticsEntry

@@ -54,7 +54,7 @@ final class Milestone: VersionedModel, Content {
 	@Field(key: "goals")
 	var goals: [Int]
 	
-	/// A cryptographic signature of the concatenation of the `name` and `extendedDescription` properties as well as the string representation of the `goals` property, in that order.
+	/// A cryptographic signature of the concatenation of the ``Milestone/name`` and ``Milestone/extendedDescription`` properties as well as the string representation of the ``Milestone/goals`` property, in that order.
 	@Field(key: "signature")
 	var signature: Data
 	

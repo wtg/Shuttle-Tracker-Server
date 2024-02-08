@@ -7,7 +7,7 @@
 
 import FluentKit
 
-/// A migration to create `Log` records.
+/// A migration to create ``Log`` records.
 struct CreateLogs: VersionedAsyncMigration {
 	
 	typealias ModelType = Log

@@ -7,6 +7,7 @@
 
 import FluentKit
 
+/// A migration to create ``APNSDevice`` records.
 struct CreateAPNSDevices: VersionedAsyncMigration {
 	
 	typealias ModelType = APNSDevice

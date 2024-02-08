@@ -20,7 +20,7 @@ struct WebRedirectsController: RouteCollection {
 	private func index(_ request: Request) -> Response {
 		return request.redirect(to: "https://web.shuttletracker.app")
 	}
-
+	
 	private func beta(_ request: Request) -> Response {
 		return request.redirect(to: "https://staging.web.shuttletracker.app")
 	}

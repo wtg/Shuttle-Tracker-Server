@@ -7,6 +7,7 @@
 
 import FluentKit
 
+/// A migration to create ``MigrationVersion`` records.
 struct CreateMigrationVersions: AsyncMigration {
 	
 	func prepare(on database: any Database) async throws {

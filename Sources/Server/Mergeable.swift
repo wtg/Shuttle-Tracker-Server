@@ -7,7 +7,7 @@
 
 import Foundation
 
-/// Collections that conform to this protocol can be merged with a single invocation of `merge(with:)`.
+/// Collections that conform to this protocol can be merged with a single invocation of ``merge(with:)``.
 protocol Mergeable: Collection {
 	
 	mutating func merge(with: Self)

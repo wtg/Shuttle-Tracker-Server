@@ -7,7 +7,7 @@
 
 import FluentKit
 
-/// A migration to create `Announcement` records.
+/// A migration to create ``Announcement`` records.
 struct CreateAnnouncements: VersionedAsyncMigration {
 	
 	typealias ModelType = Announcement

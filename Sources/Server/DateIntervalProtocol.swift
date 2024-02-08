@@ -27,7 +27,7 @@ extension DateUtilities {
 	/// - Parameters:
 	///   - start: The start date.
 	///   - end: The end date.
-	/// - Returns: A value of some opaque type that conforms to `DateIntervalProtocol`.
+	/// - Returns: A value of some opaque type that conforms to ``DateIntervalProtocol``.
 	static func createInterval(from start: Date, to end: Date) -> some DateIntervalProtocol {
 		#if os(Linux) || os(Windows)
 		return CompatibilityDateInterval(start: start, end: end)
