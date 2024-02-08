@@ -6,6 +6,7 @@
 //
 
 import FluentKit
+import PostgresNIO
 
 /// A migrator that automatically handles migrations across multiple schema versions.
 struct VersionedMigrator {
@@ -15,7 +16,15 @@ struct VersionedMigrator {
 	/// Creates a versioned migrator.
 	/// - Parameter database: The database on which to perform migrations.
 	init(database: any Database) async throws {
-		try await MigrationLog.migration.prepare(on: database).get() // Unlike most migrations, this one won’t fail if it’s executed multiple times.
+		do {
+			try await MigrationLog.migration.prepare(on: database).get()
+		} catch let error as PSQLError {
+			if case .server = error.code {
+				database.logger.log(level: .info, "Skipping preparation of the migration-log table…")
+			} else {
+				throw error // Rethrow the error because we don’t know how to handle it here.
+			}
+		}
 		let migration = CreateMigrationVersions()
 		let migrationLogs = try await MigrationLog
 			.query(on: database)
