@@ -46,7 +46,9 @@ final class Stop: Equatable, Hashable, Model, Content {
 	}
 	
 	func hash(into hasher: inout Hasher) {
-		hasher.combine(self.name) // Hashing the ID could potentially violate Hashable’s invariants when the ID is determined by the database, so we hash the name instead. This means that stop names must be globally unique, which doesn’t seem to be too far-fetched as an assumption/requirement.
+		// Hashing the ID could potentially violate Hashable’s invariants when the ID is determined by the database, so we hash the name and the coordinate instead. This means that name-coordinate pairs must be globally unique, which doesn’t seem to be too far-fetched as an assumption/requirement.
+		hasher.combine(self.name)
+		hasher.combine(self.coordinate)
 	}
 	
 	static func == (lhs: Stop, rhs: Stop) -> Bool {

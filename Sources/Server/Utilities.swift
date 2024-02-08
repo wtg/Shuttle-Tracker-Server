@@ -16,7 +16,7 @@ import FoundationNetworking
 
 public typealias Coordinate = LocationCoordinate2D
 
-extension Coordinate: Codable, AdditiveArithmetic {
+extension Coordinate: Hashable, Codable, AdditiveArithmetic {
 	
 	enum CodingKeys: CodingKey {
 		
@@ -42,6 +42,17 @@ extension Coordinate: Codable, AdditiveArithmetic {
 		let latitude = try container.decode(Double.self, forKey: .latitude)
 		let longitude = try container.decode(Double.self, forKey: .longitude)
 		self.init(latitude: latitude, longitude: longitude)
+	}
+	
+	public func hash(into hasher: inout Hasher) {
+		hasher.combine(self.latitude)
+		hasher.combine(self.longitude)
+	}
+	
+	public func encode(to encoder: any Encoder) throws {
+		var container = encoder.container(keyedBy: CodingKeys.self)
+		try container.encode(self.latitude, forKey: .latitude)
+		try container.encode(self.longitude, forKey: .longitude)
 	}
 	
 	public static func + (lhs: Coordinate, rhs: Coordinate) -> Coordinate {
@@ -70,12 +81,6 @@ extension Coordinate: Codable, AdditiveArithmetic {
 	static func /= (lhs: inout Coordinate, rhs: Double) {
 		lhs.latitude /= rhs
 		lhs.longitude /= rhs
-	}
-	
-	public func encode(to encoder: any Encoder) throws {
-		var container = encoder.container(keyedBy: CodingKeys.self)
-		try container.encode(self.latitude, forKey: .latitude)
-		try container.encode(self.longitude, forKey: .longitude)
 	}
 	
 }
