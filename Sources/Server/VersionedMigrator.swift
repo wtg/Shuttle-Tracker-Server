@@ -16,15 +16,7 @@ struct VersionedMigrator {
 	/// Creates a versioned migrator.
 	/// - Parameter database: The database on which to perform migrations.
 	init(database: any Database) async throws {
-		do {
-			try await MigrationLog.migration.prepare(on: database).get()
-		} catch let error as PSQLError {
-			if case .server = error.code {
-				database.logger.log(level: .info, "Skipping preparation of the migration-log table…")
-			} else {
-				throw error // Rethrow the error because we don’t know how to handle it here.
-			}
-		}
+		try await MigrationLog.migration.prepare(on: database).get() // Unlike most migrations, this one won’t fail if it’s executed multiple times.
 		let migration = CreateMigrationVersions()
 		let migrationLogs = try await MigrationLog
 			.query(on: database)
@@ -33,7 +25,15 @@ struct VersionedMigrator {
 			return migrationLog.name == migration.name
 		}
 		if doMigrate {
-			try await migration.prepare(on: database)
+			do {
+				try await migration.prepare(on: database)
+			} catch let error as PSQLError {
+				if case .server = error.code {
+					database.logger.log(level: .info, "Skipping preparation of the migration-versions table…")
+				} else {
+					throw error // Rethrow the error because we don’t know how to handle it here.
+				}
+			}
 			let lastBatch = try await MigrationLog
 				.query(on: database)
 				.sort(\.$batch, .descending)
