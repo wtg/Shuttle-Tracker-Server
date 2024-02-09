@@ -159,6 +159,19 @@ final class Route: Model, Content, Collection {
 	/// - Returns: The total distance between the bus location
 	func getTotalDistanceTraveled(location: Bus.Location) -> Double {
 		var totalDistance: Double = 0;
+		
+		// finds the total distance exiting out of the Union
+		// This will be the starting distance everytime
+		if (self.name == "West Route") {
+			for points in self.coordinates.endIndex-7 ..< self.coordinates.endIndex-1 {
+				totalDistance += self.coordinates[points].distance(to: self.coordinates[points+1])
+				if (points == self.coordinates.endIndex-2) {
+					print(self.coordinates[points+1])
+					totalDistance += self.coordinates[points+1].distance(to: self.coordinates[0])
+				}
+			}
+		}
+
 		let closestVertex: LocationCoordinate2D = findClosestVertex(location: location)!
 		// get the total distance that have been traveled
 		for index in 0 ..< (self.coordinates.endIndex-1) {
@@ -169,7 +182,11 @@ final class Route: Model, Content, Collection {
 				continue;
 			}
 			
-			// ** may go out of bounds -> change later on ** 
+
+			// Determine if we are going towards Union or away from the union
+			var previousClosestVertex: LocationCoordinate2D = self.coordinates[index-1] ? self.coordinates[index-1]! : self.coordinates[index]
+			 
+
 			/*
 				3 edge Cases:
 				1) 
@@ -183,11 +200,11 @@ final class Route: Model, Content, Collection {
 				3) 
 					|-------x1--|--x2--| 
 					a           b      c
-			*	VertexA = vertex behind the closest vertex
-			*	VertexB = the closest vertex
-			* 	vertexC = vertex in front of the closest vertex
-			* 	Determine the edge cases based off the distance of the current
-			* 	location to the surrounding vertex
+			 	VertexA = vertex behind the closest vertex
+				VertexB = the closest vertex
+			 	vertexC = vertex in front of the closest vertex
+			 	Determine the edge cases based off the distance of the current
+			 	location to the surrounding vertex
 			*/
 
 				// behind/front/on closest vertex
@@ -231,7 +248,6 @@ final class Route: Model, Content, Collection {
 				}
 			
 		}
-		print(totalDistance)
 		return totalDistance
 	}
 }
