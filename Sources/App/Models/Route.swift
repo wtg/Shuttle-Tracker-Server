@@ -167,7 +167,7 @@ final class Route: Model, Content, Collection {
 	// func getTotalDistanceTraveled(location: Bus.Location, busProgress: Bus.Progress) -> Double {
 	// func getTotalDistanceTraveled(location: Bus.Location, distanceTraveled: Double, previousLocation: Bus.Location) -> Double {
 	// func getTotalDistanceTraveled(location: Bus.Location, distanceTraveled: Double) -> Double {
-	func getTotalDistanceTraveled(location: Bus.Location) -> Double {
+	func getTotalDistanceTraveled(location: Bus.Location, busPreviousLocation: Bus.Location) -> Double {
 		var totalDistance: Double = 0
 
 		// finds the total distance exiting out of the Union
@@ -181,15 +181,30 @@ final class Route: Model, Content, Collection {
 			}
 		}
 
+		var beginningIndex: Int = 0
+
+
 		let closestVertex: LocationCoordinate2D = findClosestVertex(location: location)!
-		// var indexOfPreviousLocation = self.coordinates.firstIndex(of: previousLocation.coordinate)
-		// if (indexOfPreviousLocation != self.coordinates.firstIndex(of: previousLocation.coordinate)) {
-		// 	indexOfPreviousLocation = 0;
+		let previousVertex: LocationCoordinate2D = findClosestVertex(location: busPreviousLocation)!
+		
+		beginningIndex = self.coordinates.firstIndex(of: previousVertex)!
+
+		if (self.name == "North Route" && beginningIndex == 0) {
+			beginningIndex = 9
+		}
+
+		// if (busPreviousLocation != nil) {
+		// 	previousVertex = findClosestVertex(location: busPreviousLocation!.location)!
+		// print(previousVertex)
 		// }
+
+		// print(previousVertex.location!.coordinate)
+		// beginningIndex = self.coordinates.firstIndex(of: previousVertex!.coordinate)
+
 
 
 		// get the total distance that have been traveled
-		for index in 0 ..< (self.coordinates.endIndex-1) {
+		for index in beginningIndex ... (self.coordinates.endIndex-1) {
 			// find the closest vertex in the array of coordinates
 			if(self.coordinates[index].longitude != closestVertex.longitude &&
 				self.coordinates[index].latitude != closestVertex.latitude) {

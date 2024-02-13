@@ -153,7 +153,7 @@ final class Bus: Hashable, Model {
 		self.id = id
 		self.locations = locations
 		self.previousLocations = PriorityQueue<Bus.Resolved>(ascending: true)
-
+		self.metersTraveledAlongRoute = 0
 	} 
 	
 	func hash(into hasher: inout Hasher) {
