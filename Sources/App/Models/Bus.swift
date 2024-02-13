@@ -82,16 +82,16 @@ final class Bus: Hashable, Model {
 		}
 	}
 
-	struct Progress: Content, Codable {		
-		/// Distance traveled along route
-		var metersTraveledAlongRoute: Double
+	// struct Progress: Content, Codable {		
+	// 	/// Distance traveled along route
+	// 	var metersTraveledAlongRoute: Double
 
-		// // The nearest vertex to the current location
-		// var nearestVertex: LocationCoordinate2D?
+	// 	// // The nearest vertex to the current location
+	// 	// var nearestVertex: LocationCoordinate2D?
 
-		// // The vertex that we have just passed
-		// var previousVertex: LocationCoordinate2D?
-	}
+	// 	// // The vertex that we have just passed
+	// 	// var previousVertex: LocationCoordinate2D?
+	// }
 
 	// var progress: Progress? {
 	// 	get {
