@@ -82,10 +82,25 @@ final class Bus: Hashable, Model {
 		}
 	}
 
-	struct Progress: Content {		
+	struct Progress: Content, Codable {		
 		/// Distance traveled along route
 		var metersTraveledAlongRoute: Double
+
+		// // The nearest vertex to the current location
+		// var nearestVertex: LocationCoordinate2D?
+
+		// // The vertex that we have just passed
+		// var previousVertex: LocationCoordinate2D?
 	}
+
+	// var progress: Progress? {
+	// 	get {
+	// 		guard let metersTraveledAlongRoute = self.metersTraveledAlongRoute, let previousRtep = self.previousRtep, let nearestRtep = self.nearestRtep else {
+	//      		return nil;
+	// 		}
+	//      return Progress(metersTraveledAlongRoute: metersTraveledAlongRoute, nearestVertex: nearestRtep, previousVertex: previousRtep)
+	// 	}
+	// }
 	
 	static let schema = "buses"
 	
@@ -116,8 +131,14 @@ final class Bus: Hashable, Model {
 	var routeID: UUID?
 
 	@OptionalField(key: "meters_along_route") 
-	var metersAlongRoute: Double?
+	var metersTraveledAlongRoute: Double?
 	
+	// @OptionalField(key: "previous_rtep")
+	// var previousRtep: LocationCoordinate2D?
+
+	// @OptionalField(key: "nearest_rtep")
+	// var nearestRtep: LocationCoordinate2D?
+
 	/// The visited locations/coordinates 
 	@Field(key: "previous_locations")
 	var previousLocations: PriorityQueue<Bus.Resolved>

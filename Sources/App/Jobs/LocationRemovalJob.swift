@@ -25,16 +25,13 @@ struct LocationRemovalJob: AsyncScheduledJob {
 				bus.previousLocations.push(busData)
 
 				
-			    /// Adds visted location to bus priority queue
-				// if (!(bus.previousLocations.isEmpty)) {
-				// 	if (bus.previousLocations.peek()!.location.date.timeIntervalSinceNow < -1) { /// Removes the oldest location in the priority queue
-				// 		bus.previousLocations.pop()
-				// 	}
-				// }
-				
 				for route in routes {
-					if (route.schedule.isActive && route.id == bus.routeID) {
-						bus.metersAlongRoute = route.getTotalDistanceTraveled(location: bus.previousLocations.peek()!.location) /// Updates the meters traveled along the route
+					if (route.schedule.isActive && route.id == bus.routeID && bus.previousLocations.count > 0) {
+						let previousLocation = bus.previousLocations.peek()!.location
+						bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: bus.previousLocations.peek()!.location, distanceTraveled: bus.metersTraveledAlongRoute!, previousLocation: previousLocation) 
+						if (bus.previousLocations.peek()!.location.date.timeIntervalSinceNow < -1) {
+							bus.previousLocations.pop()
+						}
 					} 
 				}
 			}
