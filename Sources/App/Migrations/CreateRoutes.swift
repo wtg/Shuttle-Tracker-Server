@@ -18,6 +18,7 @@ struct CreateRoutes: AsyncMigration {
 			.field("coordinates", .array(of: .custom(Coordinate.self)), .required)
 			.field("schedule", .dictionary, .required)
 			.field("color_name", ColorName.representation(for: database), .required)
+			.field("distance_along_route", .double, .required) 
 			.create()
 	}
 	

@@ -44,6 +44,10 @@ final class Route: Model, Content, Collection {
 	/// The name of the color that clients should use to draw the route.
 	@Field(key: "color_name")
 	var colorName: ColorName
+
+	// The total distance along the route
+	@Field(key: "distance_along_route")
+	var distanceAlongRoute: Double
 	
 	init() { }
 	
@@ -106,11 +110,13 @@ final class Route: Model, Content, Collection {
 	///   - coordinates: The array of coordinates from which to create a route object.
 	///   - schedule: The schedule for when the route will be active.
 	///   - colorName: The name of the color that clients should use to draw the route.
+	///   - distanceAlongRoute: The total distance along the route
 	init(name: String, coordinates: [Coordinate], schedule: MapSchedule, colorName: ColorName) {
 		self.name = name
 		self.coordinates = coordinates
 		self.schedule = schedule
 		self.colorName = colorName
+		self.distanceAlongRoute = measureTotalDistanceAlongRoute()
 	}
 	
 	/// Gets the coordinate at the specified index.
@@ -136,11 +142,20 @@ final class Route: Model, Content, Collection {
 		return distance < Constants.isOnRouteThreshold
 	}
 
+	// Calculates the total distance along the route
+	func measureTotalDistanceAlongRoute() -> Double {
+		var distanceAlongRoute: Double = 0
+		for index in self.coordinates.startIndex ..< self.coordinates.endIndex-1 {
+			distanceAlongRoute += self.coordinates[index].distance(to: self.coordinates[index+1])
+		}
+		return distanceAlongRoute
+	}
+
 	// Find closest vertex 
 	// Parameter: The bus location
 	func findClosestVertex(location: Bus.Location) -> LocationCoordinate2D? {
 		var maxDistance: Double = Double.infinity
-		var closestVertex: LocationCoordinate2D?
+		var closestVertex: LocationCoordinate2D? = self.coordinates[0]
 
 		// find vertex with smallest distance to the current bus location
 		for index in self.coordinates.startIndex ..< (self.coordinates.endIndex - 1) {
@@ -153,21 +168,11 @@ final class Route: Model, Content, Collection {
 		return closestVertex
 	}
 
-
 	/// Get the total distance traveled along route
-	/// - Parameter location: The location to check
+	/// - Parameter location: The location to check, last known position, distance traveled
 	/// - Returns: The total distance between the bus location
-
-	/*
-		- Implement Bus.Progress so you have access to all necessary information
-				- For such information, check for nil, then set for a default value -> first rtep in the route
-		- Loop should not start at index 0, but starts at prevLocation
-		
-	*/
-	// func getTotalDistanceTraveled(location: Bus.Location, busProgress: Bus.Progress) -> Double {
-	// func getTotalDistanceTraveled(location: Bus.Location, distanceTraveled: Double, previousLocation: Bus.Location) -> Double {
-	// func getTotalDistanceTraveled(location: Bus.Location, distanceTraveled: Double) -> Double {
-	func getTotalDistanceTraveled(location: Bus.Location, busPreviousLocation: Bus.Location) -> Double {
+	// func getTotalDistanceTraveled(location: Bus.Location, busPreviousLocation: Bus.Location, distanceTraveled: Double) -> Double {
+	func getTotalDistanceTraveled(location: Bus.Location) -> Double {
 		var totalDistance: Double = 0
 
 		// finds the total distance exiting out of the Union
@@ -182,25 +187,18 @@ final class Route: Model, Content, Collection {
 		}
 
 		var beginningIndex: Int = 0
-
+		
 
 		let closestVertex: LocationCoordinate2D = findClosestVertex(location: location)!
-		let previousVertex: LocationCoordinate2D = findClosestVertex(location: busPreviousLocation)!
 		
-		beginningIndex = self.coordinates.firstIndex(of: previousVertex)!
+		// let previousVertex: LocationCoordinate2D = findClosestVertex(location: busPreviousLocation)!
+		// beginningIndex = self.coordinates.firstIndex(of: previousVertex)!
+		// print(previousVertex)
 
+		// Begins on the road and not on the horseshoe at the Union
 		if (self.name == "North Route" && beginningIndex == 0) {
 			beginningIndex = 9
 		}
-
-		// if (busPreviousLocation != nil) {
-		// 	previousVertex = findClosestVertex(location: busPreviousLocation!.location)!
-		// print(previousVertex)
-		// }
-
-		// print(previousVertex.location!.coordinate)
-		// beginningIndex = self.coordinates.firstIndex(of: previousVertex!.coordinate)
-
 
 
 		// get the total distance that have been traveled

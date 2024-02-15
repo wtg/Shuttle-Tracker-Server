@@ -18,6 +18,7 @@ struct CreateBuses: AsyncMigration {
 			.field("congestion", .int)
 			.field("route_id", .uuid)
 			.field("meters_along_route", .double)
+			// .field("previous_known_location", .custom(Bus.Resolved.self))
 			.field("previous_locations", .array(of: .custom(Bus.Resolved.self)), .required)
 			.foreignKey("route_id", references: "routes", "id", onDelete: .setNull)
 			.create()

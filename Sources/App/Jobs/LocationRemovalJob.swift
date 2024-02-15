@@ -20,20 +20,20 @@ struct LocationRemovalJob: AsyncScheduledJob {
 			.filter { (route) in
 				return route.schedule.isActive
 			}
+
+		
 		for bus in buses {
 			if let busData = bus.resolved {
 				bus.previousLocations.push(busData)
-				var busPreviousLocation: Bus.Resolved? = busData	
 				
+
 				for route in routes {
-					// if (route.schedule.isActive && route.id == bus.routeID && bus.previousLocations.count > 0) {
 					if (route.schedule.isActive && route.id == bus.routeID) {
-						// let previousLocation = bus.previousLocations.peek()!.location
-						// bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: bus.previousLocations.peek()!.location, distanceTraveled: bus.metersTraveledAlongRoute!, previousLocation: previousLocation) 
-						// bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: bus.previousLocations.peek()!.location, distanceTraveled: bus.metersTraveledAlongRoute!) 
-						bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: bus.previousLocations.peek()!.location, busPreviousLocation: busPreviousLocation!.location) 
-						if (bus.previousLocations.peek()!.location.date.timeIntervalSinceNow < -1 && bus.previousLocations.count > 0) {
-							busPreviousLocation = bus.previousLocations.pop()
+						// bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: busData.location, distanceTraveled: bus.metersTraveledAlongRoute!) 
+						// bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: busData.location, busPreviousLocation: bus.previousLocations.peek()!.location, distanceTraveled: bus.metersTraveledAlongRoute!) 
+						bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: busData.location) 
+						if (bus.previousLocations.peek()!.location.date.timeIntervalSinceNow < -7 && bus.previousLocations.count > 0) {
+							bus.previousLocations.pop()
 						}
 					} 
 				}

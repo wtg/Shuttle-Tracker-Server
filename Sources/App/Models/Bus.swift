@@ -82,23 +82,20 @@ final class Bus: Hashable, Model {
 		}
 	}
 
-	// struct Progress: Content, Codable {		
-	// 	/// Distance traveled along route
-	// 	var metersTraveledAlongRoute: Double
+	struct Progress: Content, Codable {		
+		/// Distance traveled along route
+		var metersTraveledAlongRoute: Double
 
-	// 	// // The nearest vertex to the current location
-	// 	// var nearestVertex: LocationCoordinate2D?
-
-	// 	// // The vertex that we have just passed
-	// 	// var previousVertex: LocationCoordinate2D?
-	// }
+		// // The last known locations
+		var lastKnownLocation: Location
+	}
 
 	// var progress: Progress? {
 	// 	get {
-	// 		guard let metersTraveledAlongRoute = self.metersTraveledAlongRoute, let previousRtep = self.previousRtep, let nearestRtep = self.nearestRtep else {
+	// 		guard let metersTraveledAlongRoute = self.metersTraveledAlongRoute,  let lastKnownLocation = self.lastKnownLocation else {
 	//      		return nil;
 	// 		}
-	//      return Progress(metersTraveledAlongRoute: metersTraveledAlongRoute, nearestVertex: nearestRtep, previousVertex: previousRtep)
+	//      return Progress(metersTraveledAlongRoute: metersTraveledAlongRoute, lastKnownLocation: lastKnownLocation)
 	// 	}
 	// }
 	
@@ -130,14 +127,12 @@ final class Bus: Hashable, Model {
 	@OptionalField(key: "route_id")
 	var routeID: UUID?
 
+	// Total distance traveled along the route
 	@OptionalField(key: "meters_along_route") 
-	var metersTraveledAlongRoute: Double?
-	
-	// @OptionalField(key: "previous_rtep")
-	// var previousRtep: LocationCoordinate2D?
+	var metersTraveledAlongRoute: Double?	
 
-	// @OptionalField(key: "nearest_rtep")
-	// var nearestRtep: LocationCoordinate2D?
+	// @OptionalField(key: "previous_known_location")
+	// var previousKnownLocation: Resolved?
 
 	/// The visited locations/coordinates 
 	@Field(key: "previous_locations")
