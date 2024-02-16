@@ -2,6 +2,17 @@ import csv
 import sys 
 from datetime import datetime, date
 
+"""
+    Things to keep in mind, notes:
+
+        1) We are finding the distances in between each new location, ie: loc[0] and loc[1] and finding the avg speed limit in between those two
+            - There might be a correlation between user/system
+            - There might be a correlation between the sections of the route or there could be an avg speed limit throughout the route ==> The sections of the route are roughly the same with each other
+
+        2) Filter by bus since each bus will start at different locations
+
+"""
+
 # Parses Data.csv and appends the correct data to their corresponding arrays 
 def parseCVS():
     with open("Data.csv", 'r') as csv_file:
@@ -51,19 +62,31 @@ if __name__=="__main__":
 
     # Assume all arrays have equal size
     # Data.csv has an odd number of data --> Account for it later on
-    while (filter(lambda x: x[0].startswith('96'), data)):
-        index += 1
-
+    # while (filter(lambda x: x[0].startswith('96'), data)):
+    while (index < 10):
         second_location = (data[index][1],data[index][2])
         secondDate = parseDate(data[index][3])
         secondTime = parseTime(secondDate)
 
         timeSinceLastPosition = datetime.combine(date.min,secondTime) - datetime.combine(date.min,firstTime)
+        print(timeSinceLastPosition)
 
         first_location = (data[index][1],data[index][2])
         firstDate = parseDate(data[index][3])
         firstTime = parseTime(firstDate)
-        # Filter by bus since each bus will start at different locations
+
+        index += 1
+
+        """
+            We run the algorithm here
+            We will get the total distance traveled by position 1 and position 2
+                Using these two total distances, we subtract them to find the change in distances ==> delta1
+            We will use the time difference found above and subtract time2 by time1 ==> delta2
+
+            Convert the distance into mi or ft as the total distance will return a Double in meters
+                avg speed limit = delta1/delta2
+            This will be one of the speed limit 
+                --> Append into the array that will contain all of the changes in speed limit 
+        """
         
-        # Run distance algorithm on first and second location
-        # Then subtract the two distances to get the change in distance within the timeDifference
+
