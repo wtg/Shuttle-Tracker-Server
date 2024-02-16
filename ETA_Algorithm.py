@@ -18,16 +18,24 @@ def parseCVS():
             dataType = row.split(",")[4]
             
             data.append((busNumber, latitude, longitude, time, dataType))
-    return data
+    return data 
+
+def parseDate(first):
+    return(first[0:19])
 
 def parseDate(first,second):
     return (first[0:19],second[0:19])
+
+def parseTime(first):
+    return(datetime.strptime(first, '%Y-%m-%d %H:%M:%S')).time()
 
 def parseTime(first,second):
     firstTime = datetime.strptime(first, '%Y-%m-%d %H:%M:%S').time()
     secondTime = datetime.strptime(second, '%Y-%m-%d %H:%M:%S').time()
     return(firstTime,secondTime)
 
+
+# They bus number matter, they should correlate with their locations
 if __name__=="__main__":    
     # keeps track of all of the differences in distances --> every 2 locations data points
     differenceInDistance = []
@@ -51,12 +59,12 @@ if __name__=="__main__":
 
     # Assume all arrays have equal size
     # Data.csv has an odd number of data --> Account for it later on
-    while (index < len(data)-1):
+    while (filter(lambda x: x[0].startswith('96'), data)):
         index += 1
-        if (index % 2 != 0):
-            second_location = (data[index][1], data[index][2])
+        if (index % 2 == 0):
+            first_location = (data[index][1], data[index][2])
             continue
-        first_location = (data[index][1], data[index][2])
+        second_location = (data[index][1], data[index][2])
 
         firstDate,secondDate = parseDate(data[index][3], data[index][3])
         first_time,second_time = parseTime(firstDate,secondDate)
@@ -64,5 +72,9 @@ if __name__=="__main__":
         timeDifference = datetime.combine(date.min,second_time) - datetime.combine(date.min,first_time)
         differenceInTime.append(timeDifference)
 
+
+
+        # Filter by bus since each bus will start at different locations
+        
         # Run distance algorithm on first and second location
         # Then subtract the two distances to get the change in distance within the timeDifference
