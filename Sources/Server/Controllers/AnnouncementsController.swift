@@ -27,9 +27,24 @@ struct AnnouncementsController<DecoderType>: RouteCollection where DecoderType: 
 	
 	private func create(_ request: Request) async throws -> Announcement {
 		let announcement = try request.content.decode(Announcement.self, using: self.decoder)
+
+		// new changes 2/13 
+		// ** announcement json string ** 
+		guard let data = ("\(announcement.id) || \(announcement.subject) ||  \(announcement.start) || \(announcement.end) || 
+		\(announcement.scheduleType) || \(announcement.body) || \(announcement.interruptionLevel)").data(using: .utf8) else {
+			throw Abort(.internalServerError)
+		}
+
+		/*
 		guard let data = (announcement.subject + announcement.body).data(using: .utf8) else {
 			throw Abort(.internalServerError)
 		}
+		*/
+
+	
+		
+
+
 		if try CryptographyUtilities.verify(signature: announcement.signature, of: data) {
 			try await announcement.save(on: request.db(.psql))
 			
