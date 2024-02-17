@@ -5,7 +5,7 @@ struct locationData {
     var bus_number: Int
     var coordinate: Coordinate
     var date: Date
-    var type: String
+    var type: Bus.Location.LocationType
 }
 
 var allData = [locationData]()
@@ -22,7 +22,6 @@ func parseCSV() -> [locationData] {
     }
 
     let rows = data.components(separatedBy: "\n")
-
     for row in rows {
         let columns = row.components(separatedBy: ",")
 
@@ -37,17 +36,16 @@ func parseCSV() -> [locationData] {
 
             // convert string to date type
             let dateFormatter = DateFormatter()
-            let dateFormat = "yyyy-dd-MM HH:mm:ss Z"
+            let dateFormat = "yyyy-MM-dd HH:mm:ss Z"
             dateFormatter.dateFormat = dateFormat
             let date = dateFormatter.date(from: columns[3])!
 
-            print(coordinate,date)
 
-            let type = columns[4]
+            let type = Bus.Location.LocationType(rawValue: columns[4])!
 
             let locationData = locationData(bus_number: busNumber, coordinate: coordinate, date:date, type: type)
             allData.append(locationData)
-            
+            index += 1
         }
     }
     return allData
