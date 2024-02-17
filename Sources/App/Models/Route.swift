@@ -153,13 +153,13 @@ final class Route: Model, Content, Collection {
 
 	// Find closest vertex 
 	// Parameter: The bus location
-	func findClosestVertex(location: Bus.Location) -> LocationCoordinate2D? {
+	public func findClosestVertex(location: Coordinate) -> LocationCoordinate2D? {
 		var maxDistance: Double = Double.infinity
 		var closestVertex: LocationCoordinate2D? = self.coordinates[0]
 
 		// find vertex with smallest distance to the current bus location
 		for index in self.coordinates.startIndex ..< (self.coordinates.endIndex - 1) {
-			let distance = self.coordinates[index].distance(to: location.coordinate)
+			let distance = self.coordinates[index].distance(to: location)
 			if distance < maxDistance {
 					closestVertex = self.coordinates[index]
 					maxDistance = distance
@@ -172,7 +172,7 @@ final class Route: Model, Content, Collection {
 	/// - Parameter location: The location to check, last known position, distance traveled
 	/// - Returns: The total distance between the bus location
 	// func getTotalDistanceTraveled(location: Bus.Location, busPreviousLocation: Bus.Location, distanceTraveled: Double) -> Double {
-	func getTotalDistanceTraveled(location: Bus.Location) -> Double {
+	public func getTotalDistanceTraveled(location: Coordinate) -> Double {
 		var totalDistance: Double = 0
 
 		// finds the total distance exiting out of the Union
@@ -186,8 +186,8 @@ final class Route: Model, Content, Collection {
 			}
 		}
 
+		// West Route
 		var beginningIndex: Int = 0
-		
 
 		let closestVertex: LocationCoordinate2D = findClosestVertex(location: location)!
 		
@@ -196,16 +196,27 @@ final class Route: Model, Content, Collection {
 		// print(previousVertex)
 
 		// Begins on the road and not on the horseshoe at the Union
-		if (self.name == "North Route" && beginningIndex == 0) {
-			beginningIndex = 9
+		// North Route
+		if (self.name == "North Route" && beginningIndex == 1) {
+			beginningIndex = 7
 		}
-
 
 		// get the total distance that have been traveled
 		for index in beginningIndex ... (self.coordinates.endIndex-1) {
 			// find the closest vertex in the array of coordinates
+
+			// if (index == 1 && 
+			// 	self.coordinates[0].longitude != closestVertex.longitude &&
+			// 	self.coordinates[0].latitude != closestVertex.latitude) {
+			// 		totalDistance += self.coordinates[0].distance(to: self.coordinates[1])
+			// }
+			// else if (index == 1 && 
+			// 		self.coordinates[0].longitude == closestVertex.longitude &&
+			// 		self.coordinates[0].latitude == closestVertex.latitude) {
+					
+			// }
 			if(self.coordinates[index].longitude != closestVertex.longitude &&
-				self.coordinates[index].latitude != closestVertex.latitude) {
+					self.coordinates[index].latitude != closestVertex.latitude) {
 				totalDistance += self.coordinates[index].distance(to: self.coordinates[index+1])
 				continue;
 			}			 
@@ -235,7 +246,7 @@ final class Route: Model, Content, Collection {
 				let vertexA: Coordinate = self.coordinates[index]
 				let vertexB: Coordinate = self.coordinates[index+1]
 				let vertexC: Coordinate = self.coordinates[index+2]
-				let vertexX: Coordinate = location.coordinate
+				let vertexX: Coordinate = location
 
 				// distances between the vertices
 				let distanceAB: Double = vertexA.distance(to: vertexB)
@@ -251,6 +262,10 @@ final class Route: Model, Content, Collection {
 					totalDistance += distanceAX
 					break
 				}
+				// else {
+				// 	totalDistance += distanceXC
+				// 	break
+				// }
 				
 				// distance difference depending on location of bus
 				var delta1: Double = distanceBC - distanceAX
@@ -258,9 +273,13 @@ final class Route: Model, Content, Collection {
 				
 				// second test case
 			    if (delta1 < delta2) {
-					totalDistance += distanceAB + distanceBX
+					totalDistance += distanceBX
 					break
 				}
+				// else {
+				// 	totalDistance += distanceAX
+				// 	break
+				// }
 				
 				delta1 = distanceAB - distanceCX
 				delta2 = distanceAB - distanceBC
@@ -270,6 +289,10 @@ final class Route: Model, Content, Collection {
 					totalDistance += distanceAX
 					break
 				}
+				// else {
+				// 	totalDistance += distanceBX
+				// 	break
+				// }
 			
 		}
 		print(totalDistance)

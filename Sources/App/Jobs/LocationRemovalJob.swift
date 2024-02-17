@@ -31,7 +31,7 @@ struct LocationRemovalJob: AsyncScheduledJob {
 					if (route.schedule.isActive && route.id == bus.routeID) {
 						// bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: busData.location, distanceTraveled: bus.metersTraveledAlongRoute!) 
 						// bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: busData.location, busPreviousLocation: bus.previousLocations.peek()!.location, distanceTraveled: bus.metersTraveledAlongRoute!) 
-						bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: busData.location) 
+						bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: busData.location.coordinate) 
 						if (bus.previousLocations.peek()!.location.date.timeIntervalSinceNow < -7 && bus.previousLocations.count > 0) {
 							bus.previousLocations.pop()
 						}
