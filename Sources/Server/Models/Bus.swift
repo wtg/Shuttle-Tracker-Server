@@ -139,6 +139,7 @@ final class Bus: Hashable, Model {
 	static func == (lhs: Bus, rhs: Bus) -> Bool {
 		return lhs.id == rhs.id
 	}
+	
 }
 
 extension Collection where Element == Bus.Location {
