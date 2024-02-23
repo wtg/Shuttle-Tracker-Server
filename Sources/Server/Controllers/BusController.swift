@@ -82,6 +82,9 @@ struct BusController<DecoderType>: RouteCollection where DecoderType: ContentDec
 				bus = Bus(id: id)
 				try await bus!.save(on: request.db(.sqlite))
 			}
+		} else if bus == nil && location.type == .network {
+			bus = Bus(id: id)
+			try await bus!.save(on: request.db(.sqlite))
 		}
 		guard let bus else {
 			throw Abort(.notFound)
