@@ -44,7 +44,7 @@ struct BusController<DecoderType>: RouteCollection where DecoderType: ContentDec
 		return location
 	}
 	
-	private func update(_ request: Request) async throws -> Bus.Location? {
+	private func update(_ request: Request) async throws -> Bus.Resolved? {
 		// In the context of this method, the term “route” refers to a shuttle route, not an HTTP route.
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
@@ -62,17 +62,34 @@ struct BusController<DecoderType>: RouteCollection where DecoderType: ContentDec
 		guard isOnRoute else {
 			throw Abort(.conflict)
 		}
-		let bus = try await Bus
+		var bus = try await Bus
 			.query(on: request.db(.sqlite))
 			.filter(\.$id == id)
 			.first()
-		guard let bus = bus else {
+		if id < 0 {
+			let closestBus = try await Bus
+				.query(on: request.db(.sqlite))
+				.all()
+				.filter { (candidate) in
+					return candidate.locations.resolved.map { (candidateLocation) in
+						return candidateLocation.coordinate.distance(to: location.coordinate) < 10
+					} ?? false
+				}
+				.first
+			if let closestBus {
+				bus = closestBus
+			} else {
+				bus = Bus(id: id)
+				try await bus!.save(on: request.db(.sqlite))
+			}
+		}
+		guard let bus else {
 			throw Abort(.notFound)
 		}
 		bus.locations.merge(with: [location])
 		bus.detectRoute(selectingFrom: routes)
 		try await bus.update(on: request.db(.sqlite))
-		return bus.locations.resolved
+		return bus.resolved
 	}
 	
 	private func board(_ request: Request) async throws -> Int? {
@@ -83,7 +100,7 @@ struct BusController<DecoderType>: RouteCollection where DecoderType: ContentDec
 			.query(on: request.db(.sqlite))
 			.filter(\.$id == id)
 			.first()
-		guard let bus = bus else {
+		guard let bus else {
 			throw Abort(.notFound)
 		}
 		bus.congestion = (bus.congestion ?? 0) + 1
@@ -99,7 +116,7 @@ struct BusController<DecoderType>: RouteCollection where DecoderType: ContentDec
 			.query(on: request.db(.sqlite))
 			.filter(\.$id == id)
 			.first()
-		guard let bus = bus else {
+		guard let bus else {
 			throw Abort(.notFound)
 		}
 		bus.congestion = (bus.congestion ?? 1) - 1
