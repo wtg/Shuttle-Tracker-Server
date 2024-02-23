@@ -10,11 +10,11 @@ let package = Package(
 	dependencies: [
 		.package(
 			url: "https://github.com/apple/swift-algorithms.git",
-			from: "1.0.0"
+			from: "1.2.0"
 		),
 		.package(
 			url: "https://github.com/vapor/vapor.git",
-			from: "4.79.0"
+			from: "4.92.0"
 		),
 		.package(
 			url: "https://github.com/vapor/queues.git",
@@ -22,11 +22,11 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/vapor/fluent.git",
-			from: "4.8.0"
+			from: "4.9.0"
 		),
 		.package(
-			url:"https://github.com/vapor/fluent-sqlite-driver.git",
-			from: "4.5.0"
+			url: "https://github.com/vapor/fluent-sqlite-driver.git",
+			from: "4.6.0"
 		),
 		.package(
 			url: "https://github.com/vapor/fluent-postgres-driver.git",
@@ -46,7 +46,7 @@ let package = Package(
 		),
 		.package(
 			url: "https://github.com/mapbox/turf-swift.git",
-			from: "2.2.0"
+			from: "2.8.0"
 		),
 		.package(
 			url: "https://github.com/Gerzer/JSONParser.git",
@@ -58,8 +58,8 @@ let package = Package(
 		)
 	],
 	targets: [
-		.target(
-			name: "App",
+		.executableTarget(
+			name: "Server",
 			dependencies: [
 				.product(
 					name: "Algorithms",
@@ -109,12 +109,6 @@ let package = Package(
 					name: "Turf",
 					package: "turf-swift"
 				)
-			]
-		),
-		.executableTarget(
-			name: "Runner",
-			dependencies: [
-				.target(name: "App")
 			]
 		)
 	]

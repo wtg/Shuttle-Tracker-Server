@@ -173,5 +173,40 @@
 				"end": "8:00 PM"
 			}
 		}
+	},
+	{
+		"name": "Spring ’24",
+		"start": "2024-01-08T11:00:00Z",
+		"end": "2024-05-05T04:00:00Z",
+		"content": {
+			"monday": {
+				"start": "7:00 AM",
+				"end": "12:00 AM"
+			},
+			"tuesday": {
+				"start": "7:00 AM",
+				"end": "12:00 AM"
+			},
+			"wednesday": {
+				"start": "7:00 AM",
+				"end": "12:00 AM"
+			},
+			"thursday": {
+				"start": "7:00 AM",
+				"end": "12:00 AM"
+			},
+			"friday": {
+				"start": "7:00 AM",
+				"end": "12:00 AM"
+			},
+			"saturday": {
+				"start": "9:00 AM",
+				"end": "12:00 AM"
+			},
+			"sunday": {
+				"start": "9:00 AM",
+				"end": "8:00 PM"
+			}
+		}
 	}
 ]
