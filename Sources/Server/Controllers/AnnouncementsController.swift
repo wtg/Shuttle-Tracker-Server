@@ -28,13 +28,13 @@ struct AnnouncementsController<DecoderType>: RouteCollection where DecoderType: 
 	private func create(_ request: Request) async throws -> Announcement {
 		let announcement = try request.content.decode(Announcement.self, using: self.decoder)
         
-        let books = try await announcement
+        let books = try await Announcement
                 .query(on: request.db(.psql))
-                .filter(\.$pageCount > 400)
                 .all()
-                .map { (book) in
-                    return book.title
+                .filter { (candidate) in
+                    candidate.id == announcement.id
                 }
+        guard isEmpty = (books).isEmpty();
 		// new changes 2/13
 		// ** announcement json string ** 
 		guard let data = ("\(announcement.id) || \(announcement.subject) ||  \(announcement.start) || \(announcement.end) || 
