@@ -295,7 +295,6 @@ final class Route: Model, Content, Collection {
 				// }
 			
 		}
-		print(totalDistance)
 		return totalDistance
 	}
 }

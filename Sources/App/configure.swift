@@ -100,6 +100,7 @@ public func configure(_ application: Application) async throws {
 		.at(Date() + 21600)
 	try application.queues.startInProcessJobs()
 	try application.queues.startScheduledJobs()
+
 	
 	// MARK: - APNS
 	if let apnsKeyPath = ProcessInfo.processInfo.environment["APNS_KEY"] {
@@ -170,4 +171,7 @@ public func configure(_ application: Application) async throws {
 	try await GPXImportingJob()
 		.run(context: application.queues.queue.context)
 	try routes(application)
+	
+	// Parses the large set of data each build
+	try await calculateAverageSpeedlimit(db: application.db)
 }

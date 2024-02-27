@@ -9,6 +9,11 @@ struct locationData {
 }
 
 var allData = [locationData]()
+var allBusNumbers: Set<Int> = []
+
+func getAllBusNumbers() -> Set<Int> {
+    return allBusNumbers
+}
 
 
 func parseCSV() -> [locationData] {
@@ -22,6 +27,9 @@ func parseCSV() -> [locationData] {
     }
 
     let rows = data.components(separatedBy: "\n")
+    
+    var index: Int = 0
+
     for row in rows {
         let columns = row.components(separatedBy: ",")
 
@@ -45,7 +53,12 @@ func parseCSV() -> [locationData] {
 
             let locationData = locationData(bus_number: busNumber, coordinate: coordinate, date:date, type: type)
             allData.append(locationData)
-            index += 1
+            allBusNumbers.insert(busNumber)
+        }
+
+        index += 1
+        if (index == 500) {
+            break
         }
     }
     return allData
