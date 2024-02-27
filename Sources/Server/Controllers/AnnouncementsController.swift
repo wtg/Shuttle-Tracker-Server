@@ -27,8 +27,15 @@ struct AnnouncementsController<DecoderType>: RouteCollection where DecoderType: 
 	
 	private func create(_ request: Request) async throws -> Announcement {
 		let announcement = try request.content.decode(Announcement.self, using: self.decoder)
-
-		// new changes 2/13 
+        
+        let books = try await announcement
+                .query(on: request.db(.psql))
+                .filter(\.$pageCount > 400)
+                .all()
+                .map { (book) in
+                    return book.title
+                }
+		// new changes 2/13
 		// ** announcement json string ** 
 		guard let data = ("\(announcement.id) || \(announcement.subject) ||  \(announcement.start) || \(announcement.end) || 
 		\(announcement.scheduleType) || \(announcement.body) || \(announcement.interruptionLevel)").data(using: .utf8) else {
