@@ -142,6 +142,29 @@ final class Route: Model, Content, Collection {
 		return distance < Constants.isOnRouteThreshold
 	}
 
+
+	func checkIsNearby(location: Coordinate) -> Bool { 
+		let distance = LineString(self.coordinates)
+			.closestCoordinate(to: location)?
+			.coordinate
+			.distance(to: location)
+		guard let distance else {
+			return false
+		}
+		return distance < Constants.isNearRouteCoordinateThreshold
+	}
+
+	func checkIsAtUnion(location: Coordinate) -> (Bool,Coordinate) { 
+		var distance: Double = 0
+		for points in self.coordinates.endIndex-7 ..< self.coordinates.endIndex-1 {
+			distance += self.coordinates[points].distance(to: location)
+			if (distance < 5) {
+				return (true,self.coordinates[points])
+			}
+		}
+		return (false, self.coordinates[self.coordinates.endIndex-1])
+	}
+
 	// Calculates the total distance along the route
 	func measureTotalDistanceAlongRoute() -> Double {
 		var distanceAlongRoute: Double = 0
@@ -175,48 +198,42 @@ final class Route: Model, Content, Collection {
 	public func getTotalDistanceTraveled(location: Coordinate) -> Double {
 		var totalDistance: Double = 0
 
+		let atUnion: Bool = checkIsAtUnion(location: location).0
+		let nearestAtUnionVertex: Coordinate = checkIsAtUnion(location: location).1
+
 		// finds the total distance exiting out of the Union
 		// This will be the starting distance everytime, ie: only when shuttle started moving
 		if (self.name == "West Route" && totalDistance == 0) {
 			for points in self.coordinates.endIndex-7 ..< self.coordinates.endIndex-1 {
-				totalDistance += self.coordinates[points].distance(to: self.coordinates[points+1])
-				if (points == self.coordinates.endIndex-2) {
-					totalDistance += self.coordinates[points+1].distance(to: self.coordinates[0])
+				// if start at the uinion we don't add the entire distance of the union
+				if (atUnion && self.coordinates[points] == nearestAtUnionVertex) {
+					return totalDistance
 				}
+				totalDistance += self.coordinates[points].distance(to: self.coordinates[points+1])
 			}
 		}
 
-		// West Route
 		var beginningIndex: Int = 0
 
 		let closestVertex: LocationCoordinate2D = findClosestVertex(location: location)!
-		
-		// let previousVertex: LocationCoordinate2D = findClosestVertex(location: busPreviousLocation)!
-		// beginningIndex = self.coordinates.firstIndex(of: previousVertex)!
-		// print(previousVertex)
+	
 
 		// Begins on the road and not on the horseshoe at the Union
 		// North Route
-		if (self.name == "North Route" && beginningIndex == 1) {
+		if (self.name == "North Route" && beginningIndex == 0) {
 			beginningIndex = 7
 		}
 
 		// get the total distance that have been traveled
 		for index in beginningIndex ... (self.coordinates.endIndex-1) {
-			// find the closest vertex in the array of coordinates
+			// near the first rtept, proceed with the algorithm
+			if (
+					self.coordinates[0].longitude == closestVertex.longitude &&
+					self.coordinates[0].latitude == closestVertex.latitude) {
+			}
 
-			// if (index == 1 && 
-			// 	self.coordinates[0].longitude != closestVertex.longitude &&
-			// 	self.coordinates[0].latitude != closestVertex.latitude) {
-			// 		totalDistance += self.coordinates[0].distance(to: self.coordinates[1])
-			// }
-			// else if (index == 1 && 
-			// 		self.coordinates[0].longitude == closestVertex.longitude &&
-			// 		self.coordinates[0].latitude == closestVertex.latitude) {
-					
-			// }
-			if(self.coordinates[index].longitude != closestVertex.longitude &&
-					self.coordinates[index].latitude != closestVertex.latitude) {
+			if(self.coordinates[index+1].longitude != closestVertex.longitude &&
+					self.coordinates[index+1].latitude != closestVertex.latitude) {
 				totalDistance += self.coordinates[index].distance(to: self.coordinates[index+1])
 				continue;
 			}			 
@@ -242,58 +259,59 @@ final class Route: Model, Content, Collection {
 			*/
 
 
-				// behind/front/on closest vertex
-				let vertexA: Coordinate = self.coordinates[index]
-				let vertexB: Coordinate = self.coordinates[index+1]
-				let vertexC: Coordinate = self.coordinates[index+2]
-				let vertexX: Coordinate = location
+			// behind/front/on closest vertex
+			let vertexA: Coordinate = self.coordinates[index]
+			let vertexB: Coordinate = self.coordinates[index+1]
+			let vertexC: Coordinate = self.coordinates[index+2]
+			let vertexX: Coordinate = location
 
-				// distances between the vertices
-				let distanceAB: Double = vertexA.distance(to: vertexB)
-				let distanceBC: Double = vertexB.distance(to: vertexC)
-				let distanceAX: Double = vertexA.distance(to: vertexX)
-				let distanceBX: Double = vertexB.distance(to:vertexX)
-				let distanceXC: Double = vertexX.distance(to: vertexC)
-				let distanceCX: Double = vertexC.distance(to: vertexX)
+			// distances between the vertices
+			let distanceAB: Double = vertexA.distance(to: vertexB)
+			let distanceBC: Double = vertexB.distance(to: vertexC)
+			let distanceAX: Double = vertexA.distance(to: vertexX)
+			let distanceBX: Double = vertexB.distance(to:vertexX)
+			let distanceXC: Double = vertexX.distance(to: vertexC)
+			let distanceCX: Double = vertexC.distance(to: vertexX)
 
-				
-				// first  test case
+			
+			// first  test case
+			if (distanceAB == distanceBC) {
 				if (distanceAX < distanceXC) {
 					totalDistance += distanceAX
-					break
 				}
-				// else {
-				// 	totalDistance += distanceXC
-				// 	break
-				// }
-				
-				// distance difference depending on location of bus
-				var delta1: Double = distanceBC - distanceAX
-				var delta2: Double = distanceBC - distanceAB
-				
-				// second test case
-			    if (delta1 < delta2) {
-					totalDistance += distanceBX
-					break
+				else {
+					totalDistance += distanceXC
 				}
-				// else {
-				// 	totalDistance += distanceAX
-				// 	break
-				// }
-				
-				delta1 = distanceAB - distanceCX
-				delta2 = distanceAB - distanceBC
 
-				// third test case
+			}
+			
+			// distance difference depending on location of bus
+			var delta1: Double = distanceBC - distanceAX
+			var delta2: Double = distanceBC - distanceAB
+			
+			// second test case
+			if (distanceAB < distanceBC) {
+				if (delta1 < delta2) {
+					totalDistance += distanceBX
+				}
+				else {
+					totalDistance += distanceAX
+				}
+			}
+			
+			delta1 = distanceAB - distanceCX
+			delta2 = distanceAB - distanceBC
+
+			// third test case
+			if (distanceAB > distanceBC)  {
 				if (delta1 < delta2) {
 					totalDistance += distanceAX
-					break
 				}
-				// else {
-				// 	totalDistance += distanceBX
-				// 	break
-				// }
-			
+				else {
+					totalDistance += distanceBX
+				}
+			}
+			break
 		}
 		return totalDistance
 	}

@@ -26,12 +26,6 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
     // @value: An array of all the speed limits of the bus 
     var mapOfAllBusesSpeed: [Int: [Double]] = [:]
 
-    // Create a bus to use some functions
-    // var first_location: Coordinate = allData[0].coordinate
-    // var firstDate: Date = allData[0].date
-    // var firstBusType: Bus.Location.LocationType = allData[0].type
-
-
     //
     var currentBus: Int = allData[0].bus_number
    
@@ -79,13 +73,14 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
     }
 
 
-    while (index < 10 ) { 
+    while (index < 240 ) { 
         currentBus = allData[index].bus_number
 
         var currentDate: Date = allData[index].date
-        let calendarDate = Calendar.current.dateComponents([.day, .year, .month], from: currentDate)
-        let day = calendarDate.day
-
+        let calendarDate = Calendar.current.dateComponents([.day, .year, .month, .hour, .minute, .second], from: currentDate)
+        if (Calendar.current.date(from:currentDays[currentBus]!)! == allData[0].date) {
+            currentDays[currentBus] = calendarDate
+        }
         second_location[currentBus] =  allData[index].coordinate
         secondDate[currentBus] =  allData[index].date
         secondBusType[currentBus] = allData[index].type
@@ -95,7 +90,18 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
 
         let timeSincelastLocation: Int = Int(firstDate[currentBus]!.distance(to: secondDate[currentBus]!))
         let totalTime = totalTimePassed[currentBus]!
-        totalTimePassed[currentBus] = totalTime + timeSincelastLocation
+
+
+        // check for the end date
+        var endDate = DateComponents()
+        let currentTime = Calendar.current.dateComponents([.day, .year, .month, .hour, .minute, .second], from: allData[index].date)
+
+        endDate.year = currentTime.year
+        endDate.month = currentTime.month
+        endDate.day = currentTime.day
+        endDate.hour = 0
+        endDate.minute = 0 
+        endDate.second = 0 
 
 
         /* 
@@ -103,9 +109,11 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
         *  We will clear all the information/data that we have taken so far 
         *  and clear them at the end of the day
         */
-        if (currentDays[currentBus] != calendarDate) {
+        if (allData[index].date > Calendar.current.date(from: endDate)!) {
             var distance: Double = totalDistanceTraveled[currentBus]!
             var time: Int = totalTimePassed[currentBus]!
+            
+
             mapOfAllBusesSpeed[currentBus, default: []].append(calculateSpeed(distance: distance, time: time))
 
             totalDistanceTraveled[currentBus] = 0
@@ -124,11 +132,12 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
                 let firstTotalDistance: Double = route.getTotalDistanceTraveled(location: first_location[currentBus]!)
                 let secondTotalDistance: Double = route.getTotalDistanceTraveled(location: second_location[currentBus]!)
                 // the bus may just sit at the same spot and wait to move, so we don't want to use that distance
-                // if (totalDistanceTraveled < 100 && totalTimePassed[currentBus] > 60) {
-                //     continue
-                // }
-                totalDistanceTraveled[currentBus] = totalDistanceTraveled[currentBus]! + (secondTotalDistance - firstTotalDistance)
-                print(firstTotalDistance, secondTotalDistance,route.name)
+                if ((secondTotalDistance-firstTotalDistance) < 100 && totalTimePassed[currentBus]! > 60) {
+                    continue
+                }
+                totalDistanceTraveled[currentBus] = totalDistanceTraveled[currentBus]! + abs(secondTotalDistance - firstTotalDistance)
+                totalTimePassed[currentBus] = totalTime + timeSincelastLocation
+                
             }
         }
 
@@ -137,8 +146,6 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
         firstBusType[currentBus] = allData[index].type
         firstUUID = UUID()
         firstBusLocation = Bus.Location(id: firstUUID, date: firstDate[currentBus]!, coordinate: first_location[currentBus]!, type: firstBusType[currentBus]!)
-
-        currentDays[currentBus] = calendarDate
 
         index += 1
     }

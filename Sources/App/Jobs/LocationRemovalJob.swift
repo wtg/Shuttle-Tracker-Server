@@ -26,11 +26,8 @@ struct LocationRemovalJob: AsyncScheduledJob {
 			if let busData = bus.resolved {
 				bus.previousLocations.push(busData)
 				
-
 				for route in routes {
 					if (route.id == bus.routeID) {
-						// bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: busData.location, distanceTraveled: bus.metersTraveledAlongRoute!) 
-						// bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: busData.location, busPreviousLocation: bus.previousLocations.peek()!.location, distanceTraveled: bus.metersTraveledAlongRoute!) 
 						bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: busData.location.coordinate) 
 						if (bus.previousLocations.peek()!.location.date.timeIntervalSinceNow < -7 && bus.previousLocations.count > 0) {
 							bus.previousLocations.pop()
