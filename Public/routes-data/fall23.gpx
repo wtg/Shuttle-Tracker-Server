@@ -17,9 +17,6 @@
 	<wpt lat="42.727888" lon="-73.678127">
 		<name>Academy Hall</name>
 	</wpt>
-	<wpt lat="42.725828" lon="-73.678490">
-		<name>Tibbits Avenue</name>
-	</wpt>
 	<wpt lat="42.722881" lon="-73.679696">
 		<name>Polytechnic Residence Commons</name>
 	</wpt>
@@ -49,6 +46,9 @@
 	</wpt>
 	<wpt lat="42.737000" lon="-73.670300">
 		<name>Colonie</name>
+	</wpt>
+	<wpt lat="42.731374" lon="-73.666578">
+		<name>E-Lot</name>
 	</wpt>
 	<rte>
 		<name>West Route</name>

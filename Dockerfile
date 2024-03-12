@@ -30,7 +30,7 @@ RUN swift build -c release
 WORKDIR /staging
 
 # Copy main executable to staging area
-RUN cp "$(swift build --package-path /build -c release --show-bin-path -Xswiftc -Onone)/Runner" ./
+RUN cp "$(swift build --package-path /build -c release --show-bin-path -Xswiftc -Onone)/Server" ./
 
 # Uncomment the next line if you need to load resources from the `Public` directory.
 # Ensure that by default, neither the directory nor any of its contents are writable.
@@ -61,5 +61,5 @@ USER vapor:vapor
 EXPOSE 8080
 
 # Start the Vapor service when the image is run, default to listening on 8080 in production environment
-ENTRYPOINT ["./Runner"]
+ENTRYPOINT ["./Server"]
 CMD ["serve", "--env", "production", "--hostname", "0.0.0.0", "--port", "8080"]
