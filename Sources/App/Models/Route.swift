@@ -230,9 +230,10 @@ final class Route: Model, Content, Collection {
 			if (
 					self.coordinates[0].longitude == closestVertex.longitude &&
 					self.coordinates[0].latitude == closestVertex.latitude) {
+						return self.coordinates[0].distance(to: location)
 			}
 
-			if(self.coordinates[index+1].longitude != closestVertex.longitude &&
+			else if(self.coordinates[index+1].longitude != closestVertex.longitude &&
 					self.coordinates[index+1].latitude != closestVertex.latitude) {
 				totalDistance += self.coordinates[index].distance(to: self.coordinates[index+1])
 				continue;
