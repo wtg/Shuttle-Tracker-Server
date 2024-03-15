@@ -155,13 +155,16 @@ final class Route: Model, Content, Collection {
 	}
 
 	func checkIsAtUnion(location: Coordinate) -> (Bool,Coordinate) { 
-		var distance: Double = 0
-		for points in self.coordinates.endIndex-7 ..< self.coordinates.endIndex-1 {
-			distance += self.coordinates[points].distance(to: location)
-			if (distance < 5) {
-				return (true,self.coordinates[points])
+		// West route has the union coordinates as the last 7 rtepts
+		if (name == "West Route") {
+			for points in self.coordinates.endIndex-7 ... self.coordinates.endIndex-1 {
+				let distance = self.coordinates[points].distance(to: location)
+				if (distance < 10) {
+					return (true,self.coordinates[points])
+				}
 			}
 		}
+
 		return (false, self.coordinates[self.coordinates.endIndex-1])
 	}
 
@@ -225,7 +228,7 @@ final class Route: Model, Content, Collection {
 		}
 
 		// get the total distance that have been traveled
-		for index in beginningIndex ... (self.coordinates.endIndex-1) {
+		for index in beginningIndex ..< (self.coordinates.endIndex-1) {
 			// near the first rtept, proceed with the algorithm
 			if (
 					self.coordinates[0].longitude == closestVertex.longitude &&

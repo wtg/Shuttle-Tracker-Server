@@ -9,7 +9,7 @@ struct locationData {
 }
 
 var allData = [locationData]()
-var allBusNumbers: Set<Int> = []
+var allBusNumbers: Set<Int> = Set<Int>()
 
 func getAllBusNumbers() -> Set<Int> {
     return allBusNumbers
