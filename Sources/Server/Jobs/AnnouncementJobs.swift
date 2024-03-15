@@ -1,7 +1,7 @@
-import Vapor
+import Vapor 
 import Fluent
 import FluentPostgresDriver // or whichever Fluent driver you're using
-import APNS
+import APNS  
 
 // Define a job for sending announcement notifications
 struct SendAnnouncementNotificationJob: Job {

@@ -33,13 +33,12 @@ struct AnnouncementsController<DecoderType>: RouteCollection where DecoderType: 
 		let timeUntilStart = announcement.start.timeIntervalSince(now)
 		if timeUntilStart > 3600 { // More than an hour ahead
 			// Schedule the notification job here
-			// You will need to create a custom job type for sending APNS notifications
 			let job = SendAnnouncementNotificationJob(announcementID: announcement.id)
 			// Calculate the delay for the job based on the announcement's start date
 			let delay = DispatchTimeInterval.seconds(Int(timeUntilStart))
 			application.queues.dispatch(job, after: delay)
 		} else {
-			// If the announcement is for less than an hour in the future, send immediately or handle as needed
+
 		}
 
 
