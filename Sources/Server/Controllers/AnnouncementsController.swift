@@ -43,6 +43,7 @@ struct AnnouncementsController<DecoderType>: RouteCollection where DecoderType: 
 
 
 		// new changes 2/13 
+
 		// ** announcement json string ** 
 		guard let data = ("\(announcement.id) || \(announcement.subject) ||  \(announcement.start) || \(announcement.end) || 
 		\(announcement.scheduleType) || \(announcement.body) || \(announcement.interruptionLevel)").data(using: .utf8) else {
