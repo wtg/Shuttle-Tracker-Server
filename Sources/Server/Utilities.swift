@@ -83,7 +83,6 @@ extension Coordinate: Hashable, Codable, AdditiveArithmetic {
 		lhs.latitude /= rhs
 		lhs.longitude /= rhs
 	}
-	
 }
 
 enum LocationAuthorizationStatus: Int, Codable {

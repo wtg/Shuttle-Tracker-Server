@@ -104,7 +104,6 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
         *  and clear them at the end of the day/end of the schedule
         */
         if (allData[index].date > Calendar.current.date(from: endDate)!) {
-            print(index)
             let distance: Double = totalDistanceTraveled[currentBus, default: 0]
             let time: Int = totalTimePassed[currentBus, default: 0]
             

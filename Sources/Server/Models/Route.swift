@@ -223,7 +223,7 @@ final class Route: Model, Content, Collection {
 
 		// Begins on the road and not on the horseshoe at the Union
 		// North Route
-		if (self.name == "North Route" && beginningIndex == 0) {
+		if (self.name == "North Route") {
 			beginningIndex = 7
 		}
 
