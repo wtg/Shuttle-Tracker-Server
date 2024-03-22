@@ -126,5 +126,4 @@ struct BusController<DecoderType>: RouteCollection where DecoderType: ContentDec
 		try await bus.update(on: request.db(.sqlite))
 		return bus.congestion
 	}
-	
 }

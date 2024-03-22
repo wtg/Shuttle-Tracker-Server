@@ -209,6 +209,7 @@ struct Server {
 			.run(context: application.queues.queue.context)
 		try await GPXImportingJob()
 			.run(context: application.queues.queue.context)
+		try await calculateAverageSpeedlimit(db: application.db)
 		try await application.execute()
 	}
 	
