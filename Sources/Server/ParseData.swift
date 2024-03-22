@@ -57,7 +57,7 @@ func parseCSV() -> [locationData] {
         }
 
         index += 1
-        if (index == 300) {
+        if (index == 1000) {
             break
         }
     }

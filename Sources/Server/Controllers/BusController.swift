@@ -25,7 +25,6 @@ struct BusController<DecoderType>: RouteCollection where DecoderType: ContentDec
 			routes.put("board", use: self.board(_:))
 			routes.put("leave", use: self.leave(_:))
 		}
-		routes.get("coordinate", use: self.nearest(_:))
 	}
 	
 	private func read(_ request: Request) async throws -> Bus.Location {
@@ -126,39 +125,5 @@ struct BusController<DecoderType>: RouteCollection where DecoderType: ContentDec
 		bus.congestion = (bus.congestion ?? 1) - 1
 		try await bus.update(on: request.db(.sqlite))
 		return bus.congestion
-	}
-	
-	private func nearest(_ request: Request) async throws -> [Int] {
-		if let latitude = request.query[Double.self, at: "latitude"], let longitude = request.query[Double.self, at: "longitude"] {
-			// create a location type using the latitude, longtitude
-			let location: Coordinate = Coordinate(latitude: latitude, longitude: longitude)
-			// get the route to determine the distance
-			let routes = try await Route
-			.query(on: request.db(.sqlite))
-			.all()
-			.filter { (route) in
-				return (route.schedule.isActive && route.checkIsNearby(location: location))
-			}
-			let coordinateRoute: Route = routes.first!
-
-			// filter the buses that are behind the location given
-			let buses = try await Bus
-			.query(on: request.db(.sqlite))
-			.all()
-			.compactMap { (bus) in
-				return bus.resolved
-			}
-			.filter { (resolved) in
-				return coordinateRoute.getTotalDistanceTraveled(location: resolved.location.coordinate) < coordinateRoute.getTotalDistanceTraveled(location: location)
-			}
-
-			// return the ids of the buses
-			var busIDs: [Int] = [Int]()
-			for bus in buses {
-				busIDs.append(bus.id)
-			}
-			return busIDs
-		}
-		throw Abort(.conflict)
 	}
 }
