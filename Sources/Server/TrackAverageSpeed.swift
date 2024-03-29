@@ -220,14 +220,14 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
     west = westSpeeds
     north = northSpeeds
 
-    print("West Speeds:")
-    for speed in westSpeeds {
-        print(speed)
-    }
-    print("\nNorth Speeds:")
-    for speed in northSpeeds {
-        print(speed)
-    }
+    // print("West Speeds:")
+    // for speed in westSpeeds {
+    //     print(speed)
+    // }
+    // print("\nNorth Speeds:")
+    // for speed in northSpeeds {
+    //     print(speed)
+    // }
 
 
     // calculate the overall speed from the data we have gathered
