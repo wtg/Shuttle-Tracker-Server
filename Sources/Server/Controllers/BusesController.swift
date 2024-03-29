@@ -79,8 +79,8 @@ struct BusesController<DecoderType>: RouteCollection where DecoderType: ContentD
 			// return the ids of the buses
 			var busIDs: [Int:Int] = [Int:Int]()
 			for bus in buses {
-				let ETA: Int = calculateETA(busLocation: bus.location.coordinate, destination: location)
-				busIDs[bus.id] = ETA
+				// let ETA: Int = try await calculateETA(busLocation: bus.location.coordinate, destination: location)
+				// busIDs[bus.id] = ETA
 			}
 			return busIDs
 	}

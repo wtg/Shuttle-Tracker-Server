@@ -142,7 +142,6 @@ final class Route: Model, Content, Collection {
 		return distance < Constants.isOnRouteThreshold
 	}
 
-
 	func checkIsNearby(location: Coordinate) -> Bool { 
 		let distance = LineString(self.coordinates)
 			.closestCoordinate(to: location)?
@@ -158,22 +157,27 @@ final class Route: Model, Content, Collection {
 	// returns false if it is entering union after its trip at the route
 	// distanceAlongRoute is the distance the shuttle has already traveled
 	// returns the nearest vertex at the union 
-	func checkIsAtUnion(location: Coordinate, distanceAlongRoute: Double) -> (Bool,Coordinate) { 
+	func checkIsAtUnion(location: Coordinate, distanceAlongRoute: Double) -> Bool { 
 		// West route has the union coordinates as the last 7 rtepts
 		if (name == "West Route") {
-			for points in self.coordinates.endIndex-7 ... self.coordinates.endIndex-1 {
+			for points in self.coordinates.endIndex-7 ..< self.coordinates.endIndex-1 {
 				let distance = self.coordinates[points].distance(to: location)
 				if (distance < 10) {
 					if (distanceAlongRoute < 200) {
-						return (true,self.coordinates[points])
+						return true
 					}
 					else {
-						return (false,self.coordinates[points])
+						return false
 					}
 				}
 			}
 		}
-		return (false, self.coordinates[self.coordinates.endIndex-1])
+		else if (name == "North Route") {
+			for points in self.coordinates.startIndex ..< 8 {
+
+			}
+		}
+		return false
 	}
 
 	// Calculates the total distance along the route
@@ -202,39 +206,26 @@ final class Route: Model, Content, Collection {
 		return closestVertex
 	}
 
-	// determines whether or not the bus is moving away or towards the union
-	// returns true if moving towards the uniom, false otherwise/unknown
-	func detectUnionDirection(location: Coordinate, previousLocation: Coordinate) -> Bool {
-		// unknown
-		if (location == previousLocation) {
-			return false
-		}
-		
-		var firstIndex: Int = 0 // represents the rtept index of location
-		var secondIndex: Int = 0 //represents the rtept index of previousLocation
-		// not close to the union
-		if (checkIsAtUnion(location: location).0) {
-			for index in self.coordinates.startIndex ..< (self.coordinates.endIndex-7) {
-				if (self.coordinates[index] == location) {
-					firstIndex = index
-				}
-				else if (self.coordinates[index] == previousLocation) {
-					secondIndex = index
-				}
-			}
-			if (firstIndex > secondIndex) {
-				return true
-			}
-		}
-		return false
-	}
-
 	// calculates the distance around the union
 	// used only when the shuttle has left the union and is now on the move
-	func getUnionDistance() -> Double {
+	// Optional parameter: set to the nil 
+	// Used for if the bus is at the union and we want to get the distance upto that position
+	func getUnionDistance(location: Coordinate? = nil) -> Double {
 		var totalDistance: Double = 0
-		for points in self.coordinates.endIndex-7 ... self.coordinates.endIndex-1 {
+		for points in self.coordinates.endIndex-7 ..< self.coordinates.endIndex-1 {
 			totalDistance += self.coordinates[points].distance(to: self.coordinates[points+1])
+			if (location != nil && self.coordinates[points] == findClosestVertex(location: location!)) {
+				return totalDistance
+			}
+		}
+		// gets the distance to the first rtept to get the full distance out of union
+		// location is "at" the union but have yet to go beyond the first rtept
+		if (location != nil) {
+			totalDistance += self.coordinates[0].distance(to: location!)
+		}
+		// location is beyond the first rtept
+		else {
+			totalDistance += self.coordinates[self.coordinates.endIndex-1].distance(to: self.coordinates[0])
 		}
 		return totalDistance
 	}
@@ -242,31 +233,37 @@ final class Route: Model, Content, Collection {
 	/// Get the total distance traveled along route
 	/// - Parameter location: The location to check
 	/// - Optional parameter distanceAlongRoute: the total distance the shuttle has traveled thus far
-	/// - Returns: The total distance between the bus location
+	/// - Returns: The total distance between the union(moving away) and the bus location
 	public func getTotalDistanceTraveled(location: Coordinate, distanceAlongRoute: Double = 0) -> Double {
 		// We can safely assume that we are not starting at the unioin if totalDistance is greater than 200
 		// If distanceAlongRoute is greater than 200, 
 		// we can assume that it is coming back to the union rather than exiting from the union
+		
+		// start rewrite, initialize a list(union rtepts in the front followed by the rest) in order
 		var totalDistance: Double = distanceAlongRoute
 
 		// determines whether or not the shuttle just started out of union and just began to move
-		let atUnion: Bool = checkIsAtUnion(location: location, distanceAlongRoute: distanceAlongRoute).0
-		let nearestAtUnionVertex: Coordinate = checkIsAtUnion(location: location, distanceAlongRoute: distanceAlongRoute).1
+		let atUnion: Bool = checkIsAtUnion(location: location, distanceAlongRoute: distanceAlongRoute)
 
-		if (totalDistance == 0 && !atUnion) {
+		/*
+		*	West Route: 
+		* 	2 Things to consider:
+		*		1) 
+		*		2) Just started at the union: (totalDistance = 0)
+		*			- We call getUnionDistance based on the current bus location. 
+		*			  This is because we don't want to run the algorithm as it will be accurate enough (+- 5) 
+		*/
+		if (totalDistance == 0 && !atUnion && name == "West Route") {
 			totalDistance = getUnionDistance()
 		}
+		else if (atUnion && name == "West Route") {
+			return getUnionDistance(location: location)
+		}
+
 
 		var beginningIndex: Int = 0
 
 		let closestVertex: LocationCoordinate2D = findClosestVertex(location: location)!
-	
-
-		// Begins on the road and not on the horseshoe at the Union
-		// North Route
-		if (self.name == "North Route") {
-			beginningIndex = 7
-		}
 
 		// get the total distance that have been traveled
 		for index in beginningIndex ..< (self.coordinates.endIndex-1) {

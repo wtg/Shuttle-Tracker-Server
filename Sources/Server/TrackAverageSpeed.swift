@@ -17,6 +17,18 @@ func calculateSpeed(distance: Double, time: Int) -> Double {
     // rounds to five decimal places
     return Double(round(1000 * mph) / 100000)
 }
+
+func calculateTime(route: String, distance: Double, index: Int) -> Double {
+    // equates to 1 mph
+    var mpm = 26.8224
+    var speed: Double = 0
+    mpm = (mpm * getSpeedData(routeName: route)[index])
+
+    // minutes into seconds
+    return (Double(distance)/mpm)*60
+}
+
+
 // global variable to allow for other files to access this data
 var west: [Double] = [Double]()
 var north: [Double] = [Double]()
@@ -24,13 +36,17 @@ var north: [Double] = [Double]()
 var overallWestSpeed: Double = 0
 var overallNorthSpeed: Double = 0
 
+var allActiveRoutes: [Route] = [Route]()
 
+
+// return the global variables of the data obtained
 func getSpeedData(routeName: String) -> [Double] {
     if (routeName == "West Route") {
         return west
     }
     return north
 }
+
 
 func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws {
     let allData = parseCSV()
@@ -41,6 +57,8 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
             .filter { (route) in
 				return route.schedule.isActive
 			}
+    
+    allActiveRoutes = routes
 
     // tracks the first and second location to compare
     var first_location: [Int: Coordinate] = [Int:Coordinate]()
@@ -130,7 +148,7 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
         *  Filtering out the datas by days 
         *  We will clear all the information/data that we have taken so far 
         *  and clear them at the end of the day/end of the schedule
-        *  We will also change the first_location to this new date and skip to the next index and don't calculate the distances
+        *  We will also change the first_location to this new date and skip to the next index
         */
         if (allData[index].date > Calendar.current.date(from: endDate)!) {            
             // change the current day to whatever the last known date was
@@ -139,6 +157,8 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
             first_location[currentBus] =  allData[index].coordinate
             firstDate[currentBus] =  allData[index].date
             
+            distanceAlongRoute_first[currentBus, default: 0] = 0
+            distanceAlongRoute_second[currentBus, default: 0] = 0     
 
             totalDistanceTraveled[currentBus] = 0
             totalTimePassed[currentBus] = 0
@@ -160,8 +180,6 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
 
                 totalDistanceTraveled[currentBus, default: 0] += abs(secondTotalDistance - firstTotalDistance)
                 totalTimePassed[currentBus, default: 0] += timeSincelastLocation
-                // Calculate the speed after >= 500 meters
-                if (totalDistanceTraveled[currentBus,default: 0] >= 500) {
                     var ind: Int = 0; 
                     ind = Int(route.getTotalDistanceTraveled(location: second_location[currentBus]!)/500)
                     // averages the old average and the new average speed to create a new average speed for this section
@@ -188,7 +206,7 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
                     // reset how far and how long the bus has traveled for
                     totalDistanceTraveled[currentBus] = 0
                     totalTimePassed[currentBus] = 0
-                }
+            
             }
         }
 
@@ -236,7 +254,47 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
 
 }
 
-// move to bus folder, requires speed to be pushed into server
-func calculateETA(busLocation: Coordinate, destination: Coordinate) -> Int {
+// returns time in seconds of how far until destination
+func calculateETA(busLocation: Coordinate, destination: Coordinate) async throws -> Int? {
+    for route in allActiveRoutes {
+        // if busLocation and destinate is not on the same route, we throw a error
+        if (route.checkIsNearby(location: busLocation) == !route.checkIsNearby(location: destination)) {
+            return nil
+        }
+        /*
+        *   We calculate the time based off the destination at every 500 m. 
+        *   Every 500m we use a different speed which will allow for a more accurate time
+        *   time = 500m/speed
+        */
+        if (route.checkIsNearby(location: busLocation) && route.checkIsNearby(location: destination)) {
+            let busDistance: Double = route.getTotalDistanceTraveled(location: busLocation)
+            let destinationDistance: Double = route.getTotalDistanceTraveled(location: destination)
+
+            let startIndex: Int = Int(busDistance/500)
+            let endIndex: Int = Int(destinationDistance/500)
+            /*
+            *   There are some things to consider:
+            *       1) Destination is ahead of the bus location
+            *          - Destination: Union
+            */
+            // guard let differenceInDistance = (destinationDistance - busDistance) > 0 else {
+            //     .abort(.conflict)
+            // }
+            let differenceInDistance = (destinationDistance - busDistance)
+
+            var totalTime: Double = 0
+            for index in startIndex ... endIndex {
+                if (index == endIndex) {
+                    let remainingDistance: Double = differenceInDistance.truncatingRemainder(dividingBy: 500)
+                    totalTime += calculateTime(route: route.name, distance: remainingDistance, index: index)
+                }
+                else {
+                    totalTime += calculateTime(route: route.name, distance: 500, index: index)
+                }
+            }
+            return Int(totalTime)
+        }
+    }
+    
     return 0
 }
