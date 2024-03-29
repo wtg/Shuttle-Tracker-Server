@@ -18,14 +18,34 @@ struct AnalyticsEntryController: RouteCollection {
 	}
 	
 	private func read(_ request: Request) async throws -> AnalyticsEntry {
-		let entry = try await AnalyticsEntry.find(
-			request.parameters.get("id"),
-			on: request.db(.psql)
-		)
-		guard let entry else {
-			throw Abort(.notFound)
+
+		// decode retrieval request 
+
+		let retrievalRequest = try request.query.decode(AnalyticsEntry.RetrievalRequest.self)
+
+		guard let idString = request.parameters.get("id"), let id = UUID(uuidString: idString) else { 
+			throw Abort(.badRequest)
 		}
-		return entry
+
+		// cryptogrpahic verification 
+		guard let data = id.uuidString.data(using: .utf8) else { 
+			throw Abort(.internalServerError)
+		}
+
+		// crytographic signature 
+		if try CryptographyUtilities.verify(signature: retrievalRequest.signature, of: data) { 
+			let entry = try await AnalyticsEntry.find(
+				id, 
+				on: request.db(.psql)
+			)
+			guard let entry else {
+				throw Abort(.notFound)
+			}
+			return entry 
+		} else {
+			throw Abort(.forbidden)
+		}
 	}
 	
 }
+
