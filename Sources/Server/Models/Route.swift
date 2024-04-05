@@ -153,32 +153,6 @@ final class Route: Model, Content, Collection {
 		return distance < Constants.isNearRouteCoordinateThreshold
 	}
 
-	// returns true if and only if the shuttle just started at the union and is moving away from it
-	// returns false if it is entering union after its trip at the route
-	// distanceAlongRoute is the distance the shuttle has already traveled
-	// returns the nearest vertex at the union 
-	func checkIsAtUnion(location: Coordinate, distanceAlongRoute: Double) -> Bool { 
-		// West route has the union coordinates as the last 7 rtepts
-		if (name == "West Route") {
-			for points in self.coordinates.endIndex-7 ..< self.coordinates.endIndex-1 {
-				let distance = self.coordinates[points].distance(to: location)
-				if (distance < 10) {
-					if (distanceAlongRoute < 200) {
-						return true
-					}
-					else {
-						return false
-					}
-				}
-			}
-		}
-		else if (name == "North Route") {
-
-		}
-		return false
-	}
-
-	// Calculates the total distance along the route
 	func measureTotalDistanceAlongRoute() -> Double {
 		var distanceAlongRoute: Double = 0
 		for index in self.coordinates.startIndex ..< self.coordinates.endIndex-1 {
@@ -187,160 +161,177 @@ final class Route: Model, Content, Collection {
 		return distanceAlongRoute
 	}
 
-	// Find closest vertex 
+	// Finds the closest vertex's index
 	// Parameter: The bus location
-	public func findClosestVertex(location: Coordinate) -> LocationCoordinate2D? {
+	public func findClosestVertex(location: Coordinate) -> Int {
 		var maxDistance: Double = Double.infinity
-		var closestVertex: LocationCoordinate2D? = self.coordinates[0]
+		var closestVertex: Int = 0
 
 		// find vertex with smallest distance to the current bus location
-		for index in self.coordinates.startIndex ..< (self.coordinates.endIndex - 1) {
+		for index in self.coordinates.startIndex ..< (self.coordinates.endIndex) {
 			let distance = self.coordinates[index].distance(to: location)
 			if distance < maxDistance {
-					closestVertex = self.coordinates[index]
+					closestVertex = index
 					maxDistance = distance
 			}
 		}
 		return closestVertex
 	}
 
-	// calculates the distance around the union
-	// used only when the shuttle has left the union and is now on the move
-	// Optional parameter: set to the nil 
-	// Used for if the bus is at the union and we want to get the distance upto that position
-	func getUnionDistance(location: Coordinate? = nil) -> Double {
+	/// Get the total distance traveled along route
+	/// - Parameter location, previousLocation: the current shuttle location and the previous shuttle location
+	/// - Returns: The total distance between the union(moving away) and the bus location
+	public func getTotalDistanceTraveled(location: Coordinate, previousCoordinate: Coordinate) -> Double {
+		// we want to get the union rtepts to the beginning and have union rtepts at the end
 		var totalDistance: Double = 0
-		for points in self.coordinates.endIndex-7 ..< self.coordinates.endIndex-1 {
-			totalDistance += self.coordinates[points].distance(to: self.coordinates[points+1])
-			if (location != nil && self.coordinates[points] == findClosestVertex(location: location!)) {
-				return totalDistance
-			}
-		}
-		// gets the distance to the first rtept to get the full distance out of union
-		// location is "at" the union but have yet to go beyond the first rtept
-		if (location != nil) {
-			totalDistance += self.coordinates[0].distance(to: location!)
-		}
-		// location is beyond the first rtept
-		else {
-			totalDistance += self.coordinates[self.coordinates.endIndex-1].distance(to: self.coordinates[0])
-		}
-		return totalDistance
-	}
 
-	private func getFixedCoordinates() -> [Coordinate] {
+		var coordinates = self.coordinates
+
 		if (name == "West Route") {
 			let firstIndex = self.coordinates.endIndex-7
 			let endIndex = self.coordinates.endIndex
 			let unionRtept = self.coordinates[firstIndex ..< endIndex]
 			let restCoordinates = self.coordinates[0 ..< firstIndex]
-			return Array( unionRtept + restCoordinates + unionRtept)
+			coordinates = Array( unionRtept + restCoordinates + unionRtept)
 		}
-		// North Route is fine
-		return self.coordinates
-	}
+		
 
-	/// Get the total distance traveled along route
-	/// - Parameter location: The location to check
-	/// - Optional parameter previousCoordinate: the previous coordinate that the bus has traveled
-	/// - Returns: The total distance between the union(moving away) and the bus location
-	public func getTotalDistanceTraveled(location: Coordinate, previousCoordinate: Coordinate? = nil) -> Double {
-		// we want to get the union rtepts to the beginning and have union rtepts at the end
-		var totalDistance: Double = 0
-		let coordinates = getFixedCoordinates()
-
-
-		let closestVertex: LocationCoordinate2D = findClosestVertex(location: location)!
-
-		// get the total distance that have been traveled
-		for index in coordinates.startIndex ..< (coordinates.endIndex-1) {
-			// near the first rtept
-			if (
-				coordinates[index].longitude == closestVertex.longitude &&
-				coordinates[index].latitude == closestVertex.latitude) {
-					return (totalDistance + self.coordinates[index].distance(to: location))
-			}
-			else if(coordinates[index+1].longitude != closestVertex.longitude &&
-					coordinates[index+1].latitude != closestVertex.latitude) {
-				totalDistance += coordinates[index].distance(to: coordinates[index+1])
-				continue;
-			}			 
-
-			/*
-				3 edge Cases:
-				1) 
-					|--x1--|--x2--| 
-					a      b      c
-
-				2) 
-					|--x1--|--x2-------| 
-					a      b           c
-
-				3) 
-					|-------x1--|--x2--| 
-					a           b      c
-			 	VertexA = vertex behind the closest vertex
-				VertexB = the closest vertex
-			 	vertexC = vertex in front of the closest vertex
-			 	Determine the edge cases based off the distance of the current
-			 	location to the surrounding vertex
-			*/
-
-
-			// behind/front/on closest vertex
-			let vertexA: Coordinate = self.coordinates[index]
-			let vertexB: Coordinate = self.coordinates[index+1]
-			let vertexC: Coordinate = self.coordinates[index+2]
-			let vertexX: Coordinate = location
-
-			// distances between the vertices
-			let distanceAB: Double = vertexA.distance(to: vertexB)
-			let distanceBC: Double = vertexB.distance(to: vertexC)
-			let distanceAX: Double = vertexA.distance(to: vertexX)
-			let distanceBX: Double = vertexB.distance(to:vertexX)
-			let distanceXC: Double = vertexX.distance(to: vertexC)
-			let distanceCX: Double = vertexC.distance(to: vertexX)
-
-			
-			// first  test case
-			if (distanceAB == distanceBC) {
-				if (distanceAX < distanceXC) {
-					totalDistance += distanceAX
-				}
-				else {
-					totalDistance += distanceXC
-				}
-
-			}
-			
-			// distance difference depending on location of bus
-			var delta1: Double = distanceBC - distanceAX
-			var delta2: Double = distanceBC - distanceAB
-			
-			// second test case
-			if (distanceAB < distanceBC) {
-				if (delta1 < delta2) {
-					totalDistance += distanceBX
-				}
-				else {
-					totalDistance += distanceAX
-				}
-			}
-			
-			delta1 = distanceAB - distanceCX
-			delta2 = distanceAB - distanceBC
-
-			// third test case
-			if (distanceAB > distanceBC)  {
-				if (delta1 < delta2) {
-					totalDistance += distanceAX
-				}
-				else {
-					totalDistance += distanceBX
-				}
-			}
-			break
+		let closestVertex: Int = findClosestVertex(location: location)
+		// will be set to -1 if there does not exist a previousCoordinate
+		var previousClosestVertex: Int? = -1
+		if (previousCoordinate != nil) {
+			previousClosestVertex = findClosestVertex(location: previousCoordinate!)
 		}
-		return totalDistance
+
+		// location rtept == previous location rtept
+		// something went wrong
+		if (previousClosestVertex != nil && closestVertex == previousClosestVertex) {
+			return 0
+		}
+
+		for index in self.coordinates.startIndex ..< self.coordinates.endIndex {
+			// we have reached the closest vertex (of current location)
+			if (rtept == closestVertex) {
+				// first rtept of the route (not the union) is nearby
+				// |--x1--|--x2--|
+				// ?      a      b
+				// current location is at ? whereas the first rtept of self.coordinates is a
+				if (index == 0) {
+					return self.coordinates[index].distance(to: location)
+				}
+				else {
+					// the accurate distance from previousLocation to location
+					var distance = 0	
+					var busIsBeforeClosestVertex = true
+					/*
+					Moving away from the union, i.e. is not traveling back to the union
+					3 edge Cases:	
+					1) 
+						|--x1--|--x2--| 
+						a      b      c
+
+					2) 
+						|--x1--|--x2-------| 
+						a      b           c
+
+					3) 
+						|-------x1--|--x2--| 
+						a           b      c
+					VertexA = vertex behind the closest vertex
+					VertexB = the closest vertex
+					vertexC = vertex in front of the closest vertex
+					Determine the edge cases based off the distance of the current
+					location to the surrounding vertex
+					*/
+
+
+					// behind/front/on closest vertex
+					let vertexA: Coordinate = self.coordinates[index]
+					let vertexB: Coordinate = self.coordinates[index+1]
+					let vertexC: Coordinate = self.coordinates[index+2]
+					let vertexX: Coordinate = location
+
+					// distances between the vertices
+					let distanceAB: Double = vertexA.distance(to: vertexB)
+					let distanceBC: Double = vertexB.distance(to: vertexC)
+					let distanceAX: Double = vertexA.distance(to: vertexX)
+					let distanceBX: Double = vertexB.distance(to: vertexX)
+					let distanceXC: Double = vertexX.distance(to: vertexC)
+					let distanceCX: Double = vertexC.distance(to: vertexX)
+
+					// distance difference depending on location of bus
+					var delta1: Double = distanceBC - distanceAX
+					var delta2: Double = distanceBC - distanceAB
+					
+					// first  test case
+					if (distanceAB == distanceBC) {
+						if (distanceAX < distanceXC) {
+							distance = distanceAX
+							busIsBeforeClosestVertex = false
+						}
+						else {
+							distance = distanceXC
+						}
+					}
+					
+					// second test case
+					else if (distanceAB < distanceBC) {
+						if (delta1 < delta2) {
+							distance = distanceBX
+							busIsBeforeClosestVertex = false
+						}
+						else {
+							distance = distanceAX
+						}
+					}
+					
+					// third test case
+					else if (distanceAB > distanceBC)  {
+						delta1 = distanceAB - distanceCX
+						delta2 = distanceAB - distanceBC
+						if (delta1 < delta2) {
+							distance = distanceAX
+							busIsBeforeClosestVertex = false
+						}
+						else {
+							distance = distanceBX
+						}
+					}
+					/*
+						Moving towards the union, i.e. traveling back to the union
+						|------x1--|--x2------| 
+						a          b          c
+						<----------------------  (direction)
+					*/
+					var distBetweenTwoVertex = 0.0
+					var distBetweenVertexToCurrent = 0.0
+					if (closestVertex < previousClosestVertex) {
+						let distanceAB = self.coordinates[index-1].distance(to: self.coordinates[index])
+						let distanceBC = self.coordinates[index].distance(to: self.coordinates[index+1])
+						// case 1: shuttle is behind the nearest rtept, i.e. at x1
+						if (busIsBeforeClosestVertex) {
+							distBetweenTwoVertex = distanceAB
+							distBetweenVertexToCurrent = distBetweenTwoVertex - distance
+						}
+						// case 2: shuttle is ahead of the nearest rtept, i.e. at x2
+						else {
+							distBetweenTwoVertex = distanceBC
+							distBetweenVertexToCurrent = distBetweenTwoVertex - distance
+						}
+					}
+					// we add the accurate distance to totalDistance
+					else {
+						totalDistance += distance
+						break
+					}
+				}
+			}	
+			// we add distance
+			else if (index != 0){
+				totalDistance += self.coordinates[index].distance(to: self.coordinates[index-1])
+			}
+		}
+
+	
 	}
 }

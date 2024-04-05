@@ -73,11 +73,7 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
 
     // keeps track of the total distances and time that has passed
     var totalDistanceTraveled: [Int:Double] = [Int:Double]() // tries to track distance and clears every 500m
-    var distanceAlongRoute_first: [Int: Double] = [Int:Double]() // contains the total route distance for index-1
-    var distanceAlongRoute_second: [Int: Double] = [Int:Double]() // contains the total route distance for index
-
     var totalTimePassed: [Int:Int] = [Int:Int]()
-
 
     // keeps track of what the current day of the bus is on
     var currentDays: [Int: DateComponents] = [Int:DateComponents]()
@@ -157,9 +153,6 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
             first_location[currentBus] =  allData[index].coordinate
             firstDate[currentBus] =  allData[index].date
             
-            distanceAlongRoute_first[currentBus, default: 0] = 0
-            distanceAlongRoute_second[currentBus, default: 0] = 0     
-
             totalDistanceTraveled[currentBus] = 0
             totalTimePassed[currentBus] = 0
             index += 1
@@ -172,12 +165,9 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
         for route in routes {
             // check if the bus/user location is on a route
             if (route.checkIsNearby(location: first_location[currentBus]!) && route.checkIsNearby(location: second_location[currentBus]!)) {
-                let firstTotalDistance: Double = route.getTotalDistanceTraveled(location: first_location[currentBus]!, distanceAlongRoute: distanceAlongRoute_first[currentBus,default: 0])
-                let secondTotalDistance: Double = route.getTotalDistanceTraveled(location: second_location[currentBus]!, distanceAlongRoute: distanceAlongRoute_second[currentBus,default: 0])
-                
-                distanceAlongRoute_first[currentBus, default: 0] = firstTotalDistance
-                distanceAlongRoute_second[currentBus, default: 0] = secondTotalDistance
-
+                let firstTotalDistance: Double = route.getTotalDistanceTraveled(location: first_location[currentBus]!)
+                let secondTotalDistance: Double = route.getTotalDistanceTraveled(location: second_location[currentBus]!, previousCoordinate: first_location[currentBus]!)
+            
                 totalDistanceTraveled[currentBus, default: 0] += abs(secondTotalDistance - firstTotalDistance)
                 totalTimePassed[currentBus, default: 0] += timeSincelastLocation
                     var ind: Int = 0; 
