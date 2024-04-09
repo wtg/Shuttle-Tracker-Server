@@ -21,18 +21,19 @@ struct LocationRemovalJob: AsyncScheduledJob {
 				return route.schedule.isActive
 			}
 
-		
 		for bus in buses {
 			if let busData = bus.resolved {
-				bus.previousLocations.push(busData)
-				
 				for route in routes {
+					let previousLocation = bus.locationHistory.first
 					if (route.id == bus.routeID) {
-						bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: busData.location.coordinate) 
-						if (bus.previousLocations.peek()!.location.date.timeIntervalSinceNow < -7 && bus.previousLocations.count > 0) {
-							bus.previousLocations.pop()
+						if (previousLocation != nil ) {
+							bus.metersTraveledAlongRoute = route.getTotalDistanceTraveled(location: busData.location.coordinate, previousCoordinate: previousLocation!.location.coordinate) 
 						}
-					} 
+						bus.locationHistory.append(busData)	
+					}
+					if (previousLocation != nil && previousLocation!.location.date.timeIntervalSinceNow < -360 && bus.locationHistory.count > 0) {
+						bus.locationHistory.removeFirst()
+					}
 				}
 			}
 			bus.locations

@@ -135,8 +135,8 @@ final class Bus: Hashable, Model {
 	// var previousKnownLocation: Resolved?
 
 	/// The visited locations/coordinates 
-	@Field(key: "previous_locations")
-	var previousLocations: PriorityQueue<Bus.Resolved>
+	@Field(key: "location_history")
+	var locationHistory: [Bus.Resolved]
 
 	init() { }
 	
@@ -147,7 +147,7 @@ final class Bus: Hashable, Model {
 	init(id: Int, locations: [Location] = []) {
 		self.id = id
 		self.locations = locations
-		self.previousLocations = PriorityQueue<Bus.Resolved>(ascending: true)
+		self.locationHistory = [Bus.Resolved]()
 		self.metersTraveledAlongRoute = 0
 	} 
 	
