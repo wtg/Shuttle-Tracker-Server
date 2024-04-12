@@ -14,10 +14,15 @@ struct BusController<DecoderType>: RouteCollection where DecoderType: ContentDec
 	
 	private let decoder: DecoderType
 	
+	/// Initializes a new bus controller with the specified decoder.
+    /// - Parameter decoder: An object that conforms to the `ContentDecoder` protocol, used for decoding the content of incoming requests.
+   
 	init(decoder: DecoderType) {
 		self.decoder = decoder
 	}
 	
+	/// Registers routes for accessing, updating, and managing the board and leave operations of shuttle buses.
+    /// - Parameter routes: A builder object for registering routes.
 	func boot(routes: any RoutesBuilder) throws {
 		routes.group(":id") { (routes) in
 			routes.get(use: self.read(_:))
@@ -26,7 +31,10 @@ struct BusController<DecoderType>: RouteCollection where DecoderType: ContentDec
 			routes.put("leave", use: self.leave(_:))
 		}
 	}
-	
+	/// Reads the current location of a bus by its ID.
+    /// - Parameter request: A `Request` object encapsulating details about the incoming request, including the bus ID.
+    /// - Returns: The current `Bus.Location` of the requested bus.
+    /// - Throws: An `Abort` error if the bus ID is not provided or if no bus is found with that ID.
 	private func read(_ request: Request) async throws -> Bus.Location {
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
@@ -44,6 +52,10 @@ struct BusController<DecoderType>: RouteCollection where DecoderType: ContentDec
 		return location
 	}
 	
+	/// Updates the location and route status of a bus based on the provided data.
+    /// - Parameter request: A `Request` object encapsulating details about the incoming request, including the bus ID and the new location data.
+    /// - Returns: An optional `Bus.Resolved` object representing the updated bus state.
+    /// - Throws: An `Abort` error if the bus ID is not provided, if the bus cannot be updated, or if it conflicts with route checks.
 	private func update(_ request: Request) async throws -> Bus.Resolved? {
 		// In the context of this method, the term “route” refers to a shuttle route, not an HTTP route.
 		guard let id = request.parameters.get("id", as: Int.self) else {
@@ -94,7 +106,10 @@ struct BusController<DecoderType>: RouteCollection where DecoderType: ContentDec
 		try await bus.update(on: request.db(.sqlite))
 		return bus.resolved
 	}
-	
+	/// Increments the congestion count of a bus when a passenger boards.
+    /// - Parameter request: A `Request` object encapsulating details about the incoming request, including the bus ID.
+    /// - Returns: The updated congestion level of the bus.
+    /// - Throws: An `Abort` error if the bus ID is not provided or if no bus is found with that ID.
 	private func board(_ request: Request) async throws -> Int? {
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
@@ -110,7 +125,10 @@ struct BusController<DecoderType>: RouteCollection where DecoderType: ContentDec
 		try await bus.update(on: request.db(.sqlite))
 		return bus.congestion
 	}
-	
+	/// Decrements the congestion count of a bus when a passenger leaves.
+    /// - Parameter request: A `Request` object encapsulating details about the incoming request, including the bus ID.
+    /// - Returns: The updated congestion level of the bus.
+    /// - Throws: An `Abort` error if the bus ID is not provided or if no bus is found with that ID.
 	private func leave(_ request: Request) async throws -> Int? {
 		guard let id = request.parameters.get("id", as: Int.self) else {
 			throw Abort(.badRequest)
