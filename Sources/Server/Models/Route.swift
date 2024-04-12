@@ -178,6 +178,29 @@ final class Route: Model, Content, Collection {
 		return closestVertex
 	}
 
+
+	// Get the distance between two vertices
+	// Parameter: The two vertices we are looking at to compare
+	// Return: The total distance travelde between the two vertices
+	public func getDistanceBetweenCoordinate(firstIndex: Int, secondIndex: Int) -> Double {
+		var distance = 0.0
+		for index in firstIndex...secondIndex {
+			distance += self.coordinates[index].distance(to: self.coordinates[index+1])
+		}
+		return distance
+	}
+
+	// Parameter: Index of a coordinate
+	// Return: The coordinate at that index
+	public func getLocation(index: Int) -> Coordinate {
+		return self.coordinates[index]
+	}
+
+	// Return: Returns the size of the coordinates
+	public func getSize() -> Int {
+		return self.coordinates.count
+	}
+
 	/// Get the total distance traveled along route
 	/// - Parameter location, previousLocation: the current shuttle location and the previous shuttle location
 	/// - Returns: The total distance between the union(moving away) and the bus location
@@ -197,21 +220,11 @@ final class Route: Model, Content, Collection {
 		
 
 		let closestVertex: Int = findClosestVertex(location: location)
-		// will be set to -1 if there does not exist a previousCoordinate
-		var previousClosestVertex: Int? = -1
-		if (previousCoordinate != nil) {
-			previousClosestVertex = findClosestVertex(location: previousCoordinate!)
-		}
+		var previousClosestVertex: Int = findClosestVertex(location: previousCoordinate)
 
-		// location rtept == previous location rtept
-		// something went wrong
-		if (previousClosestVertex != nil && closestVertex == previousClosestVertex) {
-			return 0
-		}
-
-		for index in self.coordinates.startIndex ..< self.coordinates.endIndex {
+		for index in self.coordinates.startIndex ..< self.coordinates.endIndex-1 {
 			// we have reached the closest vertex (of current location)
-			if (rtept == closestVertex) {
+			if (index == closestVertex) {
 				// first rtept of the route (not the union) is nearby
 				// |--x1--|--x2--|
 				// ?      a      b
@@ -221,7 +234,7 @@ final class Route: Model, Content, Collection {
 				}
 				else {
 					// the accurate distance from previousLocation to location
-					var distance = 0	
+					var distance: Double = 0.0
 					var busIsBeforeClosestVertex = true
 					/*
 					Moving away from the union, i.e. is not traveling back to the union
@@ -246,9 +259,9 @@ final class Route: Model, Content, Collection {
 
 
 					// behind/front/on closest vertex
-					let vertexA: Coordinate = self.coordinates[index]
-					let vertexB: Coordinate = self.coordinates[index+1]
-					let vertexC: Coordinate = self.coordinates[index+2]
+					let vertexA: Coordinate = self.coordinates[index-1]
+					let vertexB: Coordinate = self.coordinates[index]
+					let vertexC: Coordinate = self.coordinates[index+1]
 					let vertexX: Coordinate = location
 
 					// distances between the vertices
@@ -318,6 +331,7 @@ final class Route: Model, Content, Collection {
 							distBetweenTwoVertex = distanceBC
 							distBetweenVertexToCurrent = distBetweenTwoVertex - distance
 						}
+						totalDistance += (distBetweenVertexToCurrent - distance)
 					}
 					// we add the accurate distance to totalDistance
 					else {
@@ -331,7 +345,7 @@ final class Route: Model, Content, Collection {
 				totalDistance += self.coordinates[index].distance(to: self.coordinates[index-1])
 			}
 		}
-
-	
+		print(totalDistance)
+		return totalDistance
 	}
 }

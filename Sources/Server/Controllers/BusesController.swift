@@ -72,9 +72,9 @@ struct BusesController<DecoderType>: RouteCollection where DecoderType: ContentD
 			.compactMap { (bus) in
 				return bus.resolved
 			}
-			.filter { (resolved) in
-				return coordinateRoute.getTotalDistanceTraveled(location: resolved.location.coordinate) < coordinateRoute.getTotalDistanceTraveled(location: location)
-			}
+			// .filter { (resolved) in
+			// 	return coordinateRoute.getTotalDistanceTraveled(location: resolved.location.coordinate) <= coordinateRoute.getTotalDistanceTraveled(location: location)
+			// }
 
 			// return the ids of the buses
 			var busIDs: [Int:Int] = [Int:Int]()
