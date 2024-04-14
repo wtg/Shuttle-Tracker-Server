@@ -12,6 +12,9 @@ import Vapor
 /// - Remark: In the context of this structure, the term “route” refers to an HTTP route, not a shuttle route.
 struct RedirectsController: RouteCollection {
 	
+	/// Registers routes for main, beta, and TestFlight redirects along with nested route collections for platform-specific redirects.
+    /// - Parameter routes: A builder object for registering routes.
+   
 	func boot(routes: any RoutesBuilder) throws {
 		routes.get(use: self.index(_:))
 		routes.get("beta", use: self.beta(_:))
@@ -44,7 +47,10 @@ struct RedirectsController: RouteCollection {
 			return request.redirect(to: "/web")
 		}
 	}
-	
+
+	/// Redirects users to the beta section of their respective platform, based on the User-Agent header.
+    /// - Parameter request: The request object containing the User-Agent header.
+    /// - Returns: A redirect response to the beta section for the appropriate platform.
 	private func beta(_ request: Request) -> Response {
 		guard let agent = request.headers["User-Agent"].first else {
 			return request.redirect(to: "/web/beta")
@@ -60,6 +66,9 @@ struct RedirectsController: RouteCollection {
 		}
 	}
 	
+	/// Redirects users directly to the TestFlight beta section for iOS.
+    /// - Parameter request: The request object.
+    /// - Returns: A redirect response to the TestFlight beta page.
 	private func testflight(_ request: Request) -> Response {
 		return request.redirect(to: "/swiftui/beta")
 	}
