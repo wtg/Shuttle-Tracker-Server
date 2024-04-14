@@ -14,10 +14,16 @@ struct MilestoneController<DecoderType>: RouteCollection where DecoderType: Cont
 	
 	private let decoder: DecoderType
 	
+	/// Initializes a new milestone controller with the specified decoder.
+    /// - Parameter decoder: An object that conforms to the `ContentDecoder` protocol, used for decoding the content of incoming requests.
+    
 	init(decoder: DecoderType) {
 		self.decoder = decoder
 	}
 	
+	/// Registers routes for accessing, updating, and deleting milestones by their ID.
+    /// - Parameter routes: A builder object for registering routes.
+    
 	func boot(routes: any RoutesBuilder) throws {
 		routes.group(":id") { (routes) in
 			routes.get(use: self.read(_:))
@@ -25,7 +31,11 @@ struct MilestoneController<DecoderType>: RouteCollection where DecoderType: Cont
 			routes.delete(use: self.delete(_:))
 		}
 	}
-	
+
+	/// Retrieves a milestone by its ID.
+    /// - Parameter request: A `Request` object encapsulating details about the incoming request, including the milestone ID.
+    /// - Returns: The `Milestone` object requested.
+    /// - Throws: An `Abort` error if the milestone is not found (404) or the ID is not provided (400).
 	private func read(_ request: Request) async throws -> Milestone {
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
@@ -39,7 +49,11 @@ struct MilestoneController<DecoderType>: RouteCollection where DecoderType: Cont
 		}
 		return milestone
 	}
-	
+	/// Updates a milestone by incrementing its progress counter.
+    /// - Parameter request: A `Request` object encapsulating details about the incoming request, including the milestone ID.
+    /// - Returns: The updated `Milestone` object.
+    /// - Throws: An `Abort` error if the milestone is not found (404) or the ID is not provided (400).
+   
 	private func update(_ request: Request) async throws -> Milestone {
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
@@ -56,6 +70,10 @@ struct MilestoneController<DecoderType>: RouteCollection where DecoderType: Cont
 		return milestone
 	}
 	
+	/// Deletes a milestone by its ID after verifying the digital signature.
+    /// - Parameter request: A `Request` object encapsulating details about the incoming request, including the milestone ID and a deletion request with a digital signature.
+    /// - Returns: The UUID of the deleted milestone.
+    /// - Throws: An `Abort` error if the ID is not provided (400), if signature verification fails (403), or if there are server issues during verification (500).
 	private func delete(_ request: Request) async throws -> UUID {
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
