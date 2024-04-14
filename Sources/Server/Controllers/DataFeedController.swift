@@ -12,10 +12,18 @@ import Vapor
 /// - Remark: In the context of this structure, the term “route” refers to an HTTP route, not a shuttle route.
 struct DataFeedController: RouteCollection {
 	
+	/// Registers a route that provides access to a data feed.
+    /// - Parameter routes: A builder object for registering routes.
 	func boot(routes: any RoutesBuilder) throws {
 		routes.get(use: self.index(_:))
 	}
+
 	
+    /// Returns the contents of a data feed URL as a string.
+    /// - Parameter request: A `Request` object encapsulating details about the incoming request.
+    /// - Returns: A string containing the contents of the data feed.
+    /// - Throws: Throws an error if the contents cannot be loaded from the specified URL.
+   
 	private func index(_: Request) throws -> String {
 		return try String(contentsOf: Constants.dataFeedURL)
 	}
