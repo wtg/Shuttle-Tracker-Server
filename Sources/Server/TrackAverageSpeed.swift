@@ -175,33 +175,34 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
                 let distanceTraveled: Double = route.getTotalDistanceTraveled(location: currentLocation[currentBus]!, previousCoordinate: previousLocation[currentBus]!)
                 // if we get negative distance, we came across error:
                 // old data came from old route that we cannot calculate anymore
-    
-                // if (distanceTraveled < 0) {
-                //     print(previousLocation[currentBus]!, currentLocation[currentBus]!)
-                //     continue
-                // }
+                   
+                var ind: Int = Int(route.findClosestVertex(location: previousLocation[currentBus]!).1)
+                var endInd: Int = Int(route.findClosestVertex(location: currentLocation[currentBus]!).1)
                 
-                var ind: Int = Int(route.findClosestVertex(location: previousLocation[currentBus]!))
-                // averages the old average and the new average speed to create a new average speed for this section
-                if (route.name == "West Route") {
-                    // there exists a speed average at ind
-                    if westSpeeds[ind] != 0 {
-                        westSpeeds[ind] += (calculateSpeed(distance: distanceTraveled, time: timeSincelastLocation))/2
+                while (ind != endInd) {
+                    // averages the old average and the new average speed to create a new average speed for this section
+                    if (route.name == "West Route") {
+                        // there exists a speed average at ind
+                        if westSpeeds[ind] != 0 {
+                            westSpeeds[ind] += (calculateSpeed(distance: distanceTraveled, time: timeSincelastLocation))/2
+                        }
+                        // there does not exist a average at ind
+                        else {
+                            westSpeeds[ind] = (calculateSpeed(distance: distanceTraveled, time: timeSincelastLocation))
+                        }
                     }
-                    // there does not exist a average at ind
-                    else {
-                        westSpeeds[ind] = (calculateSpeed(distance: distanceTraveled, time: timeSincelastLocation))
+                    else if (route.name == "North Route") {
+                        // there exists a speed average at ind
+                        if northSpeeds[ind] != 0 {
+                            northSpeeds[ind] += (calculateSpeed(distance: distanceTraveled, time: timeSincelastLocation))/2
+                        }
+                        // there does not exist a average at ind
+                        else {
+                            northSpeeds[ind] = (calculateSpeed(distance: distanceTraveled, time: timeSincelastLocation))
+                        }
                     }
-                }
-                else if (route.name == "North Route") {
-                    // there exists a speed average at ind
-                    if northSpeeds[ind] != 0 {
-                        northSpeeds[ind] += (calculateSpeed(distance: distanceTraveled, time: timeSincelastLocation))/2
-                    }
-                    // there does not exist a average at ind
-                    else {
-                        northSpeeds[ind] = (calculateSpeed(distance: distanceTraveled, time: timeSincelastLocation))
-                    }
+                    ind += 1
+                    distanceTraveled -= route.getDistanceBetweenCoordinate(ind,ind+1)
                 }
             }
         }
@@ -216,14 +217,14 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
     west = westSpeeds
     north = northSpeeds
 
-    // print("West Speeds:")
-    // for speed in westSpeeds {
-    //     print(speed)
-    // }
-    // print("\nNorth Speeds:")
-    // for speed in northSpeeds {
-    //     print(speed)
-    // }
+    print("West Speeds:")
+    for speed in westSpeeds {
+        print(speed)
+    }
+    print("\nNorth Speeds:")
+    for speed in northSpeeds {
+        print(speed)
+    }
 
 
     // calculate the overall speed from the data we have gathered
@@ -251,46 +252,46 @@ func calculateAverageSpeedlimit(db: (DatabaseID?) -> any Database) async throws 
 }
 
 // returns time in seconds of how far until destination
-func calculateETA(busLocation: Coordinate, destination: Coordinate) async throws -> Int? {
-    for route in allActiveRoutes {
-        // if busLocation and destinate is not on the same route, we throw a error
-        if (route.checkIsNearby(location: busLocation) == !route.checkIsNearby(location: destination)) {
-            return nil
-        }
-        /*
-        *   We calculate the time based off the destination at every 500 m. 
-        *   Every 500m we use a different speed which will allow for a more accurate time
-        *   time = 500m/speed
-        */
-        if (route.checkIsNearby(location: busLocation) && route.checkIsNearby(location: destination)) {
-            let busDistance: Double = route.getTotalDistanceTraveled(location: destination, previousCoordinate: busLocation)
-            let destinationVertex = route.findClosestVertex(location: destination)
+// func calculateETA(busLocation: Coordinate, destination: Coordinate) async throws -> Int? {
+//     for route in allActiveRoutes {
+//         // if busLocation and destinate is not on the same route, we throw a error
+//         if (route.checkIsNearby(location: busLocation) == !route.checkIsNearby(location: destination)) {
+//             return nil
+//         }
+//         /*
+//         *   We calculate the time based off the destination at every 500 m. 
+//         *   Every 500m we use a different speed which will allow for a more accurate time
+//         *   time = 500m/speed
+//         */
+//         if (route.checkIsNearby(location: busLocation) && route.checkIsNearby(location: destination)) {
+//             let busDistance: Double = route.getTotalDistanceTraveled(location: destination, previousCoordinate: busLocation)
+//             let destinationVertex = route.findClosestVertex(location: destination)
 
-            let startIndex: Int = route.findClosestVertex(location: busLocation)
-            let endIndex: Int = route.findClosestVertex(location: destination)
-            /*
-            *   There are some things to consider:
-            *       1) Destination is ahead of the bus location
-            *          - Destination: Union
-            */
-            // guard let differenceInDistance = (destinationDistance - busDistance) > 0 else {
-            //     .abort(.conflict)
-            // }
+//             let startIndex: Int = route.getClosestVertexIndex(location: busLocation)
+//             let endIndex: Int = route.getClosestVertexIndex(location: destination)
+//             /*
+//             *   There are some things to consider:
+//             *       1) Destination is ahead of the bus location
+//             *          - Destination: Union
+//             */
+//             // guard let differenceInDistance = (destinationDistance - busDistance) > 0 else {
+//             //     .abort(.conflict)
+//             // }
 
-            var totalTime: Double = 0
-            for index in startIndex ..< endIndex {
-                if (index == endIndex) {
-                    let remainingDistance: Double = (route.getLocation(index: index)).distance(to: destination)
-                    totalTime += calculateTime(route: route.name, distance: remainingDistance, index: index)
-                }
-                else {
-                    let distance = route.getDistanceBetweenCoordinate(firstIndex: index,secondIndex: index+1)
-                    totalTime += calculateTime(route: route.name, distance: distance, index: index)
-                }
-            }
-            return Int(totalTime)
-        }
-    }
+//             var totalTime: Double = 0
+//             for index in startIndex ..< endIndex {
+//                 if (index == endIndex) {
+//                     let remainingDistance: Double = (route.getLocation(index: index)).distance(to: destination)
+//                     totalTime += calculateTime(route: route.name, distance: remainingDistance, index: index)
+//                 }
+//                 else {
+//                     let distance = route.getDistanceBetweenCoordinate(firstIndex: index,secondIndex: index+1)
+//                     totalTime += calculateTime(route: route.name, distance: distance, index: index)
+//                 }
+//             }
+//             return Int(totalTime)
+//         }
+//     }
     
-    return 0
-}
+//     return 0
+// }
