@@ -49,7 +49,7 @@ let package = Package(
 			from: "2.8.0"
 		),
 		.package(
-			url: "https://github.com/Gerzer/JSONParser.git",
+			url: "https://github.com/wtg/JSONParser.git",
 			from: "1.3.0"
 		),
 		.package(
