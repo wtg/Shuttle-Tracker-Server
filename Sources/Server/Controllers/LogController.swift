@@ -14,17 +14,25 @@ struct LogController<DecoderType>: RouteCollection where DecoderType: ContentDec
 	
 	private let decoder: DecoderType
 	
+	/// Initializes a new log controller with the specified decoder.
+    /// - Parameter decoder: An object that conforms to the `ContentDecoder` protocol, used for decoding the content of incoming requests.
 	init(decoder: DecoderType) {
 		self.decoder = decoder
 	}
 	
+	/// Registers routes for accessing and deleting logs by their ID.
+    /// - Parameter routes: A builder object for registering routes.
 	func boot(routes: any RoutesBuilder) throws {
 		routes.group(":id") { (routes) in
 			routes.get(use: self.read(_:))
 			routes.delete(use: self.delete(_:))
 		}
 	}
-	
+
+	/// Retrieves a log by its ID after verifying the digital signature.
+    /// - Parameter request: A `Request` object encapsulating details about the incoming request, including the log ID.
+    /// - Returns: The `Log` object requested.
+    /// - Throws: An `Abort` error if the log is not found (404), the ID is not provided (400), or the digital signature verification fails (403).
 	private func read(_ request: Request) async throws -> Log {
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)
@@ -46,7 +54,10 @@ struct LogController<DecoderType>: RouteCollection where DecoderType: ContentDec
 			throw Abort(.forbidden)
 		}
 	}
-	
+	/// Deletes a log by its ID after verifying the digital signature.
+    /// - Parameter request: A `Request` object encapsulating details about the incoming request, including the log ID and a deletion request with a digital signature.
+    /// - Returns: The UUID of the deleted log as a string.
+    /// - Throws: An `Abort` error if the ID is not provided (400), if signature verification fails (403), or if there are server issues during verification (500).
 	private func delete(_ request: Request) async throws -> String {
 		guard let id = request.parameters.get("id", as: UUID.self) else {
 			throw Abort(.badRequest)

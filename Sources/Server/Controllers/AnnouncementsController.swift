@@ -15,16 +15,26 @@ struct AnnouncementsController<DecoderType>: RouteCollection where DecoderType: 
 	
 	private let decoder: DecoderType
 	
+	/// Initializes a new announcements controller with the specified decoder.
+    /// - Parameter decoder: An object that conforms to the `ContentDecoder` protocol, used for decoding the content of incoming requests.
+   
 	init(decoder: DecoderType) {
 		self.decoder = decoder
 	}
 	
+	/// Registers routes for creating and reading announcements along with registering a nested route collection for individual announcement management.
+    /// - Parameter routes: A builder object for registering routes.
+   
 	func boot(routes: any RoutesBuilder) throws {
 		routes.post(use: self.create(_:))
 		routes.get(use: self.read(_:))
 		try routes.register(collection: AnnouncementController(decoder: self.decoder))
 	}
 	
+	/// Creates a new announcement after verifying the digital signature and sends a push notification to all Apple devices registered in the database.
+    /// - Parameter request: A `Request` object encapsulating details about the incoming request.
+    /// - Returns: The newly created `Announcement` object after it is saved to the database.
+    /// - Throws: An `Abort` error if the digital signature verification fails (403) or if internal issues occur (500).
 	private func create(_ request: Request) async throws -> Announcement {
 		let announcement = try request.content.decode(Announcement.self, using: self.decoder)
 		guard let data = (announcement.subject + announcement.body).data(using: .utf8) else {
@@ -87,6 +97,9 @@ struct AnnouncementsController<DecoderType>: RouteCollection where DecoderType: 
 		}
 	}
 	
+	/// Reads and returns all announcements from the database.
+    /// - Parameter request: A `Request` object encapsulating details about the incoming request.
+    /// - Returns: An array of `Announcement` objects.
 	private func read(_ request: Request) async throws -> [Announcement] {
 		return try await Announcement
 			.query(on: request.db(.psql))
