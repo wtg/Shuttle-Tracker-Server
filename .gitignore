@@ -7,3 +7,5 @@ Package.resolved
 .build/
 .vs/
 .vscode/
+
+.fake

@@ -9,6 +9,7 @@ import CoreGPX
 import Fluent
 import Turf
 import Vapor
+import SwiftPriorityQueue
 
 #if canImport(FoundationNetworking)
 import FoundationNetworking
@@ -82,7 +83,6 @@ extension Coordinate: Hashable, Codable, AdditiveArithmetic {
 		lhs.latitude /= rhs
 		lhs.longitude /= rhs
 	}
-	
 }
 
 enum LocationAuthorizationStatus: Int, Codable {
@@ -126,6 +126,9 @@ enum Constants {
 	/// The maximum perpendicular distance, in meters, away from a route at which a coordinate is considered to be “on” that route.
 	static let isOnRouteThreshold: Double = 5
 	
+	/// The maximum distance a bus location can be away from a certain route location to find the closest route coordinate
+	static let isNearRouteCoordinateThreshold: Double = 20
+
 	static let apnsTopic = "com.gerzer.shuttletracker"
 	
 }
@@ -220,6 +223,37 @@ func errorPrint(_ items: Any..., separator: String = " ", terminator: String = "
 		print(item, terminator: separator, to: &stderr)
 	}
 	print(terminator, terminator: "", to: &stderr)
+}
+
+extension PriorityQueue: Codable where T: Codable {
+
+	public init(from decoder: any Decoder) throws {
+		let container = try decoder.singleValueContainer()
+		let array = try container.decode([T].self)
+
+		var ascending: Bool = true
+		if (array.count >= 1) {
+			/// loop through array and see if ascending/descending
+			for index in array.startIndex ..< (array.endIndex-1) {
+				if array[index] < array[index+1] {
+					ascending = true
+					break
+				}
+				else {
+					ascending = false
+					break
+				}
+			}
+		}
+
+		self.init(ascending: ascending, startingValues: array)
+	}
+
+	public func encode(to encoder: any Encoder) throws {
+		var container = encoder.singleValueContainer()
+		let array = Array(self)
+		try container.encode(array)
+	}
 }
 
 // MARK: - Compatibility shims for Linux and Windows

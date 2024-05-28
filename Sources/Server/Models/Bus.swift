@@ -9,6 +9,8 @@ import FluentKit
 import JSONParser
 import Turf
 import Vapor
+import SwiftPriorityQueue
+
 
 /// A representation of a shuttle bus.
 final class Bus: Hashable, Model {
@@ -63,8 +65,8 @@ final class Bus: Hashable, Model {
 		
 	}
 	
-	/// A simplified representation of a ``Bus`` instance that’s suitable to return as a response to incoming requests.
-	struct Resolved: Content {
+	/// A simplified representation of a `Bus` instance that’s suitable to return as a response to incoming requests.
+	struct Resolved: Comparable, Content, Codable {
 		
 		/// The physical bus’s unique identifier.
 		var id: Int
@@ -74,8 +76,28 @@ final class Bus: Hashable, Model {
 		
 		/// The route along which the bus is currently traveling.
 		var routeID: UUID?
-		
+
+		static func < (lhs: Bus.Resolved, rhs: Bus.Resolved) -> Bool {
+			return lhs.location.date < rhs.location.date
+		}
 	}
+
+	struct Progress: Content, Codable {		
+		/// Distance traveled along route
+		var metersTraveledAlongRoute: Double
+
+		// // The last known locations
+		var lastKnownLocation: Location
+	}
+
+	// var progress: Progress? {
+	// 	get {
+	// 		guard let metersTraveledAlongRoute = self.metersTraveledAlongRoute,  let lastKnownLocation = self.lastKnownLocation else {
+	//      		return nil;
+	// 		}
+	//      return Progress(metersTraveledAlongRoute: metersTraveledAlongRoute, lastKnownLocation: lastKnownLocation)
+	// 	}
+	// }
 	
 	static let schema = "buses"
 	
@@ -104,7 +126,18 @@ final class Bus: Hashable, Model {
 	/// The ID of route along which this bus is currently traveling.
 	@OptionalField(key: "route_id")
 	var routeID: UUID?
-	
+
+	// Total distance traveled along the route
+	@OptionalField(key: "meters_along_route") 
+	var metersTraveledAlongRoute: Double?	
+
+	// @OptionalField(key: "previous_known_location")
+	// var previousKnownLocation: Resolved?
+
+	/// The visited locations/coordinates 
+	@Field(key: "location_history")
+	var locationHistory: [Bus.Resolved]
+
 	init() { }
 	
 	/// Creates a bus object.
@@ -114,7 +147,9 @@ final class Bus: Hashable, Model {
 	init(id: Int, locations: [Location] = []) {
 		self.id = id
 		self.locations = locations
-	}
+		self.locationHistory = [Bus.Resolved]()
+		self.metersTraveledAlongRoute = 0
+	} 
 	
 	func hash(into hasher: inout Hasher) {
 		hasher.combine(self.id)
